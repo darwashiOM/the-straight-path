@@ -2,21 +2,22 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Admin status is carried on the user's custom claims. We set the
-    // `admin: true` claim whenever a UID is added to the Firestore
+    // Admin status is carried on the user's Firebase Auth custom claims.
+    // We set `admin: true` whenever a UID is added to the Firestore
     // `/admins` collection (see scripts/set-admin-claims.mjs). Checking
-    // the claim avoids Firebase Storage's cross-service call to Firestore,
-    // which requires the Blaze plan.
+    // a claim here avoids Firebase Storage's cross-service call to
+    // Firestore, which requires the Blaze plan.
     function isAdmin() {
       return request.auth != null && request.auth.token.admin == true;
     }
 
-    // Public read for all assets; admin-only write, images up to 10MB.
+    // Public read for all assets. Admins have full write access — no
+    // size or content-type limits — so they can upload anything the
+    // site needs (images, audio, video, PDFs, etc.). Enforcement of
+    // any shape-of-file rules is delegated to the client.
     match /{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin()
-        && request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+      allow write, delete: if isAdmin();
     }
   }
 }

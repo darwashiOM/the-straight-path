@@ -45,6 +45,17 @@ export async function uploadMedia(file: File, alt: string): Promise<MediaDoc> {
   const user = getFirebaseAuth().currentUser;
   if (!user) throw new Error('Not signed in');
 
+  // Force-refresh the ID token so custom claims granted after the current
+  // session started (e.g. `admin: true`) are present in the request the
+  // Storage SDK about to send. The Storage rules check
+  // `request.auth.token.admin`, which only comes from the ID token.
+  try {
+    await user.getIdToken(true);
+  } catch {
+    // Non-fatal: the existing token might still work for writes the user
+    // has always had permission for.
+  }
+
   const id = generateId();
   const ext = guessExtension(file);
   const path = `media/${id}${ext}`;
@@ -104,6 +115,11 @@ export async function listMedia(): Promise<MediaDoc[]> {
 export async function deleteMedia(id: string): Promise<void> {
   const user = getFirebaseAuth().currentUser;
   if (!user) throw new Error('Not signed in');
+  try {
+    await user.getIdToken(true);
+  } catch {
+    // non-fatal
+  }
   // Fetch the doc to learn the storage path.
   const snap = await getDocs(collection(getDb(), MEDIA));
   const found = snap.docs.find((d) => d.id === id);
