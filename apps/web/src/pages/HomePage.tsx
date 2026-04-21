@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight, BookOpen, HelpCircle, Link2, MessageSquare, Users } from 'lucide-react';
 
+import ArticleCover from '@/components/ArticleCover';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import { getPublishedArticles } from '@/content/articles';
@@ -95,9 +96,12 @@ export default function HomePage() {
               <h2 className="mt-2 font-serif text-3xl font-semibold text-primary-700 dark:text-accent-300 md:text-4xl">
                 {t('home.sections.learn')}
               </h2>
+              <p className="mt-3 max-w-xl text-sm text-ink/60 dark:text-paper/70">
+                {t('learn.description')}
+              </p>
             </div>
             <Link
-              to={localizePath('/learn/articles')}
+              to={localizePath('/learn')}
               className="text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-accent-400"
             >
               {t('home.sections.viewAll')} {arrow}
@@ -105,26 +109,31 @@ export default function HomePage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
-            {articles.map((a) => (
-              <Link
-                key={a.frontmatter.slug}
-                to={localizePath(`/learn/articles/${a.frontmatter.slug}`)}
-                className="card group flex flex-col overflow-hidden"
-              >
-                <div className="aspect-video bg-gradient-to-br from-primary-100 to-accent-100" />
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
-                    {translateArticleTitle(a.frontmatter.slug, a.frontmatter.title)}
-                  </h3>
-                  <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">
-                    {translateArticleExcerpt(a.frontmatter.slug, a.frontmatter.excerpt)}
-                  </p>
-                  <span className="mt-4 text-xs uppercase tracking-wider text-ink/50 dark:text-paper/60">
-                    {formatDate(a.frontmatter.publishedAt, dateLocale)}
-                  </span>
-                </div>
-              </Link>
-            ))}
+            {articles.map((a) => {
+              const topic = a.frontmatter.topic;
+              const topicLabel = topic ? (t(`learn.topics.${topic}`) as string) : undefined;
+              return (
+                <Link
+                  key={a.frontmatter.slug}
+                  to={localizePath(`/learn/articles/${a.frontmatter.slug}`)}
+                  className="card group flex flex-col overflow-hidden transition-transform hover:-translate-y-0.5"
+                >
+                  <ArticleCover slug={a.frontmatter.slug} label={topicLabel} />
+                  <div className="flex flex-1 flex-col p-6">
+                    <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+                      {translateArticleTitle(a.frontmatter.slug, a.frontmatter.title)}
+                    </h3>
+                    <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">
+                      {translateArticleExcerpt(a.frontmatter.slug, a.frontmatter.excerpt)}
+                    </p>
+                    <div className="mt-5 flex items-center justify-between text-xs text-ink/50 dark:text-paper/60">
+                      <span>{formatDate(a.frontmatter.publishedAt, dateLocale)}</span>
+                      <span>{t('learn.readingTime', { minutes: a.readingTime })}</span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </Container>
       </section>

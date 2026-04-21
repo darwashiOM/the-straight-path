@@ -69,7 +69,55 @@
   },
   "learn": {
     "title": "Learn About Islam",
-    "description": "A curated set of articles introducing the core ideas, character, and practices of Islam — written for readers of any background."
+    "description": "A curated set of articles introducing the core ideas, character, and practices of Islam — written for readers of any background.",
+    "startHere": {
+      "eyebrow": "Start Here",
+      "title": "New to Islam? Start here.",
+      "description": "Three short articles, in order. Read them in one sitting, or one a day — whichever feels right.",
+      "step": "Step {{n}}"
+    },
+    "topics": {
+      "heading": "Browse by topic",
+      "ariaLabel": "Filter articles by topic",
+      "all": "All",
+      "foundations": "Foundations",
+      "creed": "Creed",
+      "quran": "Qur'an",
+      "prophet": "Prophet",
+      "character": "Character",
+      "practice": "Practice",
+      "comparative-religion": "Comparative Religion"
+    },
+    "series": {
+      "heading": "A series to follow",
+      "eyebrow": "Series",
+      "start": "Start the series"
+    },
+    "readingTime": "{{minutes}} min read",
+    "articles": {
+      "heading": "All articles",
+      "empty": "No articles match this topic yet. Try \"All\" to see everything available."
+    },
+    "faqPreview": {
+      "eyebrow": "Have a question?",
+      "title": "Common questions, answered plainly.",
+      "seeAll": "See all questions"
+    },
+    "resourcesPreview": {
+      "eyebrow": "Looking for more?",
+      "title": "Trusted places to go deeper.",
+      "seeAll": "See all resources"
+    },
+    "drafts": {
+      "badge": "Draft",
+      "notice": "Drafts are visible because \"?showDrafts=1\" is in the URL."
+    }
+  },
+  "series": {
+    "foundations-of-islam": {
+      "title": "Foundations of Islam",
+      "description": "Start at the beginning. A short reading order covering what Islam is, why we were created, the core practices, and a ten-point overview for the curious."
+    }
   },
   "articlesPage": {
     "title": "Articles",
@@ -288,6 +336,68 @@
     "why-did-god-create-you": {
       "title": "Why Did God Create You?",
       "excerpt": "The Qur'an's answer to the oldest question — and what it means for how we live."
+    },
+    "what-is-islam": {
+      "title": "What is Islam?",
+      "excerpt": "A gentle first answer — what the word means, what Muslims believe, and why so many have walked this path."
+    },
+    "the-five-pillars": {
+      "title": "The Five Pillars",
+      "excerpt": "The five acts of worship that shape a Muslim's life — and the quiet logic behind each one."
+    },
+    "understanding-the-quran": {
+      "title": "Understanding the Qur'an",
+      "excerpt": "How the Qur'an was revealed, preserved, and read — and how to approach it for the first time."
+    },
+    "the-prophets-character": {
+      "title": "The Prophet's Character",
+      "excerpt": "Small, daily portraits of the Prophet Muḥammad ﷺ — as a husband, a neighbour, a friend, a leader."
+    },
+    "prayer-a-conversation-with-god": {
+      "title": "Prayer — A Conversation with God",
+      "excerpt": "What a Muslim says in prayer, five times a day — and why it is best understood as a quiet conversation with God."
     }
+  },
+  "search": {
+    "open": "Search",
+    "short": "Search",
+    "dialogLabel": "Search the site",
+    "placeholder": "Search articles, FAQ, resources…",
+    "close": "Close search",
+    "recent": "Recent searches",
+    "empty": "Start typing to search.",
+    "noResults": "No results found.",
+    "groups": {
+      "articles": "Articles",
+      "faq": "FAQ",
+      "resources": "Resources",
+      "social": "Social"
+    },
+    "hints": {
+      "navigate": "navigate",
+      "select": "select",
+      "close": "close"
+    }
+  },
+  "theme": {
+    "current": {
+      "light": "Light mode",
+      "dark": "Dark mode",
+      "system": "System theme"
+    },
+    "switchTo": {
+      "light": "Switch to light mode",
+      "dark": "Switch to dark mode",
+      "system": "Use system theme"
+    }
+  },
+  "breadcrumbs": {
+    "label": "Breadcrumb"
+  },
+  "navExtras": {
+    "admin": "Admin"
+  },
+  "footerExtras": {
+    "signIn": "Sign in"
   }
 }

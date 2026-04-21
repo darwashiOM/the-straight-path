@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 
+import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema, graph, organizationSchema } from '@/lib/schema';
 
 interface Principle {
@@ -13,7 +14,7 @@ interface Principle {
 
 export default function AboutPage() {
   const { t } = useTranslation();
-  const { locale } = useLocalizedPath();
+  const { locale, localizePath } = useLocalizedPath();
   const meta = getRouteMeta('/about')!;
 
   const principles = (t('aboutPage.principles', { returnObjects: true }) as Principle[]) ?? [];
@@ -34,6 +35,12 @@ export default function AboutPage() {
         )}
       />
       <Container className="py-16">
+        <Breadcrumbs
+          items={buildBreadcrumbs('/about').map((n) => ({
+            label: t(n.i18nKey) as string,
+            to: n.path === '/about' ? undefined : localizePath(n.path),
+          }))}
+        />
         <div className="mx-auto max-w-3xl">
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
             {t('aboutPage.title')}

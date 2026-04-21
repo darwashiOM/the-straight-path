@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X } from 'lucide-react';
+import { Menu, Shield, X } from 'lucide-react';
 
 import Container from './Container';
 import LanguageSwitcher from './LanguageSwitcher';
+import DarkModeToggle from './DarkModeToggle';
+import CommandK from './CommandK';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { cn } from '@/lib/utils';
+import * as AuthModule from '@/lib/auth';
 
 const navItems = [
   { to: '/learn', key: 'learn' },
@@ -17,10 +20,38 @@ const navItems = [
   { to: '/about', key: 'about' },
 ] as const;
 
+/**
+ * `useAdminLinkVisibility` — returns true only when the signed-in user is an
+ * admin. Hooks are called unconditionally (per React rules); presence of the
+ * auth API is verified at module-load — if either export is missing we bind
+ * to a no-op hook so the component still renders cleanly.
+ */
+type AuthState = { user: unknown | null };
+type AdminState = { isAdmin: boolean };
+
+const noopAuth = (): AuthState => ({ user: null });
+const noopAdmin = (): AdminState => ({ isAdmin: false });
+
+const useAuthHook: () => AuthState =
+  typeof (AuthModule as { useAuth?: unknown }).useAuth === 'function'
+    ? ((AuthModule as { useAuth: () => AuthState }).useAuth as () => AuthState)
+    : noopAuth;
+const useIsAdminHook: () => AdminState =
+  typeof (AuthModule as { useIsAdmin?: unknown }).useIsAdmin === 'function'
+    ? ((AuthModule as { useIsAdmin: () => AdminState }).useIsAdmin as () => AdminState)
+    : noopAdmin;
+
+function useAdminLinkVisibility(): boolean {
+  const auth = useAuthHook();
+  const admin = useIsAdminHook();
+  return Boolean(auth.user && admin.isAdmin);
+}
+
 export default function Navbar() {
   const { t } = useTranslation();
   const { localizePath } = useLocalizedPath();
   const [open, setOpen] = useState(false);
+  const showAdminLink = useAdminLinkVisibility();
 
   return (
     <header className="sticky top-0 z-40 border-b border-primary-500/10 bg-paper/80 backdrop-blur-md dark:border-primary-700/30 dark:bg-primary-900/80">
@@ -55,7 +86,19 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <CommandK />
+            <DarkModeToggle />
             <LanguageSwitcher />
+            {showAdminLink ? (
+              <Link
+                to="/admin"
+                className="hidden lg:inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold text-primary-600 transition-colors hover:bg-primary-50 hover:text-primary-700 dark:text-accent-300 dark:hover:bg-primary-800"
+                aria-label={t('navExtras.admin', { defaultValue: 'Admin' }) as string}
+              >
+                <Shield size={12} aria-hidden="true" />
+                {t('navExtras.admin', { defaultValue: 'Admin' }) as string}
+              </Link>
+            ) : null}
             <Link
               to={localizePath('/contact')}
               className="hidden lg:inline-flex btn-accent !px-4 !py-2 text-sm"
@@ -95,6 +138,16 @@ export default function Navbar() {
                   {t(`nav.${item.key}`)}
                 </NavLink>
               ))}
+              {showAdminLink ? (
+                <Link
+                  to="/admin"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 dark:text-accent-300 dark:hover:bg-primary-800"
+                >
+                  <Shield size={14} aria-hidden="true" />
+                  {t('navExtras.admin', { defaultValue: 'Admin' }) as string}
+                </Link>
+              ) : null}
               <Link
                 to={localizePath('/contact')}
                 onClick={() => setOpen(false)}

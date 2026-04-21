@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema, faqSchema, graph } from '@/lib/schema';
 import { cn } from '@/lib/utils';
 
@@ -16,7 +17,7 @@ interface FaqItem {
 
 export default function FaqPage() {
   const { t } = useTranslation();
-  const { locale } = useLocalizedPath();
+  const { locale, localizePath } = useLocalizedPath();
   const [open, setOpen] = useState<number | null>(0);
   const meta = getRouteMeta('/faq')!;
 
@@ -40,6 +41,12 @@ export default function FaqPage() {
         )}
       />
       <Container className="py-16">
+        <Breadcrumbs
+          items={buildBreadcrumbs('/faq').map((n) => ({
+            label: t(n.i18nKey) as string,
+            to: n.path === '/faq' ? undefined : localizePath(n.path),
+          }))}
+        />
         <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
           {t('faqPage.title')}
         </h1>

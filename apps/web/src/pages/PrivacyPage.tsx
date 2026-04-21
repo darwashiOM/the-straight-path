@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 
+import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 
 interface CollectItem {
   label: string;
@@ -12,7 +13,7 @@ interface CollectItem {
 
 export default function PrivacyPage() {
   const { t } = useTranslation();
-  const { locale } = useLocalizedPath();
+  const { locale, localizePath } = useLocalizedPath();
   const meta = getRouteMeta('/privacy')!;
 
   const collectItems =
@@ -28,6 +29,12 @@ export default function PrivacyPage() {
         alternatePath="/privacy"
       />
       <Container className="py-16">
+        <Breadcrumbs
+          items={buildBreadcrumbs('/privacy').map((n) => ({
+            label: t(n.i18nKey) as string,
+            to: n.path === '/privacy' ? undefined : localizePath(n.path),
+          }))}
+        />
         <div className="mx-auto max-w-3xl">
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
             {t('privacyPage.title')}

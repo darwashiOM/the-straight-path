@@ -128,7 +128,18 @@ export default function Footer() {
           <span>
             &copy; {year} {t('footer.copyright')}
           </span>
-          <span>{t('footer.madeWith')}</span>
+          <span className="flex items-center gap-3">
+            <span>{t('footer.madeWith')}</span>
+            {/* Intentionally tiny and unadvertised — a discoverable entry
+                point for admins without hinting at it to general visitors. */}
+            <Link
+              to="/admin/login"
+              className="text-ink/30 hover:text-ink/60 dark:text-paper/30 dark:hover:text-paper/60"
+              aria-label={t('footerExtras.signIn', { defaultValue: 'Sign in' }) as string}
+            >
+              {t('footerExtras.signIn', { defaultValue: 'Sign in' }) as string}
+            </Link>
+          </span>
         </div>
       </Container>
     </footer>

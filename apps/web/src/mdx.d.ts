@@ -9,7 +9,14 @@ declare module '*.mdx' {
     tags?: string[];
     heroImage?: string;
     draft?: boolean;
+    topic?: string;
+    series?: string;
   };
   const Component: ComponentType;
   export default Component;
+}
+
+declare module '*.mdx?raw' {
+  const raw: string;
+  export default raw;
 }

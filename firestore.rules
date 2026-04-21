@@ -24,6 +24,14 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+    match /resources/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /channels/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
 
     // Write-only public, admin read
     match /contact-submissions/{id} {

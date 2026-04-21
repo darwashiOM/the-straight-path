@@ -1,10 +1,11 @@
 import { ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema } from '@/lib/schema';
 
 type ResourceKey = 'quranCom' | 'sunnahCom' | 'yaqeen' | 'bayyinah' | 'islamicAwareness';
@@ -32,7 +33,7 @@ const resources: Resource[] = [
 
 export default function ResourcesPage() {
   const { t } = useTranslation();
-  const { locale } = useLocalizedPath();
+  const { locale, localizePath } = useLocalizedPath();
   const meta = getRouteMeta('/resources')!;
 
   return (
@@ -48,6 +49,12 @@ export default function ResourcesPage() {
         ])}
       />
       <Container className="py-16">
+        <Breadcrumbs
+          items={buildBreadcrumbs('/resources').map((n) => ({
+            label: t(n.i18nKey) as string,
+            to: n.path === '/resources' ? undefined : localizePath(n.path),
+          }))}
+        />
         <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
           {t('resourcesPage.title')}
         </h1>

@@ -20,6 +20,18 @@ const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
 const TermsPage = lazy(() => import('@/pages/TermsPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
+// Admin surface — English-only, not wrapped in i18n. Lazy-loaded so the
+// public bundle never pays for the CMS.
+const AdminLayout = lazy(() => import('@/layouts/AdminLayout'));
+const LoginPage = lazy(() => import('@/pages/admin/LoginPage'));
+const DashboardPage = lazy(() => import('@/pages/admin/DashboardPage'));
+const ArticlesListPage = lazy(() => import('@/pages/admin/ArticlesListPage'));
+const ArticleEditorPage = lazy(() => import('@/pages/admin/ArticleEditorPage'));
+const ResourcesAdminPage = lazy(() => import('@/pages/admin/ResourcesAdminPage'));
+const FaqAdminPage = lazy(() => import('@/pages/admin/FaqAdminPage'));
+const ChannelsAdminPage = lazy(() => import('@/pages/admin/ChannelsAdminPage'));
+const SettingsPage = lazy(() => import('@/pages/admin/SettingsPage'));
+
 /**
  * Keeps i18next in lock-step with the route. The URL is the single source of
  * truth — `/ar/...` renders Arabic RTL, everything else renders English LTR.
@@ -72,6 +84,18 @@ export default function App() {
           <Route element={<RootLayout />}>
             {pageRoutes('en')}
             <Route path="ar">{pageRoutes('ar')}</Route>
+          </Route>
+          {/* Admin surface — sits outside RootLayout so it has its own chrome. */}
+          <Route path="admin/login" element={<LoginPage />} />
+          <Route path="admin" element={<AdminLayout />}>
+            <Route index element={<DashboardPage />} />
+            <Route path="articles" element={<ArticlesListPage />} />
+            <Route path="articles/new" element={<ArticleEditorPage />} />
+            <Route path="articles/:id" element={<ArticleEditorPage />} />
+            <Route path="resources" element={<ResourcesAdminPage />} />
+            <Route path="faq" element={<FaqAdminPage />} />
+            <Route path="channels" element={<ChannelsAdminPage />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>
       </Suspense>

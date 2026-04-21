@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 
+import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema } from '@/lib/schema';
 
 type ChannelKey = 'efdawah' | 'yaqeen' | 'muftiMenk';
@@ -16,7 +17,7 @@ const channels: { key: ChannelKey; url: string }[] = [
 
 export default function SocialPage() {
   const { t } = useTranslation();
-  const { locale } = useLocalizedPath();
+  const { locale, localizePath } = useLocalizedPath();
   const meta = getRouteMeta('/social')!;
   const arrow = locale === 'ar' ? '←' : '→';
 
@@ -33,6 +34,12 @@ export default function SocialPage() {
         ])}
       />
       <Container className="py-16">
+        <Breadcrumbs
+          items={buildBreadcrumbs('/social').map((n) => ({
+            label: t(n.i18nKey) as string,
+            to: n.path === '/social' ? undefined : localizePath(n.path),
+          }))}
+        />
         <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
           {t('socialPage.title')}
         </h1>
