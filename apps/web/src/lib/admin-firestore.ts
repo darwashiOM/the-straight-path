@@ -31,11 +31,74 @@ import type {
   TopicDoc,
   Translatable,
 } from './content-schema';
+import { recordAudit } from './audit';
 
 function requireAdminAuth() {
   const user = getFirebaseAuth().currentUser;
   if (!user) throw new Error('Not signed in');
   return user;
+}
+
+/** Snapshot a doc's current data for audit `before` — returns null when absent. */
+async function snapshotOr(
+  coll: string,
+  id: string,
+): Promise<Record<string, unknown> | undefined> {
+  try {
+    const snap = await getDoc(doc(getDb(), coll, id));
+    return snap.exists() ? (snap.data() as Record<string, unknown>) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Fire-and-forget audit write with a safe `after` shape. */
+async function audit(
+  action: 'create' | 'update' | 'delete',
+  coll: string,
+  docId: string,
+  before: Record<string, unknown> | undefined,
+  after: Record<string, unknown> | undefined,
+): Promise<void> {
+  const user = getFirebaseAuth().currentUser;
+  if (!user) return;
+  await recordAudit({
+    uid: user.uid,
+    email: user.email ?? '',
+    action,
+    collection: coll,
+    docId,
+    ...(before ? { before: stripTimestamps(before) } : {}),
+    ...(after ? { after: stripTimestamps(after) } : {}),
+  });
+}
+
+/** Strip Firestore Timestamps + undefineds from a doc snapshot so we can
+ *  serialize it into audit JSON without losing the envelope. */
+function stripTimestamps(input: unknown): Record<string, unknown> {
+  if (input === null || typeof input !== 'object') return input as Record<string, unknown>;
+  if (Array.isArray(input)) {
+    return input.map((v) => stripTimestamps(v)) as unknown as Record<string, unknown>;
+  }
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
+    if (v === undefined) continue;
+    if (v && typeof v === 'object' && 'seconds' in v && 'nanoseconds' in v) {
+      // Firestore Timestamp → ISO string for audit storage.
+      try {
+        out[k] = new Date((v as { seconds: number }).seconds * 1000).toISOString();
+      } catch {
+        out[k] = null;
+      }
+      continue;
+    }
+    if (v && typeof v === 'object') {
+      out[k] = stripTimestamps(v);
+      continue;
+    }
+    out[k] = v;
+  }
+  return out;
 }
 
 // ---------- Articles ----------
@@ -302,6 +365,7 @@ export async function saveArticleV2(slug: string, data: ArticleDoc): Promise<voi
   requireAdminAuth();
   const ref = doc(getDb(), ARTICLES, slug);
   const existing = await getDoc(ref);
+  const before = existing.exists() ? (existing.data() as Record<string, unknown>) : undefined;
   // Strip undefined so Firestore doesn't reject the write.
   const payload: DocumentData = stripUndefined({
     ...data,
@@ -311,11 +375,14 @@ export async function saveArticleV2(slug: string, data: ArticleDoc): Promise<voi
   });
   if (!existing.exists()) payload.createdAt = serverTimestamp();
   await setDoc(ref, payload, { merge: false });
+  await audit(existing.exists() ? 'update' : 'create', ARTICLES, slug, before, payload);
 }
 
 export async function deleteArticleV2(id: string): Promise<void> {
   requireAdminAuth();
+  const before = await snapshotOr(ARTICLES, id);
   await deleteDoc(doc(getDb(), ARTICLES, id));
+  await audit('delete', ARTICLES, id, before, undefined);
 }
 
 // ---------- Site settings ----------
@@ -352,6 +419,7 @@ export async function saveSiteSetting<T = Record<string, string>>(
   requireAdminAuth();
   const ref = doc(getDb(), SITE_SETTINGS, id);
   const existing = await getDoc(ref);
+  const before = existing.exists() ? (existing.data() as Record<string, unknown>) : undefined;
   const payload: DocumentData = stripUndefined({
     id,
     schemaVersion: 1,
@@ -361,6 +429,7 @@ export async function saveSiteSetting<T = Record<string, string>>(
   });
   if (!existing.exists()) payload.createdAt = serverTimestamp();
   await setDoc(ref, payload, { merge: false });
+  await audit(existing.exists() ? 'update' : 'create', SITE_SETTINGS, id, before, payload);
 }
 
 // ---------- Topics ----------
@@ -382,6 +451,7 @@ export async function saveTopic(slug: string, data: TopicDoc): Promise<void> {
   requireAdminAuth();
   const ref = doc(getDb(), TOPICS, slug);
   const existing = await getDoc(ref);
+  const before = existing.exists() ? (existing.data() as Record<string, unknown>) : undefined;
   const payload: DocumentData = stripUndefined({
     ...data,
     slug,
@@ -390,11 +460,14 @@ export async function saveTopic(slug: string, data: TopicDoc): Promise<void> {
   });
   if (!existing.exists()) payload.createdAt = serverTimestamp();
   await setDoc(ref, payload, { merge: false });
+  await audit(existing.exists() ? 'update' : 'create', TOPICS, slug, before, payload);
 }
 
 export async function deleteTopic(slug: string): Promise<void> {
   requireAdminAuth();
+  const before = await snapshotOr(TOPICS, slug);
   await deleteDoc(doc(getDb(), TOPICS, slug));
+  await audit('delete', TOPICS, slug, before, undefined);
 }
 
 // ---------- Series ----------
@@ -416,6 +489,7 @@ export async function saveSeries(slug: string, data: SeriesDoc): Promise<void> {
   requireAdminAuth();
   const ref = doc(getDb(), SERIES, slug);
   const existing = await getDoc(ref);
+  const before = existing.exists() ? (existing.data() as Record<string, unknown>) : undefined;
   const payload: DocumentData = stripUndefined({
     ...data,
     slug,
@@ -424,11 +498,43 @@ export async function saveSeries(slug: string, data: SeriesDoc): Promise<void> {
   });
   if (!existing.exists()) payload.createdAt = serverTimestamp();
   await setDoc(ref, payload, { merge: false });
+  await audit(existing.exists() ? 'update' : 'create', SERIES, slug, before, payload);
 }
 
 export async function deleteSeries(slug: string): Promise<void> {
   requireAdminAuth();
+  const before = await snapshotOr(SERIES, slug);
   await deleteDoc(doc(getDb(), SERIES, slug));
+  await audit('delete', SERIES, slug, before, undefined);
+}
+
+// ---------- Restore (revert to a previous snapshot) ----------
+
+/** Restore a doc from an audit `before` snapshot. Used by the Activity page's
+ *  "Revert" button. Creates the doc if it no longer exists, replaces it
+ *  otherwise. Emits its own audit entry so the revert itself is visible. */
+export async function restoreSnapshot(
+  coll: string,
+  docId: string,
+  snapshot: Record<string, unknown>,
+): Promise<void> {
+  requireAdminAuth();
+  const ref = doc(getDb(), coll, docId);
+  const existing = await getDoc(ref);
+  const before = existing.exists() ? (existing.data() as Record<string, unknown>) : undefined;
+  // Drop Firestore-managed envelope fields so we don't try to re-write server
+  // timestamps from a snapshot.
+  const { createdAt: _c, updatedAt: _u, ...rest } = snapshot as Record<string, unknown>;
+  void _c;
+  void _u;
+  const payload: DocumentData = stripUndefined({
+    ...rest,
+    schemaVersion: 1,
+    updatedAt: serverTimestamp(),
+  });
+  if (!existing.exists()) payload.createdAt = serverTimestamp();
+  await setDoc(ref, payload, { merge: false });
+  await audit(existing.exists() ? 'update' : 'create', coll, docId, before, payload);
 }
 
 // ---------- util ----------

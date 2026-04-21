@@ -6,13 +6,17 @@
 import { Eye, X } from 'lucide-react';
 
 import { useIsAdmin } from '@/lib/auth';
-import { isPreviewMode } from '@/lib/preview';
+import { clearAllPreviews, hasAnyStagedPreview, isPreviewMode } from '@/lib/preview';
 
 export default function PreviewBanner() {
   const { isAdmin } = useIsAdmin();
-  if (!isPreviewMode() || !isAdmin) return null;
+  // Only render when the URL is in preview mode, the viewer is an admin,
+  // AND there is actual staged content to preview. Missing any one of these
+  // and the public page falls through to the live Firestore data as normal.
+  if (!isPreviewMode() || !isAdmin || !hasAnyStagedPreview()) return null;
 
   function dismiss() {
+    clearAllPreviews();
     try {
       const url = new URL(window.location.href);
       url.searchParams.delete('preview');

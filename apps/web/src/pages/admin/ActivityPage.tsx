@@ -16,7 +16,7 @@
  * volume grows, swap in a cursor-based `startAfter` pager.
  */
 import { Fragment, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   collection,
   getDocs,
@@ -25,10 +25,11 @@ import {
   query,
   type Timestamp,
 } from 'firebase/firestore';
-import { ChevronDown, ChevronRight, RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronRight, RefreshCw, Undo2 } from 'lucide-react';
 
 import { getDb } from '@/lib/firebase';
 import type { AuditLogDoc } from '@/lib/content-schema';
+import { restoreSnapshot } from '@/lib/admin-firestore';
 
 interface AuditRow extends AuditLogDoc {
   id: string;
@@ -86,6 +87,7 @@ function DiffBlock({ label, value }: { label: string; value: unknown }) {
 }
 
 export default function ActivityPage() {
+  const qc = useQueryClient();
   const { data, isLoading, isFetching, refetch, error } = useQuery({
     queryKey: ['admin', 'auditLog'],
     queryFn: fetchAuditLog,
@@ -95,6 +97,32 @@ export default function ActivityPage() {
   const [collectionFilter, setCollectionFilter] = useState<string>('');
   const [whoFilter, setWhoFilter] = useState<string>('');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [reverting, setReverting] = useState<string | null>(null);
+  const [revertError, setRevertError] = useState<string | null>(null);
+
+  async function revert(row: AuditRow) {
+    if (!row.before) {
+      setRevertError('This entry has no "before" snapshot to restore.');
+      return;
+    }
+    const msg =
+      row.action === 'delete'
+        ? `Recreate ${row.collection}/${row.docId} from this snapshot?`
+        : `Revert ${row.collection}/${row.docId} to this snapshot? The current state will be replaced.`;
+    if (!window.confirm(msg)) return;
+    setReverting(row.id);
+    setRevertError(null);
+    try {
+      await restoreSnapshot(row.collection, row.docId, row.before);
+      // Invalidate all content + the audit log itself so the restored state
+      // and the new audit entry both land immediately.
+      await qc.invalidateQueries();
+    } catch (err) {
+      setRevertError((err as Error).message);
+    } finally {
+      setReverting(null);
+    }
+  }
 
   const collectionOptions = useMemo(() => {
     const set = new Set<string>();
@@ -186,6 +214,11 @@ export default function ActivityPage() {
           Failed to load audit log: {(error as Error).message}
         </div>
       ) : null}
+      {revertError ? (
+        <div className="rounded-xl border border-sienna/30 bg-sienna/5 p-4 text-sm text-sienna">
+          Revert failed: {revertError}
+        </div>
+      ) : null}
 
       <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
         <table className="w-full text-sm">
@@ -246,6 +279,25 @@ export default function ActivityPage() {
                     <tr className="bg-paper/40">
                       <td></td>
                       <td colSpan={5} className="px-4 py-4">
+                        <div className="mb-3 flex items-center justify-between gap-4">
+                          <div className="text-xs text-ink/60">
+                            {r.before
+                              ? 'You can restore the "before" snapshot below.'
+                              : '(No "before" snapshot — this was a new create.)'}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void revert(r);
+                            }}
+                            disabled={!r.before || reverting === r.id}
+                            className="inline-flex items-center gap-1.5 rounded-md border border-accent-400 bg-accent-50 px-3 py-1.5 text-xs font-medium text-accent-700 hover:bg-accent-100 disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            <Undo2 className="h-3.5 w-3.5" />
+                            {reverting === r.id ? 'Reverting…' : 'Revert to "Before"'}
+                          </button>
+                        </div>
                         <div className="flex flex-col gap-4 md:flex-row">
                           <DiffBlock label="Before" value={r.before} />
                           <DiffBlock label="After" value={r.after} />
