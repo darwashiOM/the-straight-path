@@ -1,18 +1,25 @@
 /**
  * Search index — builds a Fuse.js index of every indexable entity on the
- * site (articles, FAQ items, resources, social channels) at module load.
+ * site (articles, FAQ items, resources, social channels) at call time.
  *
  * Because Fuse is ~12 KB gzipped, this module is only imported by the
  * <SearchDialog>, which is itself lazy-loaded. That keeps the first-paint
  * bundle free of search code.
  *
- * Raw MDX sources are loaded with Vite's `?raw` glob so we can index a short
- * body snippet in addition to frontmatter excerpts.
+ * Content is fetched directly from Firestore when the dialog opens, so the
+ * index reflects the live admin state. If Firestore is empty or unreachable
+ * we fall back to the built-in defaults from `content-defaults`.
  */
 import Fuse from 'fuse.js';
-import type { TFunction } from 'i18next';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
-import { articles } from '@/content/articles';
+import { getDb } from './firebase';
+import { pickLocale, type ArticleDoc, type Locale } from './content-schema';
+import {
+  DEFAULT_CHANNELS,
+  DEFAULT_FAQS,
+  DEFAULT_RESOURCES,
+} from './content-defaults';
 
 export type SearchItemType = 'article' | 'faq' | 'resource' | 'social';
 
@@ -27,112 +34,166 @@ export interface SearchItem {
   externalUrl?: string;
 }
 
-// Body snippets for search are pre-generated at build time by
-// `scripts/generate-reading-times.mjs` (alongside reading times) because the
-// MDX plugin intercepts `?raw` queries on `.mdx` files.
-import { bodySnippets } from '@/content/articles/reading-times.generated';
-
-function bodySnippetFor(slug: string): string {
-  return bodySnippets[slug] ?? '';
+function snippet(markdown: string, max = 400): string {
+  return markdown
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[#>*_~`-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
 }
 
-interface FaqEntry {
-  q: string;
-  a: string;
+async function fetchPublishedArticles(locale: Locale) {
+  try {
+    const snap = await getDocs(
+      query(collection(getDb(), 'articles'), where('status', '==', 'published')),
+    );
+    return snap.docs.map((d) => {
+      const data = d.data() as ArticleDoc;
+      const tr = pickLocale(data.translations, locale);
+      return {
+        slug: data.slug,
+        title: tr.title,
+        excerpt: tr.excerpt,
+        body: tr.body,
+      };
+    });
+  } catch {
+    return [];
+  }
 }
 
-interface ResourceEntry {
-  key: string;
-  title: string;
-  description: string;
-  url: string;
-  category?: string;
+async function fetchFaqs(locale: Locale) {
+  try {
+    const snap = await getDocs(collection(getDb(), 'faqs'));
+    if (snap.empty) {
+      return DEFAULT_FAQS.map((f, i) => {
+        const tr = pickLocale(f.translations, locale);
+        return { id: f.id ?? String(i), question: tr.question, answer: tr.answer };
+      });
+    }
+    return snap.docs.map((d) => {
+      const data = d.data() as {
+        translations: { en: { question: string; answer: string }; ar?: { question: string; answer: string } };
+      };
+      const tr = pickLocale(data.translations, locale);
+      return { id: d.id, question: tr.question, answer: tr.answer };
+    });
+  } catch {
+    return DEFAULT_FAQS.map((f, i) => {
+      const tr = pickLocale(f.translations, locale);
+      return { id: f.id ?? String(i), question: tr.question, answer: tr.answer };
+    });
+  }
 }
 
-interface SocialChannelEntry {
-  key: string;
-  name: string;
-  description: string;
-  url: string;
+async function fetchResources(locale: Locale) {
+  try {
+    const snap = await getDocs(collection(getDb(), 'resources'));
+    if (snap.empty) {
+      return DEFAULT_RESOURCES.map((r) => {
+        const tr = pickLocale(r.translations, locale);
+        return { id: r.id, title: tr.title, description: tr.description, url: r.url };
+      });
+    }
+    return snap.docs.map((d) => {
+      const data = d.data() as {
+        url: string;
+        translations: { en: { title: string; description: string }; ar?: { title: string; description: string } };
+      };
+      const tr = pickLocale(data.translations, locale);
+      return { id: d.id, title: tr.title, description: tr.description, url: data.url };
+    });
+  } catch {
+    return DEFAULT_RESOURCES.map((r) => {
+      const tr = pickLocale(r.translations, locale);
+      return { id: r.id, title: tr.title, description: tr.description, url: r.url };
+    });
+  }
 }
 
-const RESOURCES: Omit<ResourceEntry, 'title' | 'description'>[] = [
-  { key: 'quranCom', url: 'https://quran.com/', category: 'quran' },
-  { key: 'sunnahCom', url: 'https://sunnah.com/', category: 'hadith' },
-  { key: 'yaqeen', url: 'https://yaqeeninstitute.org/', category: 'research' },
-  { key: 'bayyinah', url: 'https://bayyinah.tv/', category: 'study' },
-  { key: 'islamicAwareness', url: 'https://www.islamic-awareness.org/', category: 'research' },
-];
-
-const SOCIAL_CHANNELS: Omit<SocialChannelEntry, 'name' | 'description'>[] = [
-  { key: 'efdawah', url: 'https://www.youtube.com/@EFDawah' },
-  { key: 'yaqeen', url: 'https://www.youtube.com/@YaqeenInstituteOfficial' },
-  { key: 'muftiMenk', url: 'https://www.youtube.com/@muftimenkofficial' },
-];
+async function fetchChannels(locale: Locale) {
+  try {
+    const snap = await getDocs(collection(getDb(), 'channels'));
+    if (snap.empty) {
+      return DEFAULT_CHANNELS.map((c) => {
+        const tr = pickLocale(c.translations, locale);
+        return { id: c.id, name: tr.name, description: tr.description, url: c.url };
+      });
+    }
+    return snap.docs.map((d) => {
+      const data = d.data() as {
+        url: string;
+        translations: { en: { name: string; description: string }; ar?: { name: string; description: string } };
+      };
+      const tr = pickLocale(data.translations, locale);
+      return { id: d.id, name: tr.name, description: tr.description, url: data.url };
+    });
+  } catch {
+    return DEFAULT_CHANNELS.map((c) => {
+      const tr = pickLocale(c.translations, locale);
+      return { id: c.id, name: tr.name, description: tr.description, url: c.url };
+    });
+  }
+}
 
 /**
- * Build the full list of SearchItems for the active locale. The i18n
- * `t` function is passed in so the caller can decide which locale to index
- * (we typically pass the current one).
+ * Build the full list of SearchItems for the active locale by reading
+ * Firestore directly. The search dialog awaits this on first open and
+ * memoizes by locale.
  */
-export function buildSearchItems(t: TFunction, i18n: { exists: (k: string) => boolean }): SearchItem[] {
+export async function buildSearchItemsAsync(locale: Locale): Promise<SearchItem[]> {
+  const [articles, faqs, resources, channels] = await Promise.all([
+    fetchPublishedArticles(locale),
+    fetchFaqs(locale),
+    fetchResources(locale),
+    fetchChannels(locale),
+  ]);
+
   const items: SearchItem[] = [];
 
-  // Articles.
   for (const a of articles) {
-    if (a.frontmatter.draft) continue;
-    const slug = a.frontmatter.slug;
-    const title =
-      i18n.exists(`articles.${slug}.title`)
-        ? (t(`articles.${slug}.title`) as string)
-        : a.frontmatter.title;
-    const excerpt =
-      i18n.exists(`articles.${slug}.excerpt`)
-        ? (t(`articles.${slug}.excerpt`) as string)
-        : a.frontmatter.excerpt;
-    const snippet = bodySnippetFor(slug);
     items.push({
-      id: `article:${slug}`,
+      id: `article:${a.slug}`,
       type: 'article',
-      title,
-      body: `${excerpt} ${snippet}`.trim(),
-      to: `/learn/articles/${slug}`,
+      title: a.title,
+      body: `${a.excerpt} ${snippet(a.body)}`.trim(),
+      to: `/learn/articles/${a.slug}`,
     });
   }
 
-  // FAQ.
-  const faqs = (t('faqPage.items', { returnObjects: true }) as FaqEntry[] | undefined) ?? [];
-  faqs.forEach((f, i) => {
+  faqs.forEach((f) => {
     items.push({
-      id: `faq:${i}`,
+      id: `faq:${f.id}`,
       type: 'faq',
-      title: f.q,
-      body: f.a,
+      title: f.question,
+      body: f.answer,
       to: `/faq`,
     });
   });
 
-  // Resources.
-  for (const r of RESOURCES) {
+  for (const r of resources) {
     items.push({
-      id: `resource:${r.key}`,
+      id: `resource:${r.id}`,
       type: 'resource',
-      title: t(`resourcesPage.items.${r.key}.title`) as string,
-      body: t(`resourcesPage.items.${r.key}.description`) as string,
+      title: r.title,
+      body: r.description,
       to: `/resources`,
       externalUrl: r.url,
     });
   }
 
-  // Social channels.
-  for (const s of SOCIAL_CHANNELS) {
+  for (const c of channels) {
     items.push({
-      id: `social:${s.key}`,
+      id: `social:${c.id}`,
       type: 'social',
-      title: t(`socialPage.channels.${s.key}.name`) as string,
-      body: t(`socialPage.channels.${s.key}.description`) as string,
+      title: c.name,
+      body: c.description,
       to: `/social`,
-      externalUrl: s.url,
+      externalUrl: c.url,
     });
   }
 

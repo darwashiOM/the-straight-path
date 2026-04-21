@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ArrowRight, BookOpen } from 'lucide-react';
 
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import type { ArticleModule } from '@/content/articles';
-import type { Series } from '@/content/series';
+import type { PublicArticle, PublicSeries } from '@/lib/content';
+import { readingTimeMinutes } from '@/lib/reading-time';
 
 /**
  * Renders a horizontal "series" card — a named reading order with a stacked
@@ -12,28 +12,17 @@ import type { Series } from '@/content/series';
  * reader to the first article in the series.
  */
 export interface SeriesCardProps {
-  series: Series;
-  articles: ArticleModule[];
+  series: PublicSeries;
+  articles: PublicArticle[];
 }
 
 export default function SeriesCard({ series, articles }: SeriesCardProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
   const arrowIconClass = locale === 'ar' ? 'rotate-180' : undefined;
 
   const first = articles[0];
   if (!first) return null;
-
-  const translateTitle = (slug: string, fallback: string) =>
-    i18n.exists(`articles.${slug}.title`) ? (t(`articles.${slug}.title`) as string) : fallback;
-
-  // Locale fallback for the series title/description: prefer a locale key, but
-  // fall back to the English source defined in `series.ts` so adding a new
-  // series doesn't require a translation round-trip before it ships.
-  const titleKey = `series.${series.slug}.title`;
-  const descKey = `series.${series.slug}.description`;
-  const title = i18n.exists(titleKey) ? (t(titleKey) as string) : series.title;
-  const description = i18n.exists(descKey) ? (t(descKey) as string) : series.description;
 
   return (
     <section className="card overflow-hidden md:grid md:grid-cols-5">
@@ -44,11 +33,11 @@ export default function SeriesCard({ series, articles }: SeriesCardProps) {
             <BookOpen size={14} aria-hidden="true" />
             {t('learn.series.eyebrow')}
           </p>
-          <h3 className="mt-3 font-serif text-2xl font-semibold md:text-3xl">{title}</h3>
-          <p className="mt-3 text-sm text-paper/80">{description}</p>
+          <h3 className="mt-3 font-serif text-2xl font-semibold md:text-3xl">{series.title}</h3>
+          <p className="mt-3 text-sm text-paper/80">{series.description}</p>
         </div>
         <Link
-          to={localizePath(`/learn/articles/${first.frontmatter.slug}`)}
+          to={localizePath(`/learn/articles/${first.slug}`)}
           className="inline-flex w-fit items-center gap-2 rounded-xl bg-accent-400 px-4 py-2 text-sm font-semibold text-primary-900 transition-colors hover:bg-accent-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400"
         >
           {t('learn.series.start')}
@@ -59,9 +48,9 @@ export default function SeriesCard({ series, articles }: SeriesCardProps) {
       {/* Right column — the stacked article list. */}
       <ol className="col-span-3 divide-y divide-primary-500/10 p-2 dark:divide-primary-700/40">
         {articles.map((a, i) => (
-          <li key={a.frontmatter.slug}>
+          <li key={a.slug}>
             <Link
-              to={localizePath(`/learn/articles/${a.frontmatter.slug}`)}
+              to={localizePath(`/learn/articles/${a.slug}`)}
               className="group flex items-center gap-4 rounded-xl p-4 transition-colors hover:bg-primary-50 dark:hover:bg-primary-700/40"
             >
               <span
@@ -72,10 +61,10 @@ export default function SeriesCard({ series, articles }: SeriesCardProps) {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-serif text-base font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
-                  {translateTitle(a.frontmatter.slug, a.frontmatter.title)}
+                  {a.title}
                 </p>
                 <p className="truncate text-xs text-ink/60 dark:text-paper/60">
-                  {t('learn.readingTime', { minutes: a.readingTime })}
+                  {t('learn.readingTime', { minutes: readingTimeMinutes(a.body) })}
                 </p>
               </div>
               <ArrowRight

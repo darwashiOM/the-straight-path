@@ -10,13 +10,18 @@
 import { Link, NavLink, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useMemo } from 'react';
 import {
+  Activity,
   BookOpen,
   FileText,
+  FolderTree,
   HelpCircle,
+  Layers,
   LayoutDashboard,
   Link as LinkIcon,
   LogOut,
+  Notebook,
   Settings,
+  Sliders,
   Tv,
 } from 'lucide-react';
 
@@ -29,7 +34,12 @@ const NAV = [
   { to: '/admin/resources', label: 'Resources', icon: LinkIcon },
   { to: '/admin/faq', label: 'FAQ', icon: HelpCircle },
   { to: '/admin/channels', label: 'Channels', icon: Tv },
+  { to: '/admin/site', label: 'Site Settings', icon: Sliders },
   { to: '/admin/settings', label: 'Settings', icon: Settings },
+  { to: '/admin/activity', label: 'Activity', icon: Activity },
+  { to: '/admin/series', label: 'Series', icon: Layers },
+  { to: '/admin/topics', label: 'Topics', icon: FolderTree },
+  { to: '/admin/pages', label: 'Pages', icon: Notebook },
 ];
 
 export default function AdminLayout() {

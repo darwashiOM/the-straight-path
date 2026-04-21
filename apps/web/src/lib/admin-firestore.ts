@@ -23,6 +23,14 @@ import {
 } from 'firebase/firestore';
 
 import { getDb, getFirebaseAuth } from './firebase';
+import type {
+  ArticleDoc,
+  SeriesDoc,
+  SiteSettingDoc,
+  SiteSettingId,
+  TopicDoc,
+  Translatable,
+} from './content-schema';
 
 function requireAdminAuth() {
   const user = getFirebaseAuth().currentUser;
@@ -254,4 +262,189 @@ export async function addAdmin(uid: string, email: string, displayName?: string)
 export async function removeAdmin(uid: string): Promise<void> {
   requireAdminAuth();
   await deleteDoc(doc(getDb(), ADMINS, uid));
+}
+
+// ============================================================================
+// V2 API — nested-translations schema. The V1 helpers above stay live until
+// Wave B removes the old editor pages that still import them.
+// ============================================================================
+
+// ---------- Articles V2 ----------
+
+export interface AdminArticleV2 extends ArticleDoc {
+  /** Firestore doc id; always equals `slug`. */
+  id: string;
+}
+
+export async function listArticlesV2(): Promise<AdminArticleV2[]> {
+  const snap = await getDocs(collection(getDb(), ARTICLES));
+  const rows: AdminArticleV2[] = [];
+  for (const d of snap.docs) {
+    const data = d.data() as Partial<ArticleDoc>;
+    // Only return docs that have the V2 nested-translations shape. V1 docs
+    // still have a top-level `title`; skip them so the V2 list stays clean.
+    if (data.translations && typeof data.translations === 'object' && 'en' in data.translations) {
+      rows.push({ id: d.id, ...(data as ArticleDoc) });
+    }
+  }
+  return rows;
+}
+
+export async function getArticleV2(id: string): Promise<AdminArticleV2 | null> {
+  const snap = await getDoc(doc(getDb(), ARTICLES, id));
+  if (!snap.exists()) return null;
+  const data = snap.data() as Partial<ArticleDoc>;
+  if (!data.translations || !('en' in data.translations)) return null;
+  return { id: snap.id, ...(data as ArticleDoc) };
+}
+
+export async function saveArticleV2(slug: string, data: ArticleDoc): Promise<void> {
+  requireAdminAuth();
+  const ref = doc(getDb(), ARTICLES, slug);
+  const existing = await getDoc(ref);
+  // Strip undefined so Firestore doesn't reject the write.
+  const payload: DocumentData = stripUndefined({
+    ...data,
+    slug,
+    schemaVersion: 1,
+    updatedAt: serverTimestamp(),
+  });
+  if (!existing.exists()) payload.createdAt = serverTimestamp();
+  await setDoc(ref, payload, { merge: false });
+}
+
+export async function deleteArticleV2(id: string): Promise<void> {
+  requireAdminAuth();
+  await deleteDoc(doc(getDb(), ARTICLES, id));
+}
+
+// ---------- Site settings ----------
+
+const SITE_SETTINGS = 'siteSettings';
+
+export type AdminSiteSetting<T = Record<string, string>> = SiteSettingDoc<T> & {
+  id: SiteSettingId;
+};
+
+export async function listSiteSettings(): Promise<AdminSiteSetting[]> {
+  const snap = await getDocs(collection(getDb(), SITE_SETTINGS));
+  return snap.docs.map((d) => ({
+    id: d.id as SiteSettingId,
+    ...(d.data() as Omit<SiteSettingDoc, 'id'>),
+  })) as AdminSiteSetting[];
+}
+
+export async function getSiteSetting<T = Record<string, string>>(
+  id: SiteSettingId,
+): Promise<AdminSiteSetting<T> | null> {
+  const snap = await getDoc(doc(getDb(), SITE_SETTINGS, id));
+  if (!snap.exists()) return null;
+  return {
+    id: snap.id,
+    ...(snap.data() as Omit<SiteSettingDoc<T>, 'id'>),
+  } as AdminSiteSetting<T>;
+}
+
+export async function saveSiteSetting<T = Record<string, string>>(
+  id: SiteSettingId,
+  data: { translations: Translatable<T>; data?: Record<string, unknown> },
+): Promise<void> {
+  requireAdminAuth();
+  const ref = doc(getDb(), SITE_SETTINGS, id);
+  const existing = await getDoc(ref);
+  const payload: DocumentData = stripUndefined({
+    id,
+    schemaVersion: 1,
+    translations: data.translations,
+    ...(data.data !== undefined ? { data: data.data } : {}),
+    updatedAt: serverTimestamp(),
+  });
+  if (!existing.exists()) payload.createdAt = serverTimestamp();
+  await setDoc(ref, payload, { merge: false });
+}
+
+// ---------- Topics ----------
+
+const TOPICS = 'topics';
+
+export interface AdminTopic extends TopicDoc {
+  id: string;
+}
+
+export async function listTopics(): Promise<AdminTopic[]> {
+  const snap = await getDocs(
+    query(collection(getDb(), TOPICS), orderBy('order', 'asc')),
+  ).catch(async () => getDocs(collection(getDb(), TOPICS)));
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<TopicDoc, 'id'>) })) as AdminTopic[];
+}
+
+export async function saveTopic(slug: string, data: TopicDoc): Promise<void> {
+  requireAdminAuth();
+  const ref = doc(getDb(), TOPICS, slug);
+  const existing = await getDoc(ref);
+  const payload: DocumentData = stripUndefined({
+    ...data,
+    slug,
+    schemaVersion: 1,
+    updatedAt: serverTimestamp(),
+  });
+  if (!existing.exists()) payload.createdAt = serverTimestamp();
+  await setDoc(ref, payload, { merge: false });
+}
+
+export async function deleteTopic(slug: string): Promise<void> {
+  requireAdminAuth();
+  await deleteDoc(doc(getDb(), TOPICS, slug));
+}
+
+// ---------- Series ----------
+
+const SERIES = 'series';
+
+export interface AdminSeries extends SeriesDoc {
+  id: string;
+}
+
+export async function listSeries(): Promise<AdminSeries[]> {
+  const snap = await getDocs(
+    query(collection(getDb(), SERIES), orderBy('order', 'asc')),
+  ).catch(async () => getDocs(collection(getDb(), SERIES)));
+  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SeriesDoc, 'id'>) })) as AdminSeries[];
+}
+
+export async function saveSeries(slug: string, data: SeriesDoc): Promise<void> {
+  requireAdminAuth();
+  const ref = doc(getDb(), SERIES, slug);
+  const existing = await getDoc(ref);
+  const payload: DocumentData = stripUndefined({
+    ...data,
+    slug,
+    schemaVersion: 1,
+    updatedAt: serverTimestamp(),
+  });
+  if (!existing.exists()) payload.createdAt = serverTimestamp();
+  await setDoc(ref, payload, { merge: false });
+}
+
+export async function deleteSeries(slug: string): Promise<void> {
+  requireAdminAuth();
+  await deleteDoc(doc(getDb(), SERIES, slug));
+}
+
+// ---------- util ----------
+
+/** Recursively drop keys whose value is `undefined` — Firestore rejects them. */
+function stripUndefined<T>(input: T): T {
+  if (Array.isArray(input)) {
+    return input.map((v) => stripUndefined(v)) as unknown as T;
+  }
+  if (input !== null && typeof input === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
+      if (v === undefined) continue;
+      out[k] = stripUndefined(v);
+    }
+    return out as T;
+  }
+  return input;
 }

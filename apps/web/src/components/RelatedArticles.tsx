@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { getPublishedArticles, type ArticleModule } from '@/content/articles';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { usePublishedArticles, type PublicArticle } from '@/lib/content';
 import { formatDate } from '@/lib/utils';
 
 interface RelatedArticlesProps {
@@ -13,6 +13,12 @@ interface RelatedArticlesProps {
   tags?: string[];
   /** Maximum number of related cards to display. */
   limit?: number;
+  /**
+   * Optional pre-fetched article pool. Pass from the article page to avoid a
+   * duplicate Firestore fetch; if omitted the component fetches via
+   * `usePublishedArticles` using the current locale.
+   */
+  pool?: PublicArticle[];
 }
 
 /**
@@ -25,19 +31,21 @@ export default function RelatedArticles({
   currentSlug,
   tags = [],
   limit = 3,
+  pool,
 }: RelatedArticlesProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
   const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
 
+  const fallback = usePublishedArticles(locale);
+  const articles = pool ?? fallback.data;
+
   const related = useMemo(() => {
     const tagSet = new Set(tags);
-    const candidates = getPublishedArticles().filter(
-      (a) => a.frontmatter.slug !== currentSlug,
-    );
+    const candidates = articles.filter((a) => a.slug !== currentSlug);
 
     const scored = candidates.map((a) => {
-      const overlap = (a.frontmatter.tags ?? []).reduce(
+      const overlap = (a.tags ?? []).reduce(
         (acc, tag) => acc + (tagSet.has(tag) ? 1 : 0),
         0,
       );
@@ -47,27 +55,17 @@ export default function RelatedArticles({
     scored.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
       return (
-        new Date(b.article.frontmatter.publishedAt).getTime() -
-        new Date(a.article.frontmatter.publishedAt).getTime()
+        new Date(b.article.publishedAt).getTime() -
+        new Date(a.article.publishedAt).getTime()
       );
     });
 
     return scored.slice(0, limit).map((s) => s.article);
-  }, [currentSlug, tags, limit]);
+  }, [articles, currentSlug, tags, limit]);
 
   if (related.length === 0) return null;
 
   const heading = t('articlesPage.related', 'Related reading') as string;
-
-  const titleFor = (a: ArticleModule) =>
-    i18n.exists(`articles.${a.frontmatter.slug}.title`)
-      ? (t(`articles.${a.frontmatter.slug}.title`) as string)
-      : a.frontmatter.title;
-
-  const excerptFor = (a: ArticleModule) =>
-    i18n.exists(`articles.${a.frontmatter.slug}.excerpt`)
-      ? (t(`articles.${a.frontmatter.slug}.excerpt`) as string)
-      : a.frontmatter.excerpt;
 
   return (
     <section className="mt-16" aria-labelledby="related-articles-heading">
@@ -79,19 +77,19 @@ export default function RelatedArticles({
       </h2>
       <ul className="mt-6 grid gap-6 sm:grid-cols-2">
         {related.map((a) => (
-          <li key={a.frontmatter.slug}>
+          <li key={a.slug}>
             <Link
-              to={localizePath(`/learn/articles/${a.frontmatter.slug}`)}
+              to={localizePath(`/learn/articles/${a.slug}`)}
               className="group block h-full rounded-xl border border-primary-500/10 bg-paper/50 p-5 transition hover:border-accent-400 hover:shadow-md dark:border-primary-700/40 dark:bg-primary-800/40"
             >
               <p className="font-serif text-xs uppercase tracking-widest text-accent-500">
-                {formatDate(a.frontmatter.publishedAt, dateLocale)}
+                {formatDate(a.publishedAt, dateLocale)}
               </p>
               <h3 className="mt-2 font-serif text-lg text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200">
-                {titleFor(a)}
+                {a.title}
               </h3>
               <p className="mt-2 line-clamp-3 text-sm text-ink/70 dark:text-paper/70">
-                {excerptFor(a)}
+                {a.excerpt}
               </p>
             </Link>
           </li>

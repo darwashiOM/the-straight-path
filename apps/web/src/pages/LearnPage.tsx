@@ -8,43 +8,36 @@ import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import ArticleCover from '@/components/ArticleCover';
 import SeriesCard from '@/components/SeriesCard';
+import Skeleton from '@/components/Skeleton';
 import StartHereSteps from '@/components/StartHereSteps';
 import TopicChips, { TOPICS, type TopicSlug } from '@/components/TopicChips';
-import {
-  articles as allArticles,
-  getArticle,
-  getArticlesInSeries,
-  getVisibleArticles,
-  type ArticleModule,
-} from '@/content/articles';
-import { series as allSeries } from '@/content/series';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import {
+  useArticles,
+  useFaqs,
+  useResources,
+  useSeries,
+  useSiteSetting,
+  type PublicArticle,
+} from '@/lib/content';
+import { readingTimeMinutes } from '@/lib/reading-time';
 import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema } from '@/lib/schema';
 import { formatDate } from '@/lib/utils';
 
-/** The three curated "Start here" slugs, in reading order. */
-const START_HERE_SLUGS = [
-  'what-is-islam',
-  'why-did-god-create-you',
-  '10-things-to-know-about-islam',
-];
-
-/** Keep a light FAQ preview list in sync with the FAQ page shape. */
-interface FaqItem {
-  q: string;
-  a: string;
+interface LearnHeaderCopy {
+  title: string;
+  description: string;
 }
 
-/** Small preview of the external resources block, mirroring ResourcesPage. */
-const RESOURCE_PREVIEWS = [
-  { key: 'quranCom', url: 'https://quran.com/', category: 'quran' as const },
-  { key: 'sunnahCom', url: 'https://sunnah.com/', category: 'hadith' as const },
-  { key: 'yaqeen', url: 'https://yaqeeninstitute.org/', category: 'research' as const },
-];
+interface StartHereCopy {
+  eyebrow: string;
+  title: string;
+  body?: string;
+}
 
 export default function LearnPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
   const [searchParams, setSearchParams] = useSearchParams();
   const meta = getRouteMeta('/learn')!;
@@ -82,45 +75,67 @@ export default function LearnPage() {
     [searchParams, setSearchParams],
   );
 
-  // --- Data slicing ----------------------------------------------------------
-  const visibleArticles = getVisibleArticles(showDrafts);
+  // --- Data fetching ---------------------------------------------------------
+  const learnHeader = useSiteSetting<LearnHeaderCopy>('learnHeader', locale);
+  const startHereSetting = useSiteSetting<StartHereCopy>('startHere', locale);
+  const articlesQuery = useArticles(locale);
+  const seriesQuery = useSeries(locale);
+  const faqsQuery = useFaqs(locale);
+  const resourcesQuery = useResources(locale);
+
+  const allArticles = articlesQuery.data ?? [];
+  const visibleArticles = useMemo(
+    () => (showDrafts ? allArticles : allArticles.filter((a) => a.status === 'published')),
+    [allArticles, showDrafts],
+  );
+
   const filteredArticles = useMemo(() => {
     if (activeTopic === 'all') return visibleArticles;
-    return visibleArticles.filter((a) => a.frontmatter.topic === activeTopic);
+    return visibleArticles.filter((a) => a.topic === activeTopic);
   }, [visibleArticles, activeTopic]);
 
-  // Start-Here uses the full article pool (not filtered by topic or drafts)
-  // because these are intentionally the first cards a newcomer sees. We only
-  // fall back to "whatever is published" if a specific slug isn't available.
-  const startHereArticles: ArticleModule[] = START_HERE_SLUGS
-    .map((slug) => getArticle(slug))
-    .filter((a): a is ArticleModule => {
-      if (!a) return false;
-      return !a.frontmatter.draft || showDrafts;
-    });
+  // --- Start Here row --------------------------------------------------------
+  // The `startHere` site-setting doc carries locale-independent ordering in
+  // its `data.articleSlugs` field. Each slug is resolved against the visible
+  // article pool; missing slugs are silently dropped so the row keeps working
+  // while drafts ship.
+  const startHereSlugs = useMemo(() => {
+    const raw = startHereSetting.data?.data?.articleSlugs;
+    return Array.isArray(raw) ? (raw.filter((s): s is string => typeof s === 'string')) : [];
+  }, [startHereSetting.data]);
 
-  // Series block — use the first series in `series.ts` (there is only one
-  // today; if we ever have many we'll render them as a carousel).
-  const featuredSeries = allSeries[0];
-  const featuredSeriesArticles = featuredSeries
-    ? getArticlesInSeries(featuredSeries.slug, featuredSeries.articleSlugs, showDrafts)
-    : [];
+  const startHereArticles = useMemo<PublicArticle[]>(() => {
+    const pool = showDrafts ? allArticles : allArticles.filter((a) => a.status === 'published');
+    return startHereSlugs
+      .map((slug) => pool.find((a) => a.slug === slug))
+      .filter((a): a is PublicArticle => Boolean(a));
+  }, [startHereSlugs, allArticles, showDrafts]);
 
-  // --- FAQ previews ----------------------------------------------------------
-  const faqs = (t('faqPage.items', { returnObjects: true }) as FaqItem[]) ?? [];
-  const faqPreviews = faqs.slice(0, 3);
+  // --- Series block ----------------------------------------------------------
+  // Use the first series (there is only one today; if we ever have many we'll
+  // render them as a carousel).
+  const featuredSeries = seriesQuery.data?.[0];
+  const featuredSeriesArticles = useMemo<PublicArticle[]>(() => {
+    if (!featuredSeries) return [];
+    const pool = showDrafts ? allArticles : allArticles.filter((a) => a.status === 'published');
+    return featuredSeries.articleSlugs
+      .map((slug) => pool.find((a) => a.slug === slug))
+      .filter((a): a is PublicArticle => Boolean(a) && a!.series === featuredSeries.slug);
+  }, [featuredSeries, allArticles, showDrafts]);
 
-  const translateArticleTitle = (slug: string, fallback: string) =>
-    i18n.exists(`articles.${slug}.title`) ? (t(`articles.${slug}.title`) as string) : fallback;
-  const translateArticleExcerpt = (slug: string, fallback: string) =>
-    i18n.exists(`articles.${slug}.excerpt`)
-      ? (t(`articles.${slug}.excerpt`) as string)
-      : fallback;
+  // --- FAQ + resource previews ----------------------------------------------
+  const faqPreviews = (faqsQuery.data ?? []).slice(0, 3);
+  const resourcePreviews = (resourcesQuery.data ?? []).slice(0, 3);
+
+  const headerTitle = learnHeader.data?.value.title ?? (t('learn.title') as string);
+  const headerDescription =
+    learnHeader.data?.value.description ?? (t('learn.description') as string);
+  const startHereCopy = startHereSetting.data?.value;
 
   return (
     <>
       <SeoHead
-        title={t('learn.title')}
+        title={headerTitle}
         description={locale === 'en' ? meta.description : undefined}
         canonical={canonicalFor('/learn', locale)}
         alternatePath="/learn"
@@ -139,10 +154,10 @@ export default function LearnPage() {
         {/* Header */}
         <header className="mx-auto max-w-3xl text-center">
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
-            {t('learn.title')}
+            {headerTitle}
           </h1>
           <p className="mt-4 text-lg text-ink/70 dark:text-paper/70">
-            {t('learn.description')}
+            {headerDescription}
           </p>
         </header>
 
@@ -155,7 +170,16 @@ export default function LearnPage() {
         {/* Start Here */}
         {startHereArticles.length > 0 ? (
           <div className="mt-12">
-            <StartHereSteps articles={startHereArticles} />
+            <StartHereSteps
+              articles={startHereArticles}
+              eyebrow={startHereCopy?.eyebrow}
+              title={startHereCopy?.title}
+              description={startHereCopy?.body}
+            />
+          </div>
+        ) : articlesQuery.isLoading ? (
+          <div className="mt-12">
+            <Skeleton variant="card" className="h-64" />
           </div>
         ) : null}
 
@@ -195,23 +219,23 @@ export default function LearnPage() {
 
           <TopicChips value={activeTopic} onChange={onTopicChange} className="mb-10" />
 
-          {filteredArticles.length === 0 ? (
+          {articlesQuery.isLoading && visibleArticles.length === 0 ? (
+            <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[0, 1, 2].map((i) => (
+                <li key={i} className="contents">
+                  <Skeleton variant="card" className="h-80" />
+                </li>
+              ))}
+            </ul>
+          ) : filteredArticles.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-primary-500/30 p-8 text-center text-ink/60 dark:border-primary-700/60 dark:text-paper/60">
               {t('learn.articles.empty')}
             </p>
           ) : (
             <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredArticles.map((a) => (
-                <li key={a.frontmatter.slug} className="contents">
-                  <ArticleGridCard
-                    article={a}
-                    dateLocale={dateLocale}
-                    title={translateArticleTitle(a.frontmatter.slug, a.frontmatter.title)}
-                    excerpt={translateArticleExcerpt(
-                      a.frontmatter.slug,
-                      a.frontmatter.excerpt,
-                    )}
-                  />
+                <li key={a.slug} className="contents">
+                  <ArticleGridCard article={a} dateLocale={dateLocale} />
                 </li>
               ))}
             </ul>
@@ -231,7 +255,7 @@ export default function LearnPage() {
             <ul className="mt-6 flex-1 space-y-3">
               {faqPreviews.map((f) => (
                 <li
-                  key={f.q}
+                  key={f.id}
                   className="flex items-start gap-3 text-sm text-ink/80 dark:text-paper/80"
                 >
                   <ChevronDown
@@ -239,7 +263,7 @@ export default function LearnPage() {
                     aria-hidden="true"
                     className="-rotate-90 shrink-0 text-primary-400 dark:text-accent-400"
                   />
-                  <span className="leading-relaxed">{f.q}</span>
+                  <span className="leading-relaxed">{f.question}</span>
                 </li>
               ))}
             </ul>
@@ -261,8 +285,8 @@ export default function LearnPage() {
               {t('learn.resourcesPreview.title')}
             </h3>
             <ul className="mt-6 flex-1 space-y-3">
-              {RESOURCE_PREVIEWS.map((r) => (
-                <li key={r.url}>
+              {resourcePreviews.map((r) => (
+                <li key={r.id}>
                   <a
                     href={r.url}
                     target="_blank"
@@ -271,11 +295,9 @@ export default function LearnPage() {
                   >
                     <div>
                       <p className="font-serif text-base font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
-                        {t(`resourcesPage.items.${r.key}.title`)}
+                        {r.title}
                       </p>
-                      <p className="text-xs text-ink/60 dark:text-paper/60">
-                        {t(`resourcesPage.items.${r.key}.description`)}
-                      </p>
+                      <p className="text-xs text-ink/60 dark:text-paper/60">{r.description}</p>
                     </div>
                     <ExternalLink
                       size={14}
@@ -317,16 +339,15 @@ export default function LearnPage() {
 /* -------------------------------------------------------------------------- */
 
 interface ArticleGridCardProps {
-  article: ArticleModule;
-  title: string;
-  excerpt: string;
+  article: PublicArticle;
   dateLocale: string;
 }
 
-function ArticleGridCard({ article, title, excerpt, dateLocale }: ArticleGridCardProps) {
+function ArticleGridCard({ article, dateLocale }: ArticleGridCardProps) {
   const { t } = useTranslation();
   const { localizePath } = useLocalizedPath();
-  const { slug, tags, topic, publishedAt, draft } = article.frontmatter;
+  const { slug, tags, topic, publishedAt, status, title, excerpt, body } = article;
+  const isDraft = status === 'draft';
 
   const topicLabel = topic ? (t(`learn.topics.${topic}`) as string) : undefined;
 
@@ -339,7 +360,7 @@ function ArticleGridCard({ article, title, excerpt, dateLocale }: ArticleGridCar
       <div className="flex flex-1 flex-col p-6">
         <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
           {title}
-          {draft ? (
+          {isDraft ? (
             <span className="ms-2 rounded bg-accent-100 px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wider text-accent-700">
               {t('learn.drafts.badge')}
             </span>
@@ -360,7 +381,7 @@ function ArticleGridCard({ article, title, excerpt, dateLocale }: ArticleGridCar
         ) : null}
         <div className="mt-5 flex items-center justify-between text-xs text-ink/50 dark:text-paper/60">
           <span>{formatDate(publishedAt, dateLocale)}</span>
-          <span>{t('learn.readingTime', { minutes: article.readingTime })}</span>
+          <span>{t('learn.readingTime', { minutes: readingTimeMinutes(body) })}</span>
         </div>
       </div>
     </Link>

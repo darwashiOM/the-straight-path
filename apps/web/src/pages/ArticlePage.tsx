@@ -2,6 +2,8 @@ import { useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ArrowRight, ChevronRight } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import ArticleCover from '@/components/ArticleCover';
 import ArticleToc from '@/components/ArticleToc';
@@ -12,22 +14,39 @@ import ReadingProgress from '@/components/ReadingProgress';
 import RelatedArticles from '@/components/RelatedArticles';
 import SeoHead from '@/components/SeoHead';
 import ShareButtons from '@/components/ShareButtons';
-import { getArticle } from '@/content/articles';
+import Skeleton from '@/components/Skeleton';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useArticle, usePublishedArticles } from '@/lib/content';
 import { canonicalFor } from '@/lib/routes';
 import { articleSchema, breadcrumbSchema, graph } from '@/lib/schema';
 import { formatDate } from '@/lib/utils';
 
 export default function ArticlePage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
   const { slug } = useParams<{ slug: string }>();
-  const article = slug ? getArticle(slug) : undefined;
+  const { data: article, isLoading } = useArticle(slug, locale);
+  const { data: publishedArticles } = usePublishedArticles(locale);
   const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
 
   // Refs for progress bar (article scroll target) and TOC (body heading scan).
   const articleRef = useRef<HTMLElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
+
+  // Loading skeleton — shown only while the initial fetch is in flight and we
+  // have nothing to render. On a warm cache (data already resolved) we fall
+  // straight through to the real article.
+  if (isLoading && !article) {
+    return (
+      <Container className="py-16">
+        <Skeleton height="0.75rem" width={160} className="mb-6" />
+        <Skeleton height="3.5rem" width="80%" />
+        <Skeleton variant="text-line" lines={3} className="mt-6 max-w-2xl" />
+        <Skeleton className="mt-8 aspect-[16/9] w-full" />
+        <Skeleton variant="text-line" lines={8} className="mt-10 max-w-prose" />
+      </Container>
+    );
+  }
 
   if (!article) {
     return (
@@ -40,49 +59,49 @@ export default function ArticlePage() {
     );
   }
 
-  const { frontmatter, Component } = article;
-
-  // Use translated title/excerpt for display + metadata when available, falling
-  // back to the MDX frontmatter for untranslated articles.
-  const displayTitle = i18n.exists(`articles.${frontmatter.slug}.title`)
-    ? (t(`articles.${frontmatter.slug}.title`) as string)
-    : frontmatter.title;
-  const displayExcerpt = i18n.exists(`articles.${frontmatter.slug}.excerpt`)
-    ? (t(`articles.${frontmatter.slug}.excerpt`) as string)
-    : frontmatter.excerpt;
+  const {
+    slug: articleSlug,
+    title,
+    excerpt,
+    body,
+    publishedAt,
+    author,
+    tags,
+    heroImage,
+  } = article;
 
   // The back-arrow points "backwards" in the reading direction: left in LTR,
   // right in RTL. Using two icons keeps the chevron semantically correct.
   const BackIcon = locale === 'ar' ? ArrowRight : ArrowLeft;
-  const CrumbIcon = locale === 'ar' ? ChevronRight : ChevronRight; // Same icon; visual direction handled by rtl text flow.
+  const CrumbIcon = ChevronRight; // Visual direction handled by rtl text flow.
 
-  const canonicalUrl = canonicalFor(`/learn/articles/${frontmatter.slug}`, locale);
+  const canonicalUrl = canonicalFor(`/learn/articles/${articleSlug}`, locale);
 
   return (
     <>
       <SeoHead
-        title={displayTitle}
-        description={displayExcerpt}
+        title={title}
+        description={excerpt}
         type="article"
         canonical={canonicalUrl}
-        alternatePath={`/learn/articles/${frontmatter.slug}`}
-        ogImage={frontmatter.heroImage}
+        alternatePath={`/learn/articles/${articleSlug}`}
+        ogImage={heroImage}
         jsonLd={graph(
           articleSchema({
-            slug: frontmatter.slug,
-            title: displayTitle,
-            excerpt: displayExcerpt,
-            publishedAt: frontmatter.publishedAt,
-            author: frontmatter.author,
-            heroImage: frontmatter.heroImage,
-            tags: frontmatter.tags,
+            slug: articleSlug,
+            title,
+            excerpt,
+            publishedAt,
+            author,
+            heroImage,
+            tags,
           }),
           breadcrumbSchema([
             { name: t('nav.home'), url: canonicalFor('/', locale) },
             { name: t('nav.learn'), url: canonicalFor('/learn', locale) },
             { name: t('nav.articles'), url: canonicalFor('/learn/articles', locale) },
             {
-              name: displayTitle,
+              name: title,
               url: canonicalUrl,
             },
           ]),
@@ -138,7 +157,7 @@ export default function ArticlePage() {
                 aria-current="page"
                 className="max-w-[18rem] truncate text-primary-700 dark:text-accent-300"
               >
-                {displayTitle}
+                {title}
               </li>
             </ol>
           </nav>
@@ -152,13 +171,13 @@ export default function ArticlePage() {
 
           <header className="mt-8 border-b border-primary-500/10 pb-8 dark:border-primary-700/40">
             <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
-              {formatDate(frontmatter.publishedAt, dateLocale)} · {frontmatter.author}
+              {formatDate(publishedAt, dateLocale)} · {author}
             </p>
             <h1 className="mt-3 text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
-              {displayTitle}
+              {title}
             </h1>
             <p className="text-pretty mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
-              {displayExcerpt}
+              {excerpt}
             </p>
           </header>
 
@@ -166,21 +185,17 @@ export default function ArticlePage() {
               provided, otherwise fall back to the deterministic gradient
               ArticleCover so every article has a visual anchor. */}
           <div className="mt-8">
-            {frontmatter.heroImage ? (
+            {heroImage ? (
               <Image
-                src={frontmatter.heroImage}
-                alt={displayTitle}
+                src={heroImage}
+                alt={title}
                 aspectRatio="16 / 9"
                 priority
                 pictureClassName="block w-full overflow-hidden rounded-xl"
                 className="h-full w-full object-cover"
               />
             ) : (
-              <ArticleCover
-                slug={frontmatter.slug}
-                label={frontmatter.tags?.[0]}
-                className="rounded-xl"
-              />
+              <ArticleCover slug={articleSlug} label={tags?.[0]} className="rounded-xl" />
             )}
           </div>
 
@@ -204,22 +219,19 @@ export default function ArticlePage() {
                 lang={locale === 'ar' ? 'en' : undefined}
                 dir={locale === 'ar' ? 'ltr' : undefined}
               >
-                <Component />
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
               </div>
 
               <div className="mx-auto max-w-prose">
-                <ShareButtons
-                  url={canonicalUrl}
-                  title={displayTitle}
-                  description={displayExcerpt}
-                />
+                <ShareButtons url={canonicalUrl} title={title} description={excerpt} />
 
                 <RelatedArticles
-                  currentSlug={frontmatter.slug}
-                  tags={frontmatter.tags}
+                  currentSlug={articleSlug}
+                  tags={tags}
+                  pool={publishedArticles}
                 />
 
-                <PrevNextArticle currentSlug={frontmatter.slug} />
+                <PrevNextArticle currentSlug={articleSlug} pool={publishedArticles} />
               </div>
             </div>
 

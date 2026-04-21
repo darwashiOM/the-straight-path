@@ -3,12 +3,18 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-import { getPublishedArticles, type ArticleModule } from '@/content/articles';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { usePublishedArticles, type PublicArticle } from '@/lib/content';
 
 interface PrevNextArticleProps {
   /** Slug of the current article to locate it in the ordered list. */
   currentSlug: string;
+  /**
+   * Optional pre-fetched article pool. Pass from the article page to avoid a
+   * duplicate Firestore fetch; if omitted the component fetches via
+   * `usePublishedArticles` using the current locale.
+   */
+  pool?: PublicArticle[];
 }
 
 /**
@@ -17,13 +23,15 @@ interface PrevNextArticleProps {
  * side-by-side on desktop and stacked on mobile. In RTL locales the chevron
  * directions flip so "previous" still points backwards in reading order.
  */
-export default function PrevNextArticle({ currentSlug }: PrevNextArticleProps) {
-  const { t, i18n } = useTranslation();
+export default function PrevNextArticle({ currentSlug, pool }: PrevNextArticleProps) {
+  const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
 
+  const fallback = usePublishedArticles(locale);
+  const list = pool ?? fallback.data;
+
   const { prev, next } = useMemo(() => {
-    const list = getPublishedArticles();
-    const idx = list.findIndex((a) => a.frontmatter.slug === currentSlug);
+    const idx = list.findIndex((a) => a.slug === currentSlug);
     if (idx === -1) return { prev: undefined, next: undefined };
     // `articles` is sorted newest-first, so the "previous" (older) article
     // is the next index, and the "next" (newer) is the previous index.
@@ -31,7 +39,7 @@ export default function PrevNextArticle({ currentSlug }: PrevNextArticleProps) {
       prev: list[idx + 1],
       next: list[idx - 1],
     };
-  }, [currentSlug]);
+  }, [list, currentSlug]);
 
   if (!prev && !next) return null;
 
@@ -41,11 +49,6 @@ export default function PrevNextArticle({ currentSlug }: PrevNextArticleProps) {
   const PrevIcon = locale === 'ar' ? ArrowRight : ArrowLeft;
   const NextIcon = locale === 'ar' ? ArrowLeft : ArrowRight;
 
-  const titleFor = (a: ArticleModule) =>
-    i18n.exists(`articles.${a.frontmatter.slug}.title`)
-      ? (t(`articles.${a.frontmatter.slug}.title`) as string)
-      : a.frontmatter.title;
-
   return (
     <nav
       aria-label={t('articlesPage.articleNav', 'Article navigation') as string}
@@ -53,14 +56,14 @@ export default function PrevNextArticle({ currentSlug }: PrevNextArticleProps) {
     >
       {prev ? (
         <Link
-          to={localizePath(`/learn/articles/${prev.frontmatter.slug}`)}
+          to={localizePath(`/learn/articles/${prev.slug}`)}
           className="group rounded-xl border border-primary-500/10 bg-paper/50 p-5 transition hover:border-accent-400 hover:shadow-md dark:border-primary-700/40 dark:bg-primary-800/40"
         >
           <span className="inline-flex items-center gap-2 font-serif text-xs uppercase tracking-widest text-accent-500">
             <PrevIcon size={14} /> {prevLabel}
           </span>
           <p className="mt-2 font-serif text-lg text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200">
-            {titleFor(prev)}
+            {prev.title}
           </p>
         </Link>
       ) : (
@@ -69,14 +72,14 @@ export default function PrevNextArticle({ currentSlug }: PrevNextArticleProps) {
 
       {next ? (
         <Link
-          to={localizePath(`/learn/articles/${next.frontmatter.slug}`)}
+          to={localizePath(`/learn/articles/${next.slug}`)}
           className="group rounded-xl border border-primary-500/10 bg-paper/50 p-5 text-right transition hover:border-accent-400 hover:shadow-md dark:border-primary-700/40 dark:bg-primary-800/40"
         >
           <span className="inline-flex items-center gap-2 font-serif text-xs uppercase tracking-widest text-accent-500">
             {nextLabel} <NextIcon size={14} />
           </span>
           <p className="mt-2 font-serif text-lg text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200">
-            {titleFor(next)}
+            {next.title}
           </p>
         </Link>
       ) : (

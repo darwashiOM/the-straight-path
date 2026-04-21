@@ -1,9 +1,13 @@
 import { useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
+import Skeleton from '@/components/Skeleton';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { usePage } from '@/lib/content';
 import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 
 export default function TermsPage() {
@@ -11,10 +15,13 @@ export default function TermsPage() {
   const { locale, localizePath } = useLocalizedPath();
   const meta = getRouteMeta('/terms')!;
 
+  const { data: page, isLoading } = usePage('terms', locale);
+  const title = page?.title ?? (t('termsPage.title') as string);
+
   return (
     <>
       <SeoHead
-        title={t('termsPage.title')}
+        title={title}
         description={locale === 'en' ? meta.description : undefined}
         canonical={canonicalFor('/terms', locale)}
         alternatePath="/terms"
@@ -28,26 +35,14 @@ export default function TermsPage() {
         />
         <div className="mx-auto max-w-3xl">
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-            {t('termsPage.title')}
+            {title}
           </h1>
           <div className="prose prose-lg mt-8 dark:prose-invert">
-            <p>{t('termsPage.lastUpdated')}</p>
-            <p>{t('termsPage.intro')}</p>
-            <ul>
-              <li>{t('termsPage.items.accuracy')}</li>
-              <li>
-                {t('termsPage.items.licensePrefix')}
-                <a
-                  href="https://creativecommons.org/licenses/by/4.0/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('termsPage.items.licenseLink')}
-                </a>
-                {t('termsPage.items.licenseSuffix')}
-              </li>
-              <li>{t('termsPage.items.abuse')}</li>
-            </ul>
+            {page ? (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{page.body}</ReactMarkdown>
+            ) : isLoading ? (
+              <Skeleton variant="text-line" lines={8} />
+            ) : null}
           </div>
         </div>
       </Container>

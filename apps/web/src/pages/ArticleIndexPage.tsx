@@ -6,12 +6,19 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import ArticleCover from '@/components/ArticleCover';
+import Skeleton from '@/components/Skeleton';
 import TopicChips, { TOPICS, type TopicSlug } from '@/components/TopicChips';
-import { getVisibleArticles, type ArticleModule } from '@/content/articles';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useArticles, useSiteSetting, type PublicArticle } from '@/lib/content';
+import { readingTimeMinutes } from '@/lib/reading-time';
 import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema } from '@/lib/schema';
 import { formatDate } from '@/lib/utils';
+
+interface ArticlesHeaderCopy {
+  title: string;
+  description: string;
+}
 
 /**
  * The "full library" view. Complements Learn (the curated hub) by letting
@@ -20,7 +27,7 @@ import { formatDate } from '@/lib/utils';
  * decoupled from this page.
  */
 export default function ArticleIndexPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
   const [searchParams, setSearchParams] = useSearchParams();
   const meta = getRouteMeta('/learn/articles')!;
@@ -46,23 +53,27 @@ export default function ArticleIndexPage() {
     [searchParams, setSearchParams],
   );
 
-  const visibleArticles = getVisibleArticles(showDrafts);
+  const header = useSiteSetting<ArticlesHeaderCopy>('articlesHeader', locale);
+  const articlesQuery = useArticles(locale);
+
+  const visibleArticles = useMemo(() => {
+    const pool = articlesQuery.data ?? [];
+    return showDrafts ? pool : pool.filter((a) => a.status === 'published');
+  }, [articlesQuery.data, showDrafts]);
+
   const filteredArticles = useMemo(() => {
     if (activeTopic === 'all') return visibleArticles;
-    return visibleArticles.filter((a) => a.frontmatter.topic === activeTopic);
+    return visibleArticles.filter((a) => a.topic === activeTopic);
   }, [visibleArticles, activeTopic]);
 
-  const translateArticleTitle = (slug: string, fallback: string) =>
-    i18n.exists(`articles.${slug}.title`) ? (t(`articles.${slug}.title`) as string) : fallback;
-  const translateArticleExcerpt = (slug: string, fallback: string) =>
-    i18n.exists(`articles.${slug}.excerpt`)
-      ? (t(`articles.${slug}.excerpt`) as string)
-      : fallback;
+  const headerTitle = header.data?.value.title ?? (t('articlesPage.title') as string);
+  const headerDescription =
+    header.data?.value.description ?? (t('articlesPage.description') as string);
 
   return (
     <>
       <SeoHead
-        title={t('articlesPage.title')}
+        title={headerTitle}
         description={locale === 'en' ? meta.description : undefined}
         canonical={canonicalFor('/learn/articles', locale)}
         alternatePath="/learn/articles"
@@ -81,10 +92,10 @@ export default function ArticleIndexPage() {
         />
         <header>
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-            {t('articlesPage.title')}
+            {headerTitle}
           </h1>
           <p className="mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
-            {t('articlesPage.description')}
+            {headerDescription}
           </p>
         </header>
 
@@ -98,23 +109,23 @@ export default function ArticleIndexPage() {
           <TopicChips value={activeTopic} onChange={onTopicChange} />
         </div>
 
-        {filteredArticles.length === 0 ? (
+        {articlesQuery.isLoading && visibleArticles.length === 0 ? (
+          <ul className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <li key={i} className="contents">
+                <Skeleton variant="card" className="h-80" />
+              </li>
+            ))}
+          </ul>
+        ) : filteredArticles.length === 0 ? (
           <p className="mt-12 rounded-2xl border border-dashed border-primary-500/30 p-8 text-center text-ink/60 dark:border-primary-700/60 dark:text-paper/60">
             {t('learn.articles.empty')}
           </p>
         ) : (
           <ul className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredArticles.map((a) => (
-              <li key={a.frontmatter.slug} className="contents">
-                <IndexCard
-                  article={a}
-                  title={translateArticleTitle(a.frontmatter.slug, a.frontmatter.title)}
-                  excerpt={translateArticleExcerpt(
-                    a.frontmatter.slug,
-                    a.frontmatter.excerpt,
-                  )}
-                  dateLocale={dateLocale}
-                />
+              <li key={a.slug} className="contents">
+                <IndexCard article={a} dateLocale={dateLocale} />
               </li>
             ))}
           </ul>
@@ -125,17 +136,16 @@ export default function ArticleIndexPage() {
 }
 
 interface IndexCardProps {
-  article: ArticleModule;
-  title: string;
-  excerpt: string;
+  article: PublicArticle;
   dateLocale: string;
 }
 
-function IndexCard({ article, title, excerpt, dateLocale }: IndexCardProps) {
+function IndexCard({ article, dateLocale }: IndexCardProps) {
   const { t } = useTranslation();
   const { localizePath } = useLocalizedPath();
-  const { slug, topic, tags, publishedAt, draft } = article.frontmatter;
+  const { slug, topic, tags, publishedAt, status, title, excerpt, body } = article;
   const topicLabel = topic ? (t(`learn.topics.${topic}`) as string) : undefined;
+  const isDraft = status === 'draft';
 
   return (
     <Link
@@ -146,7 +156,7 @@ function IndexCard({ article, title, excerpt, dateLocale }: IndexCardProps) {
       <div className="flex flex-1 flex-col p-6">
         <h2 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
           {title}
-          {draft ? (
+          {isDraft ? (
             <span className="ms-2 rounded bg-accent-100 px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wider text-accent-700">
               {t('articlesPage.draft')}
             </span>
@@ -167,7 +177,7 @@ function IndexCard({ article, title, excerpt, dateLocale }: IndexCardProps) {
         ) : null}
         <div className="mt-5 flex items-center justify-between text-xs text-ink/50 dark:text-paper/60">
           <span>{formatDate(publishedAt, dateLocale)}</span>
-          <span>{t('learn.readingTime', { minutes: article.readingTime })}</span>
+          <span>{t('learn.readingTime', { minutes: readingTimeMinutes(body) })}</span>
         </div>
       </div>
     </Link>

@@ -5,26 +5,56 @@ import { ArrowRight, BookOpen, HelpCircle, Link2, MessageSquare, Users } from 'l
 import ArticleCover from '@/components/ArticleCover';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
-import { getPublishedArticles } from '@/content/articles';
+import Skeleton from '@/components/Skeleton';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { usePublishedArticles, useSiteSetting } from '@/lib/content';
+import { readingTimeMinutes } from '@/lib/reading-time';
 import { graph, organizationSchema, websiteSchema } from '@/lib/schema';
 import { formatDate } from '@/lib/utils';
 
+interface HeroCopy {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  ctaPrimary: string;
+  ctaSecondary: string;
+}
+
+interface QuranBannerCopy {
+  eyebrow: string;
+  headline: string;
+  body: string;
+  cta: string;
+  ctaUrl?: string;
+}
+
+interface AboutPreviewCopy {
+  eyebrow: string;
+  headline: string;
+  body: string;
+  cta: string;
+}
+
 export default function HomePage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
-  const articles = getPublishedArticles().slice(0, 3);
-  const featured = articles[0];
   const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
   const arrow = locale === 'ar' ? '←' : '→';
   const arrowIconClass = locale === 'ar' ? 'rotate-180' : undefined;
 
-  const translateArticleTitle = (slug: string, fallback: string) =>
-    i18n.exists(`articles.${slug}.title`) ? (t(`articles.${slug}.title`) as string) : fallback;
-  const translateArticleExcerpt = (slug: string, fallback: string) =>
-    i18n.exists(`articles.${slug}.excerpt`)
-      ? (t(`articles.${slug}.excerpt`) as string)
-      : fallback;
+  const hero = useSiteSetting<HeroCopy>('hero', locale);
+  const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
+  const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
+  const articlesQuery = usePublishedArticles(locale);
+
+  const heroCopy = hero.data?.value;
+  const quranCopy = quranBanner.data?.value;
+  const aboutCopy = aboutPreview.data?.value;
+
+  const articles = (articlesQuery.data ?? []).slice(0, 3);
+  const featured = articles[0];
+
+  const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
 
   return (
     <>
@@ -34,24 +64,34 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-primary-50 to-paper py-24 md:py-32 dark:from-primary-800 dark:to-primary-900">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-4 font-serif text-sm uppercase tracking-widest text-accent-500">
-              {t('home.hero.eyebrow')}
-            </p>
-            <h1 className="text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-7xl">
-              {t('home.hero.title')}
-            </h1>
-            <p className="text-pretty mt-6 text-lg text-ink/70 dark:text-paper/80 md:text-xl">
-              {t('home.hero.subtitle')}
-            </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-              <Link to={localizePath('/learn/articles')} className="btn-primary">
-                {t('home.hero.ctaPrimary')}{' '}
-                <ArrowRight size={16} aria-hidden="true" className={arrowIconClass} />
-              </Link>
-              <Link to={localizePath('/quran')} className="btn-ghost">
-                {t('home.hero.ctaSecondary')}
-              </Link>
-            </div>
+            {heroCopy ? (
+              <>
+                <p className="mb-4 font-serif text-sm uppercase tracking-widest text-accent-500">
+                  {heroCopy.eyebrow}
+                </p>
+                <h1 className="text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-7xl">
+                  {heroCopy.title}
+                </h1>
+                <p className="text-pretty mt-6 text-lg text-ink/70 dark:text-paper/80 md:text-xl">
+                  {heroCopy.subtitle}
+                </p>
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+                  <Link to={localizePath('/learn/articles')} className="btn-primary">
+                    {heroCopy.ctaPrimary}{' '}
+                    <ArrowRight size={16} aria-hidden="true" className={arrowIconClass} />
+                  </Link>
+                  <Link to={localizePath('/quran')} className="btn-ghost">
+                    {heroCopy.ctaSecondary}
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center gap-4">
+                <Skeleton height="0.75rem" width={160} />
+                <Skeleton height="3rem" width="80%" />
+                <Skeleton variant="text-line" lines={2} className="w-full max-w-xl" />
+              </div>
+            )}
           </div>
         </Container>
       </section>
@@ -61,7 +101,7 @@ export default function HomePage() {
         <section className="py-20">
           <Container>
             <Link
-              to={localizePath(`/learn/articles/${featured.frontmatter.slug}`)}
+              to={localizePath(`/learn/articles/${featured.slug}`)}
               className="card group block overflow-hidden md:grid md:grid-cols-5"
             >
               <div className="col-span-2 aspect-[4/3] bg-gradient-to-br from-primary-200 to-accent-200 md:aspect-auto" />
@@ -70,17 +110,21 @@ export default function HomePage() {
                   {t('home.featured.eyebrow')}
                 </span>
                 <h2 className="mt-3 font-serif text-3xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300 md:text-4xl">
-                  {translateArticleTitle(featured.frontmatter.slug, featured.frontmatter.title)}
+                  {featured.title}
                 </h2>
-                <p className="mt-4 text-ink/70 dark:text-paper/70">
-                  {translateArticleExcerpt(featured.frontmatter.slug, featured.frontmatter.excerpt)}
-                </p>
+                <p className="mt-4 text-ink/70 dark:text-paper/70">{featured.excerpt}</p>
                 <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-accent-400">
                   {t('home.featured.readArticle')}{' '}
                   <ArrowRight size={14} className={arrowIconClass} />
                 </span>
               </div>
             </Link>
+          </Container>
+        </section>
+      ) : articlesQuery.isLoading ? (
+        <section className="py-20">
+          <Container>
+            <Skeleton variant="card" className="h-72" />
           </Container>
         </section>
       ) : null}
@@ -108,33 +152,42 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {articles.map((a) => {
-              const topic = a.frontmatter.topic;
-              const topicLabel = topic ? (t(`learn.topics.${topic}`) as string) : undefined;
-              return (
-                <Link
-                  key={a.frontmatter.slug}
-                  to={localizePath(`/learn/articles/${a.frontmatter.slug}`)}
-                  className="card group flex flex-col overflow-hidden transition-transform hover:-translate-y-0.5"
-                >
-                  <ArticleCover slug={a.frontmatter.slug} label={topicLabel} />
-                  <div className="flex flex-1 flex-col p-6">
-                    <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
-                      {translateArticleTitle(a.frontmatter.slug, a.frontmatter.title)}
-                    </h3>
-                    <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">
-                      {translateArticleExcerpt(a.frontmatter.slug, a.frontmatter.excerpt)}
-                    </p>
-                    <div className="mt-5 flex items-center justify-between text-xs text-ink/50 dark:text-paper/60">
-                      <span>{formatDate(a.frontmatter.publishedAt, dateLocale)}</span>
-                      <span>{t('learn.readingTime', { minutes: a.readingTime })}</span>
+          {articlesQuery.isLoading && articles.length === 0 ? (
+            <div className="grid gap-6 md:grid-cols-3">
+              {[0, 1, 2].map((i) => (
+                <Skeleton key={i} variant="card" className="h-80" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-3">
+              {articles.map((a) => {
+                const topicLabel = a.topic ? (t(`learn.topics.${a.topic}`) as string) : undefined;
+                return (
+                  <Link
+                    key={a.slug}
+                    to={localizePath(`/learn/articles/${a.slug}`)}
+                    className="card group flex flex-col overflow-hidden transition-transform hover:-translate-y-0.5"
+                  >
+                    <ArticleCover slug={a.slug} label={topicLabel} />
+                    <div className="flex flex-1 flex-col p-6">
+                      <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+                        {a.title}
+                      </h3>
+                      <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">
+                        {a.excerpt}
+                      </p>
+                      <div className="mt-5 flex items-center justify-between text-xs text-ink/50 dark:text-paper/60">
+                        <span>{formatDate(a.publishedAt, dateLocale)}</span>
+                        <span>
+                          {t('learn.readingTime', { minutes: readingTimeMinutes(a.body) })}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </Container>
       </section>
 
@@ -142,21 +195,27 @@ export default function HomePage() {
       <section className="bg-primary-700 py-20 text-paper dark:bg-primary-900">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <p className="font-serif text-sm uppercase tracking-widest text-accent-300">
-              {t('home.sections.quran')}
-            </p>
-            <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
-              {t('home.quranBanner.headline')}
-            </h2>
-            <p className="mt-6 text-lg text-paper/80">{t('home.quranBanner.body')}</p>
-            <a
-              href="https://quran.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-accent mt-8"
-            >
-              {t('home.quranBanner.cta')} <ArrowRight size={16} className={arrowIconClass} />
-            </a>
+            {quranCopy ? (
+              <>
+                <p className="font-serif text-sm uppercase tracking-widest text-accent-300">
+                  {quranCopy.eyebrow ?? t('home.sections.quran')}
+                </p>
+                <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
+                  {quranCopy.headline}
+                </h2>
+                <p className="mt-6 text-lg text-paper/80">{quranCopy.body}</p>
+                <a
+                  href={quranCtaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-accent mt-8"
+                >
+                  {quranCopy.cta} <ArrowRight size={16} className={arrowIconClass} />
+                </a>
+              </>
+            ) : (
+              <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
+            )}
           </div>
         </Container>
       </section>
@@ -205,18 +264,22 @@ export default function HomePage() {
       <section className="bg-paper py-20 dark:bg-primary-900">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
-            <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
-              {t('home.sections.about')}
-            </p>
-            <h2 className="mt-3 font-serif text-4xl font-semibold text-primary-700 dark:text-accent-300">
-              {t('home.aboutPreview.headline')}
-            </h2>
-            <p className="mt-6 text-lg text-ink/70 dark:text-paper/80">
-              {t('home.aboutPreview.body')}
-            </p>
-            <Link to={localizePath('/about')} className="btn-ghost mt-8">
-              {t('home.aboutPreview.cta')}
-            </Link>
+            {aboutCopy ? (
+              <>
+                <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+                  {aboutCopy.eyebrow}
+                </p>
+                <h2 className="mt-3 font-serif text-4xl font-semibold text-primary-700 dark:text-accent-300">
+                  {aboutCopy.headline}
+                </h2>
+                <p className="mt-6 text-lg text-ink/70 dark:text-paper/80">{aboutCopy.body}</p>
+                <Link to={localizePath('/about')} className="btn-ghost mt-8">
+                  {aboutCopy.cta}
+                </Link>
+              </>
+            ) : (
+              <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
+            )}
           </div>
         </Container>
       </section>

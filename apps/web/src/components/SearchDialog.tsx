@@ -9,10 +9,11 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, ExternalLink, HelpCircle, Link as LinkIcon, Search, Users, X } from 'lucide-react';
+import type Fuse from 'fuse.js';
 
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import {
-  buildSearchItems,
+  buildSearchItemsAsync,
   createFuse,
   type FuseResult,
   type SearchItem,
@@ -95,25 +96,35 @@ function highlight(text: string, indices: readonly [number, number][] | undefine
  * *visible flat order* so that ↑/↓ never lands on a group header.
  */
 export default function SearchDialog({ open, onClose }: SearchDialogProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { localizePath } = useLocalizedPath();
+  const { localizePath, locale } = useLocalizedPath();
 
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const [recent, setRecent] = useState<string[]>(() => readRecent());
+  const [fuse, setFuse] = useState<Fuse<SearchItem> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Rebuild index whenever locale changes. Also re-build when opened to be
-  // safe — build cost is trivial (a few dozen items).
-  const fuse = useMemo(() => {
-    const items = buildSearchItems(t, i18n);
-    return createFuse(items);
-  }, [t, i18n, i18n.language, open]);
+  // Build the Fuse index from Firestore content whenever the dialog is opened
+  // or the locale changes. Results are asynchronous, so the first keystroke
+  // after open may see an empty list for a tick — this is fine: the cost is
+  // roughly a single getDocs round-trip.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    void buildSearchItemsAsync(locale).then((items) => {
+      if (cancelled) return;
+      setFuse(createFuse(items));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, locale]);
 
   const results: FuseResult[] = useMemo(() => {
-    if (!query.trim()) return [];
+    if (!query.trim() || !fuse) return [];
     return fuse.search(query.trim(), { limit: 40 });
   }, [fuse, query]);
 

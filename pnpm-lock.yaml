@@ -11,6 +11,9 @@ importers:
       '@size-limit/file':
         specifier: ^11.1.6
         version: 11.2.0(size-limit@11.2.0)
+      firebase-admin:
+        specifier: ^12.7.0
+        version: 12.7.0
       prettier:
         specifier: ^3.3.3
         version: 3.8.3

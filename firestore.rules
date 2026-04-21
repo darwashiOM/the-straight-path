@@ -32,6 +32,33 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+    match /series/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /topics/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /siteSettings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /pages/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /media/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Audit log — append-only by admins, readable by admins.
+    match /auditLog/{id} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false;
+    }
 
     // Write-only public, admin read
     match /contact-submissions/{id} {

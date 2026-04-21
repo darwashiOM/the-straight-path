@@ -1,28 +1,29 @@
 import { useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
+import Skeleton from '@/components/Skeleton';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { usePage } from '@/lib/content';
 import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema, graph, organizationSchema } from '@/lib/schema';
-
-interface Principle {
-  label: string;
-  body: string;
-}
 
 export default function AboutPage() {
   const { t } = useTranslation();
   const { locale, localizePath } = useLocalizedPath();
   const meta = getRouteMeta('/about')!;
 
-  const principles = (t('aboutPage.principles', { returnObjects: true }) as Principle[]) ?? [];
+  const { data: page, isLoading } = usePage('about', locale);
+
+  const title = page?.title ?? (t('aboutPage.title') as string);
 
   return (
     <>
       <SeoHead
-        title={t('aboutPage.title')}
+        title={title}
         description={locale === 'en' ? meta.description : undefined}
         canonical={canonicalFor('/about', locale)}
         alternatePath="/about"
@@ -43,20 +44,14 @@ export default function AboutPage() {
         />
         <div className="mx-auto max-w-3xl">
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-            {t('aboutPage.title')}
+            {title}
           </h1>
           <div className="prose prose-lg mt-8 dark:prose-invert">
-            <p>{t('aboutPage.intro')}</p>
-            <h2>{t('aboutPage.principlesTitle')}</h2>
-            <ul>
-              {principles.map((p) => (
-                <li key={p.label}>
-                  <strong>{p.label}</strong> {p.body}
-                </li>
-              ))}
-            </ul>
-            <h2>{t('aboutPage.fundingTitle')}</h2>
-            <p>{t('aboutPage.fundingBody')}</p>
+            {page ? (
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{page.body}</ReactMarkdown>
+            ) : isLoading ? (
+              <Skeleton variant="text-line" lines={8} />
+            ) : null}
           </div>
         </div>
       </Container>
