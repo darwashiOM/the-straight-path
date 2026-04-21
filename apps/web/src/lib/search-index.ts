@@ -27,33 +27,13 @@ export interface SearchItem {
   externalUrl?: string;
 }
 
-/** Raw MDX content for each article, keyed by filename. */
-const RAW_MDX = import.meta.glob<string>('../content/articles/*.mdx', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-});
-
-/** Strip frontmatter, markdown syntax, and HTML, collapse whitespace. */
-function stripMdx(raw: string): string {
-  // Remove frontmatter block.
-  const withoutFm = raw.replace(/^---[\s\S]*?---\n?/, '');
-  return withoutFm
-    .replace(/```[\s\S]*?```/g, ' ') // fenced code
-    .replace(/`[^`]*`/g, ' ')
-    .replace(/!\[[^\]]*]\([^)]*\)/g, ' ') // images
-    .replace(/\[([^\]]+)]\([^)]*\)/g, '$1') // links -> text
-    .replace(/<[^>]+>/g, ' ') // JSX/HTML
-    .replace(/[#>*_~]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
+// Body snippets for search are pre-generated at build time by
+// `scripts/generate-reading-times.mjs` (alongside reading times) because the
+// MDX plugin intercepts `?raw` queries on `.mdx` files.
+import { bodySnippets } from '@/content/articles/reading-times.generated';
 
 function bodySnippetFor(slug: string): string {
-  // Keys look like `../content/articles/<slug>.mdx`.
-  const entry = Object.entries(RAW_MDX).find(([k]) => k.endsWith(`/${slug}.mdx`));
-  if (!entry) return '';
-  return stripMdx(entry[1]).slice(0, 500);
+  return bodySnippets[slug] ?? '';
 }
 
 interface FaqEntry {

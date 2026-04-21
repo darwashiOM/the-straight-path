@@ -1,4 +1,4 @@
-import { readingTimeMinutes } from '@/lib/reading-time';
+import { readingTimes } from './reading-times.generated';
 
 /** Canonical topic identifiers. Kept string-wide to avoid compile-time churn
  *  when new topics are seeded in a single MDX file and haven't been wired
@@ -40,24 +40,19 @@ type MdxImport = {
   default: React.ComponentType;
 };
 
-// Eagerly import each MDX file twice — once as a module (for the compiled
-// React component + structured frontmatter) and once as a raw string (for
-// computing reading time without re-parsing the rendered tree). Vite resolves
-// the `?raw` import to the original source text at build time so this stays
-// tree-shakeable and zero-runtime-cost.
+// Eagerly import each MDX file as a compiled module. Reading times are
+// pre-computed from the raw source at build time by
+// `scripts/generate-reading-times.mjs` — we can't use a `?raw` glob here
+// because the MDX Rollup plugin (enforce: 'pre') intercepts queries on
+// `.mdx` files, returning the compiled module instead of the raw text.
 const modules = import.meta.glob<MdxImport>('./*.mdx', { eager: true });
-const raws = import.meta.glob<string>('./*.mdx', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-});
 
-export const articles: ArticleModule[] = Object.entries(modules)
-  .map(([path, mod]) => {
-    const raw = raws[path] ?? '';
+export const articles: ArticleModule[] = Object.values(modules)
+  .map((mod) => {
+    const slug = mod.frontmatter.slug;
     return {
       frontmatter: mod.frontmatter,
-      readingTime: readingTimeMinutes(raw),
+      readingTime: readingTimes[slug] ?? 1,
       Component: mod.default,
     };
   })

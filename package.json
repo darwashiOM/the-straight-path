@@ -16,7 +16,7 @@
   "packageManager": "pnpm@10.32.1",
   "scripts": {
     "dev": "pnpm --filter @tsp/web dev",
-    "prebuild": "node scripts/generate-sitemap.mjs && node scripts/generate-llms-full.mjs",
+    "prebuild": "node scripts/generate-reading-times.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-llms-full.mjs",
     "build": "pnpm --filter @tsp/web build",
     "preview": "pnpm --filter @tsp/web preview",
     "lint": "pnpm -r lint",
