@@ -9,7 +9,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ExternalLink, Eye, Image as ImageIcon, Plus, Save, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Image as ImageIcon, Plus, Save, Trash2 } from 'lucide-react';
 
 import {
   getSiteSetting,
@@ -44,7 +44,7 @@ import {
   DEFAULT_QUICK_LINKS,
   DEFAULT_SITE_SETTINGS,
 } from '@/lib/content-defaults';
-import { stagePreview } from '@/lib/preview';
+import { stageAndOpenPreview, stagePreview } from '@/lib/preview';
 import MediaPicker from '@/components/admin/MediaPicker';
 
 // ---------- Field definitions, per settings id ----------
@@ -661,22 +661,31 @@ function BrandCard() {
     setOgImage(docData.ogImage ?? defData.ogImage ?? '');
   }, [query.data, query.isLoading]);
 
+  function buildPayload() {
+    const payload: {
+      translations: { en: BrandTranslations; ar?: BrandTranslations };
+      data?: Record<string, unknown>;
+    } = {
+      translations: {
+        en: { siteName: enVal.siteName, tagline: enVal.tagline || undefined },
+        ...(arEnabled
+          ? { ar: { siteName: arVal.siteName, tagline: arVal.tagline || undefined } }
+          : {}),
+      },
+      data: { logoUrl: logoUrl.trim(), ogImage: ogImage.trim() },
+    };
+    return payload;
+  }
+
+  function handlePreview() {
+    stageAndOpenPreview('siteSetting', 'brand', buildPayload(), '/');
+  }
+
   async function save() {
     setError(null);
     setSaving(true);
     try {
-      const payload: {
-        translations: { en: BrandTranslations; ar?: BrandTranslations };
-        data?: Record<string, unknown>;
-      } = {
-        translations: {
-          en: { siteName: enVal.siteName, tagline: enVal.tagline || undefined },
-          ...(arEnabled
-            ? { ar: { siteName: arVal.siteName, tagline: arVal.tagline || undefined } }
-            : {}),
-        },
-        data: { logoUrl: logoUrl.trim(), ogImage: ogImage.trim() },
-      };
+      const payload = buildPayload();
       await saveSiteSetting('brand', payload);
       await qc.invalidateQueries({ queryKey: ['admin', 'siteSetting', 'brand'] });
       await qc.invalidateQueries({ queryKey: ['content', 'siteSettings', 'brand'] });
@@ -699,15 +708,15 @@ function BrandCard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+          <button
+            type="button"
+            onClick={handlePreview}
+            className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+            title="Open the public page with unsaved changes"
           >
-            <ExternalLink className="h-3 w-3" />
-            Preview on site
-          </a>
+            <Eye className="h-3 w-3" />
+            Preview
+          </button>
           {!arEnabled && (
             <button
               type="button"
@@ -982,6 +991,18 @@ function NavItemsCard() {
     ]);
   }
 
+  function handlePreview() {
+    stageAndOpenPreview(
+      'siteSetting',
+      'navItems',
+      {
+        translations: { en: {} },
+        data: { items: items.map((it, i) => ({ ...it, order: i })) },
+      },
+      '/',
+    );
+  }
+
   async function save() {
     setError(null);
     // Validate paths before hitting Firestore.
@@ -1022,15 +1043,15 @@ function NavItemsCard() {
             or hide the navbar links.
           </p>
         </div>
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+        <button
+          type="button"
+          onClick={handlePreview}
+          className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+          title="Open the public page with unsaved changes"
         >
-          <ExternalLink className="h-3 w-3" />
-          Preview on site
-        </a>
+          <Eye className="h-3 w-3" />
+          Preview
+        </button>
       </header>
 
       {query.isLoading ? (
@@ -1271,6 +1292,18 @@ function QuickLinksCard() {
     ]);
   }
 
+  function handlePreview() {
+    stageAndOpenPreview(
+      'siteSetting',
+      'quickLinks',
+      {
+        translations: { en: {} },
+        data: { items: items.map((it, i) => ({ ...it, order: i })) },
+      },
+      '/',
+    );
+  }
+
   async function save() {
     setError(null);
     for (const it of items) {
@@ -1306,15 +1339,15 @@ function QuickLinksCard() {
             at the bottom of the homepage.
           </p>
         </div>
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+        <button
+          type="button"
+          onClick={handlePreview}
+          className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+          title="Open the public page with unsaved changes"
         >
-          <ExternalLink className="h-3 w-3" />
-          Preview on site
-        </a>
+          <Eye className="h-3 w-3" />
+          Preview
+        </button>
       </header>
 
       {query.isLoading ? (
@@ -1618,6 +1651,28 @@ function FooterNavCard() {
     );
   }
 
+  function buildFooterPayload() {
+    return {
+      translations: { en: {} },
+      data: {
+        columns: columns.map((c, i) => ({
+          ...c,
+          order: i,
+          links: c.links.map((l) => ({
+            to: l.to,
+            labelEn: l.labelEn,
+            labelAr: l.labelAr,
+            ...(l.external ? { external: true } : {}),
+          })),
+        })),
+      },
+    };
+  }
+
+  function handlePreview() {
+    stageAndOpenPreview('siteSetting', 'footerNav', buildFooterPayload(), '/');
+  }
+
   async function save() {
     setError(null);
     for (const c of columns) {
@@ -1667,15 +1722,15 @@ function FooterNavCard() {
             in the site footer.
           </p>
         </div>
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+        <button
+          type="button"
+          onClick={handlePreview}
+          className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+          title="Open the public page with unsaved changes"
         >
-          <ExternalLink className="h-3 w-3" />
-          Preview on site
-        </a>
+          <Eye className="h-3 w-3" />
+          Preview
+        </button>
       </header>
 
       {query.isLoading ? (
@@ -1986,22 +2041,30 @@ function ContactIntroCard() {
     setState((s) => ({ ...s, [k]: { ...s[k], [key]: value } }));
   }
 
+  function buildContactPayload() {
+    return {
+      translations: {
+        en: state.en,
+        ...(state.arEnabled ? { ar: state.ar } : {}),
+      },
+      data: {
+        formLabels: {
+          en: state.labelsEn,
+          ...(state.arEnabled ? { ar: state.labelsAr } : {}),
+        },
+      },
+    };
+  }
+
+  function handlePreview() {
+    stageAndOpenPreview('siteSetting', 'contactIntro', buildContactPayload(), '/contact');
+  }
+
   async function save() {
     setError(null);
     setSaving(true);
     try {
-      const payload = {
-        translations: {
-          en: state.en,
-          ...(state.arEnabled ? { ar: state.ar } : {}),
-        },
-        data: {
-          formLabels: {
-            en: state.labelsEn,
-            ...(state.arEnabled ? { ar: state.labelsAr } : {}),
-          },
-        },
-      };
+      const payload = buildContactPayload();
       await saveSiteSetting('contactIntro', payload);
       await qc.invalidateQueries({ queryKey: ['admin', 'siteSetting', 'contactIntro'] });
       await qc.invalidateQueries({ queryKey: ['public', 'siteSetting', 'contactIntro'] });
@@ -2023,16 +2086,15 @@ function ContactIntroCard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href="/contact"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-            title="Open public page"
+          <button
+            type="button"
+            onClick={handlePreview}
+            className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+            title="Open the public page with unsaved changes"
           >
             <Eye className="h-3 w-3" />
-            Preview on site
-          </a>
+            Preview
+          </button>
           {!state.arEnabled && (
             <button
               type="button"
@@ -2248,17 +2310,30 @@ function NotFoundCard() {
     setLinks(links.map((l, idx) => (idx === i ? { ...l, [key]: value } : l)));
   }
 
+  function buildNotFoundPayload() {
+    return {
+      translations: {
+        en,
+        ...(arEnabled ? { ar } : {}),
+      },
+      data: { popularLinks: links },
+    };
+  }
+
+  function handlePreview() {
+    stageAndOpenPreview(
+      'siteSetting',
+      'notFound',
+      buildNotFoundPayload(),
+      '/__preview-404',
+    );
+  }
+
   async function save() {
     setError(null);
     setSaving(true);
     try {
-      await saveSiteSetting('notFound', {
-        translations: {
-          en,
-          ...(arEnabled ? { ar } : {}),
-        },
-        data: { popularLinks: links },
-      });
+      await saveSiteSetting('notFound', buildNotFoundPayload());
       await qc.invalidateQueries({ queryKey: ['admin', 'siteSetting', 'notFound'] });
       await qc.invalidateQueries({ queryKey: ['public', 'siteSetting', 'notFound'] });
       setSavedAt(Date.now());
@@ -2279,16 +2354,15 @@ function NotFoundCard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href="/__not_found__"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-            title="Open a 404 page"
+          <button
+            type="button"
+            onClick={handlePreview}
+            className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+            title="Open the public page with unsaved changes"
           >
             <Eye className="h-3 w-3" />
-            Preview on site
-          </a>
+            Preview
+          </button>
           {!arEnabled && (
             <button
               type="button"
@@ -2565,6 +2639,18 @@ function HomepageSectionsCard() {
     setSections(sections.map((s, idx) => (idx === i ? { ...s, visible: !s.visible } : s)));
   }
 
+  function handlePreview() {
+    stageAndOpenPreview(
+      'siteSetting',
+      'homepageSections',
+      {
+        translations: { en: {} },
+        data: { sections: sections.map((s, i) => ({ ...s, order: i })) },
+      },
+      '/',
+    );
+  }
+
   async function save() {
     setError(null);
     setSaving(true);
@@ -2592,15 +2678,15 @@ function HomepageSectionsCard() {
             <span className="font-mono text-xs text-ink/50">homepageSections</span> · Reorder or hide each section.
           </p>
         </div>
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+        <button
+          type="button"
+          onClick={handlePreview}
+          className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+          title="Open the public page with unsaved changes"
         >
           <Eye className="h-3 w-3" />
-          Preview on site
-        </a>
+          Preview
+        </button>
       </header>
 
       {query.isLoading ? (
@@ -2700,16 +2786,24 @@ function FeaturedCard({ articles }: { articles: AdminArticleV2[] }) {
     setArticleSlug(data?.articleSlug ?? '');
   }, [query.data, query.isLoading]);
 
+  function buildFeaturedPayload() {
+    const data: Record<string, unknown> =
+      mode === 'manual' && articleSlug ? { mode, articleSlug } : { mode: 'newest' };
+    return {
+      translations: { en: {} },
+      data,
+    };
+  }
+
+  function handlePreview() {
+    stageAndOpenPreview('siteSetting', 'featured', buildFeaturedPayload(), '/');
+  }
+
   async function save() {
     setError(null);
     setSaving(true);
     try {
-      const data: Record<string, unknown> =
-        mode === 'manual' && articleSlug ? { mode, articleSlug } : { mode: 'newest' };
-      await saveSiteSetting('featured', {
-        translations: { en: {} },
-        data,
-      });
+      await saveSiteSetting('featured', buildFeaturedPayload());
       await qc.invalidateQueries({ queryKey: ['admin', 'siteSetting', 'featured'] });
       await qc.invalidateQueries({ queryKey: ['public', 'siteSetting', 'featured'] });
       setSavedAt(Date.now());
@@ -2729,15 +2823,15 @@ function FeaturedCard({ articles }: { articles: AdminArticleV2[] }) {
             <span className="font-mono text-xs text-ink/50">featured</span> · Choose the article shown in the Featured slot.
           </p>
         </div>
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+        <button
+          type="button"
+          onClick={handlePreview}
+          className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+          title="Open the public page with unsaved changes"
         >
           <Eye className="h-3 w-3" />
-          Preview on site
-        </a>
+          Preview
+        </button>
       </header>
 
       {query.isLoading ? (
@@ -2862,33 +2956,41 @@ function SeoCard() {
     setRoutes(routes.map((r, idx) => (idx === i ? { ...r, [key]: value } : r)));
   }
 
+  function buildSeoPayload() {
+    const routesMap: Record<string, SeoRouteOverride> = {};
+    for (const r of routes) {
+      if (!r.path) continue;
+      const entry: SeoRouteOverride = {};
+      if (r.titleEn) entry.titleEn = r.titleEn;
+      if (r.titleAr) entry.titleAr = r.titleAr;
+      if (r.descriptionEn) entry.descriptionEn = r.descriptionEn;
+      if (r.descriptionAr) entry.descriptionAr = r.descriptionAr;
+      routesMap[r.path] = entry;
+    }
+    const data: SeoData = {
+      defaults: {
+        titleSuffix,
+        defaultDescriptionEn: descEn,
+        defaultDescriptionAr: descAr,
+        defaultOgImageUrl: ogImage,
+      },
+      routes: routesMap,
+    };
+    return {
+      translations: { en: {} },
+      data: data as unknown as Record<string, unknown>,
+    };
+  }
+
+  function handlePreview() {
+    stageAndOpenPreview('siteSetting', 'seo', buildSeoPayload(), '/');
+  }
+
   async function save() {
     setError(null);
     setSaving(true);
     try {
-      const routesMap: Record<string, SeoRouteOverride> = {};
-      for (const r of routes) {
-        if (!r.path) continue;
-        const entry: SeoRouteOverride = {};
-        if (r.titleEn) entry.titleEn = r.titleEn;
-        if (r.titleAr) entry.titleAr = r.titleAr;
-        if (r.descriptionEn) entry.descriptionEn = r.descriptionEn;
-        if (r.descriptionAr) entry.descriptionAr = r.descriptionAr;
-        routesMap[r.path] = entry;
-      }
-      const data: SeoData = {
-        defaults: {
-          titleSuffix,
-          defaultDescriptionEn: descEn,
-          defaultDescriptionAr: descAr,
-          defaultOgImageUrl: ogImage,
-        },
-        routes: routesMap,
-      };
-      await saveSiteSetting('seo', {
-        translations: { en: {} },
-        data: data as unknown as Record<string, unknown>,
-      });
+      await saveSiteSetting('seo', buildSeoPayload());
       await qc.invalidateQueries({ queryKey: ['admin', 'siteSetting', 'seo'] });
       await qc.invalidateQueries({ queryKey: ['public', 'siteSetting', 'seo'] });
       setSavedAt(Date.now());
@@ -2908,15 +3010,15 @@ function SeoCard() {
             <span className="font-mono text-xs text-ink/50">seo</span> · Site-wide SEO defaults and optional per-route overrides.
           </p>
         </div>
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+        <button
+          type="button"
+          onClick={handlePreview}
+          className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+          title="Open the public page with unsaved changes"
         >
           <Eye className="h-3 w-3" />
-          Preview on site
-        </a>
+          Preview
+        </button>
       </header>
 
       {query.isLoading ? (

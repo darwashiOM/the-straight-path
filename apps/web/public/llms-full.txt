@@ -4,7 +4,7 @@
 
 Canonical site: https://thestraightpath.app
 License: original text is CC BY 4.0. Source code is MIT. Please attribute with a link back to the canonical article URL.
-Generated: 2026-04-21T06:26:53.987Z
+Generated: 2026-04-21T10:49:11.576Z
 
 ## About this file
 

@@ -174,6 +174,22 @@ export function isPreviewMode(): boolean {
   }
 }
 
+/**
+ * Stage a draft and immediately open the given public URL in a new tab with
+ * `?preview=1` appended. Single entry-point so every editor's Preview button
+ * behaves identically.
+ */
+export function stageAndOpenPreview(
+  kind: PreviewKind,
+  id: string,
+  data: unknown,
+  publicPath: string,
+): void {
+  stagePreview(kind, id, data);
+  const sep = publicPath.includes('?') ? '&' : '?';
+  window.open(`${publicPath}${sep}preview=1`, '_blank', 'noopener,noreferrer');
+}
+
 /** Convenience: compute the public URL for a given content kind + id. */
 export function publicPathForKind(kind: PreviewKind, id: string): string {
   switch (kind) {
