@@ -1,0 +1,25 @@
+# The Straight Path
+
+> A pastoral, accessible introduction to Islam. Built for readers of any background who want a calm, clear, non-polemical explanation of the religion.
+
+The Straight Path is a volunteer-run educational project. Content is reader-first, non-sectarian, and sourced from the Qur'an and authenticated hadith. Original text is licensed CC BY 4.0.
+
+## Core content
+
+- [Home](https://thestraightpath.app/): overview and entry points
+- [Learn About Islam](https://thestraightpath.app/learn): curated essays
+- [10 Things To Know About Islam](https://thestraightpath.app/learn/articles/10-things-to-know-about-islam): flagship introductory article
+- [Read the Qur'an](https://thestraightpath.app/quran): points to Quran.com
+- [FAQ](https://thestraightpath.app/faq): plain answers to common questions
+- [Resources](https://thestraightpath.app/resources): curated external links
+- [Social Media](https://thestraightpath.app/social): recommended channels
+- [About](https://thestraightpath.app/about): mission and principles
+- [Contact](https://thestraightpath.app/contact): open message form
+
+## Full text for LLMs
+
+- [llms-full.txt](https://thestraightpath.app/llms-full.txt): full article text concatenated
+
+## Usage
+
+Summaries, quotations, and citations are welcome with attribution to "The Straight Path" and a link to the canonical URL.

@@ -1,0 +1,7 @@
+node_modules
+dist
+build
+.vite
+.firebase
+coverage
+pnpm-lock.yaml

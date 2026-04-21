@@ -1,0 +1,118 @@
+import { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Menu, X, Globe } from 'lucide-react';
+
+import Container from './Container';
+import { cn } from '@/lib/utils';
+
+const navItems = [
+  { to: '/learn', key: 'learn' },
+  { to: '/quran', key: 'quran' },
+  { to: '/resources', key: 'resources' },
+  { to: '/faq', key: 'faq' },
+  { to: '/social', key: 'social' },
+  { to: '/about', key: 'about' },
+] as const;
+
+export default function Navbar() {
+  const { t, i18n } = useTranslation();
+  const [open, setOpen] = useState(false);
+
+  const toggleLocale = () => {
+    const next = i18n.language === 'ar' ? 'en' : 'ar';
+    void i18n.changeLanguage(next);
+  };
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-primary-500/10 bg-paper/80 backdrop-blur-md dark:border-primary-700/30 dark:bg-primary-900/80">
+      <Container>
+        <div className="flex h-16 items-center justify-between gap-4">
+          <Link
+            to="/"
+            className="flex items-center gap-2 font-serif text-xl font-semibold text-primary-700 dark:text-accent-300"
+          >
+            <span aria-hidden="true" className="inline-block h-2 w-2 rounded-full bg-accent-400" />
+            {t('site.name')}
+          </Link>
+
+          <nav className="hidden lg:flex items-center gap-6">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.key}
+                to={item.to}
+                className={({ isActive }) =>
+                  cn(
+                    'text-sm font-medium transition-colors',
+                    isActive
+                      ? 'text-primary-700 dark:text-accent-300'
+                      : 'text-ink/70 hover:text-primary-700 dark:text-paper/70 dark:hover:text-accent-300',
+                  )
+                }
+              >
+                {t(`nav.${item.key}`)}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleLocale}
+              className="btn-ghost !px-3 !py-2"
+              aria-label="Switch language"
+            >
+              <Globe size={16} aria-hidden="true" />
+              <span className="text-xs font-semibold uppercase">
+                {i18n.language === 'ar' ? 'EN' : 'ع'}
+              </span>
+            </button>
+            <Link to="/contact" className="hidden lg:inline-flex btn-accent !px-4 !py-2 text-sm">
+              {t('nav.contact')}
+            </Link>
+            <button
+              type="button"
+              className="lg:hidden btn-ghost !px-2 !py-2"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Toggle menu"
+              aria-expanded={open}
+            >
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+
+        {open ? (
+          <nav className="lg:hidden pb-4 animate-fade-in">
+            <div className="flex flex-col gap-1">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.key}
+                  to={item.to}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'rounded-lg px-3 py-2 text-sm font-medium',
+                      isActive
+                        ? 'bg-primary-50 text-primary-700 dark:bg-primary-800 dark:text-accent-300'
+                        : 'text-ink/80 hover:bg-primary-50 dark:text-paper/80 dark:hover:bg-primary-800',
+                    )
+                  }
+                >
+                  {t(`nav.${item.key}`)}
+                </NavLink>
+              ))}
+              <Link
+                to="/contact"
+                onClick={() => setOpen(false)}
+                className="mt-2 btn-accent text-sm"
+              >
+                {t('nav.contact')}
+              </Link>
+            </div>
+          </nav>
+        ) : null}
+      </Container>
+    </header>
+  );
+}

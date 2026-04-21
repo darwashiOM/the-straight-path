@@ -1,0 +1,42 @@
+node_modules
+dist
+build
+.cache
+.vite
+.turbo
+.next
+out
+
+# env
+.env
+.env.local
+.env.*.local
+
+# firebase
+.firebase
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+.runtimeconfig.json
+
+# editors
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# test coverage
+coverage
+.nyc_output
+
+# misc
+*.local
+.tmp
+*.tsbuildinfo

@@ -1,0 +1,37 @@
+{
+  "site": {
+    "name": "The Straight Path",
+    "tagline": "A Clear Path to God"
+  },
+  "nav": {
+    "home": "Home",
+    "learn": "Learn",
+    "articles": "Articles",
+    "quran": "Read the Qur'an",
+    "resources": "Resources",
+    "faq": "Ask Questions",
+    "social": "On Social Media",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "hero": {
+      "title": "A Clear Path to God",
+      "subtitle": "A pastoral, accessible introduction to Islam — organized around learning, scripture, and reflection.",
+      "ctaPrimary": "Start Learning",
+      "ctaSecondary": "Read the Qur'an"
+    },
+    "sections": {
+      "learn": "Learn About Islam",
+      "quran": "Read the Qur'an",
+      "social": "Islam Explained on Social Media",
+      "resources": "Useful External Links",
+      "faq": "Frequently Asked Questions",
+      "about": "About Us"
+    }
+  },
+  "footer": {
+    "copyright": "The Straight Path. All rights reserved.",
+    "madeWith": "Built with care and in service."
+  }
+}
