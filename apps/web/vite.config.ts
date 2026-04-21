@@ -88,9 +88,11 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,woff,woff2}'],
         // Skip precaching gigantic source maps.
         globIgnores: ['**/*.map', 'sw.js', 'workbox-*.js'],
-        // Fall back to the offline page when a navigation cannot be served.
-        navigateFallback: '/offline.html',
-        navigateFallbackDenylist: [/^\/__/, /^\/api\//],
+        // SPA shell fallback: any same-origin navigation not matched by a
+        // precached URL resolves to the React app shell so client-side routes
+        // (including /ar/*) render correctly when served from the SW cache.
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/__/, /^\/api\//, /^\/sw\.js/, /^\/workbox-/, /\/sitemap\.xml$/, /\/robots\.txt$/, /\/ai\.txt$/, /\/llms.*\.txt$/, /\/manifest\.webmanifest$/],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
@@ -145,6 +147,25 @@ export default defineConfig({
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
               },
+            },
+          },
+          {
+            // SPA navigation: NetworkFirst so new deploys appear promptly;
+            // on failure, Workbox serves the precached app shell (index.html).
+            // The dedicated /offline.html is used only when the precache is
+            // itself unavailable.
+            urlPattern: ({ request, sameOrigin }) =>
+              sameOrigin && request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages',
+              networkTimeoutSeconds: 4,
+              plugins: [
+                {
+                  handlerDidError: async () =>
+                    (await caches.match('/offline.html')) ?? Response.error(),
+                },
+              ],
             },
           },
         ],
