@@ -19,6 +19,8 @@ The Straight Path is a volunteer-run educational project. Content is reader-firs
 ## Full text for LLMs
 
 - [llms-full.txt](https://thestraightpath.app/llms-full.txt): full article text concatenated
+- [ai.txt](https://thestraightpath.app/ai.txt): short crawler-facing summary of purpose, principles, and licensing
+- [sitemap.xml](https://thestraightpath.app/sitemap.xml): full URL inventory with hreflang alternates
 
 ## Usage
 

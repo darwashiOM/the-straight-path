@@ -9,13 +9,56 @@
     text-rendering: optimizeLegibility;
   }
 
-  html[dir='rtl'] {
-    font-family: theme('fontFamily.arabic');
-  }
-
   body {
     @apply bg-paper text-ink;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /*
+   * Arabic typography.
+   *
+   * When the document is in RTL mode we:
+   *   1. Swap the body font stack to Amiri (with Noto Naskh Arabic as a
+   *      fallback). This cascades through children — including Tailwind
+   *      Typography (`prose`) and `font-serif` utilities — because we also
+   *      override those selectors below.
+   *   2. Open up line-height (~1.9) for Arabic's denser letterforms, which
+   *      need more breathing room than Latin text to remain comfortable.
+   *   3. Disable letter-spacing utilities; `tracking-*` classes are designed
+   *      for Latin caps and look cramped or ugly on Arabic.
+   */
+  html[dir='rtl'] body {
+    font-family: theme('fontFamily.arabic');
+    line-height: 1.9;
+  }
+
+  /* Headings and anything using our `font-serif` token stay in Amiri because
+     Fraunces has no Arabic glyphs. Without this override they would fall back
+     to the system serif and mix visually with body text. */
+  html[dir='rtl'] h1,
+  html[dir='rtl'] h2,
+  html[dir='rtl'] h3,
+  html[dir='rtl'] h4,
+  html[dir='rtl'] h5,
+  html[dir='rtl'] h6,
+  html[dir='rtl'] .font-serif {
+    font-family: theme('fontFamily.arabic');
+  }
+
+  /* Tailwind Typography cascades its own font-family through custom props, so
+     re-declare the family on the prose scope itself. Slightly looser leading
+     than the body for comfortable reading. */
+  html[dir='rtl'] .prose,
+  html[dir='rtl'] .prose-lg {
+    font-family: theme('fontFamily.arabic');
+    line-height: 1.95;
+  }
+
+  /* `tracking-*` is Latin-only. Neutralise it in RTL. */
+  html[dir='rtl'] .tracking-wide,
+  html[dir='rtl'] .tracking-wider,
+  html[dir='rtl'] .tracking-widest {
+    letter-spacing: 0;
   }
 
   .dark body {
@@ -64,4 +107,49 @@
   .text-pretty {
     text-wrap: pretty;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* iOS safe-area-inset utilities (PWA / notch support).               */
+/* Appended by the PWA agent — do not reorder with existing classes.  */
+/* ------------------------------------------------------------------ */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+.safe-right {
+  padding-right: env(safe-area-inset-right);
+}
+.safe-x {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.safe-y {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-all {
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
+
+/* Margin variants, useful for sticky/fixed elements. */
+.safe-mt {
+  margin-top: env(safe-area-inset-top);
+}
+.safe-mb {
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+/* Min-height helper for full-bleed hero sections on mobile. */
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh;
 }

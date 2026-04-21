@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 import Container from './Container';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -16,20 +18,16 @@ const navItems = [
 ] as const;
 
 export default function Navbar() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { localizePath } = useLocalizedPath();
   const [open, setOpen] = useState(false);
-
-  const toggleLocale = () => {
-    const next = i18n.language === 'ar' ? 'en' : 'ar';
-    void i18n.changeLanguage(next);
-  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-primary-500/10 bg-paper/80 backdrop-blur-md dark:border-primary-700/30 dark:bg-primary-900/80">
       <Container>
         <div className="flex h-16 items-center justify-between gap-4">
           <Link
-            to="/"
+            to={localizePath('/')}
             className="flex items-center gap-2 font-serif text-xl font-semibold text-primary-700 dark:text-accent-300"
           >
             <span aria-hidden="true" className="inline-block h-2 w-2 rounded-full bg-accent-400" />
@@ -40,7 +38,8 @@ export default function Navbar() {
             {navItems.map((item) => (
               <NavLink
                 key={item.key}
-                to={item.to}
+                to={localizePath(item.to)}
+                end
                 className={({ isActive }) =>
                   cn(
                     'text-sm font-medium transition-colors',
@@ -56,25 +55,18 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={toggleLocale}
-              className="btn-ghost !px-3 !py-2"
-              aria-label="Switch language"
+            <LanguageSwitcher />
+            <Link
+              to={localizePath('/contact')}
+              className="hidden lg:inline-flex btn-accent !px-4 !py-2 text-sm"
             >
-              <Globe size={16} aria-hidden="true" />
-              <span className="text-xs font-semibold uppercase">
-                {i18n.language === 'ar' ? 'EN' : 'ع'}
-              </span>
-            </button>
-            <Link to="/contact" className="hidden lg:inline-flex btn-accent !px-4 !py-2 text-sm">
               {t('nav.contact')}
             </Link>
             <button
               type="button"
               className="lg:hidden btn-ghost !px-2 !py-2"
               onClick={() => setOpen((v) => !v)}
-              aria-label="Toggle menu"
+              aria-label={t('nav.toggleMenu')}
               aria-expanded={open}
             >
               {open ? <X size={20} /> : <Menu size={20} />}
@@ -88,7 +80,8 @@ export default function Navbar() {
               {navItems.map((item) => (
                 <NavLink
                   key={item.key}
-                  to={item.to}
+                  to={localizePath(item.to)}
+                  end
                   onClick={() => setOpen(false)}
                   className={({ isActive }) =>
                     cn(
@@ -103,7 +96,7 @@ export default function Navbar() {
                 </NavLink>
               ))}
               <Link
-                to="/contact"
+                to={localizePath('/contact')}
                 onClick={() => setOpen(false)}
                 className="mt-2 btn-accent text-sm"
               >

@@ -1,22 +1,40 @@
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { breadcrumbSchema } from '@/lib/schema';
 
 export default function QuranPage() {
+  const { t } = useTranslation();
+  const { locale } = useLocalizedPath();
+  const meta = getRouteMeta('/quran')!;
+  const arrowIconClass = locale === 'ar' ? 'rotate-180' : undefined;
+
   return (
     <>
-      <SeoHead title="Read the Qur'an" canonical="https://thestraightpath.app/quran" />
+      <SeoHead
+        title={t('quranPage.headline')}
+        description={locale === 'en' ? meta.description : undefined}
+        canonical={canonicalFor('/quran', locale)}
+        alternatePath="/quran"
+        jsonLd={breadcrumbSchema([
+          { name: t('nav.home'), url: canonicalFor('/', locale) },
+          { name: t('nav.quran'), url: canonicalFor('/quran', locale) },
+        ])}
+      />
       <section className="bg-gradient-to-b from-primary-50 to-paper py-24 dark:from-primary-800 dark:to-primary-900">
         <Container className="text-center">
           <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
-            The Noble Qur'ān
+            {t('quranPage.eyebrow')}
           </p>
           <h1 className="mx-auto mt-3 max-w-3xl text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
-            Read the word of God, preserved for over 1400 years.
+            {t('quranPage.headline')}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-ink/70 dark:text-paper/80">
-            We recommend Quran.com — a trusted, free resource that offers the Qur'ān in many
-            languages with a simple and beautiful interface.
+            {t('quranPage.body')}
           </p>
           <a
             href="https://quran.com/"
@@ -24,7 +42,7 @@ export default function QuranPage() {
             rel="noopener noreferrer"
             className="btn-primary mt-8"
           >
-            Open Quran.com <ArrowRight size={16} />
+            {t('quranPage.cta')} <ArrowRight size={16} className={arrowIconClass} />
           </a>
         </Container>
       </section>
@@ -33,20 +51,11 @@ export default function QuranPage() {
         <Container>
           <div className="mx-auto max-w-3xl">
             <h2 className="font-serif text-3xl font-semibold text-primary-700 dark:text-accent-300">
-              About the Qur'ān
+              {t('quranPage.aboutTitle')}
             </h2>
             <div className="prose prose-lg mt-6 dark:prose-invert">
-              <p>
-                The Qur'ān is the final revelation from God (Allāh), revealed through the angel
-                Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for
-                word, in its original Arabic — through both written transmission and continuous
-                memorization across generations.
-              </p>
-              <p>
-                It is the central religious text of Islam — a book of guidance, mercy, and wisdom.
-                Muslims believe its preservation is divinely safeguarded, and its message is a
-                continuation of the one sent to earlier prophets: worship God alone, and do good.
-              </p>
+              <p>{t('quranPage.aboutBody1')}</p>
+              <p>{t('quranPage.aboutBody2')}</p>
             </div>
           </div>
         </Container>

@@ -1,57 +1,58 @@
 import { ExternalLink } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { breadcrumbSchema } from '@/lib/schema';
+
+type ResourceKey = 'quranCom' | 'sunnahCom' | 'yaqeen' | 'bayyinah' | 'islamicAwareness';
+type CategoryKey = 'quran' | 'hadith' | 'research' | 'study';
 
 interface Resource {
-  title: string;
+  key: ResourceKey;
   url: string;
-  description: string;
-  category: string;
+  category: CategoryKey;
 }
 
+/** External resources are keyed by an internal identifier and the display
+ *  title/description come from the locale file so they translate cleanly. */
 const resources: Resource[] = [
+  { key: 'quranCom', url: 'https://quran.com/', category: 'quran' },
+  { key: 'sunnahCom', url: 'https://sunnah.com/', category: 'hadith' },
+  { key: 'yaqeen', url: 'https://yaqeeninstitute.org/', category: 'research' },
+  { key: 'bayyinah', url: 'https://bayyinah.tv/', category: 'study' },
   {
-    title: 'Quran.com',
-    url: 'https://quran.com/',
-    description: 'The Noble Qur\'an with translations in many languages.',
-    category: 'Qur\'an',
-  },
-  {
-    title: 'Sunnah.com',
-    url: 'https://sunnah.com/',
-    description: 'Searchable, authenticated hadith collections with gradings.',
-    category: 'Hadith',
-  },
-  {
-    title: 'Yaqeen Institute',
-    url: 'https://yaqeeninstitute.org/',
-    description: 'Research-driven articles addressing contemporary questions about Islam.',
-    category: 'Research',
-  },
-  {
-    title: 'Bayyinah TV',
-    url: 'https://bayyinah.tv/',
-    description: 'Arabic and Qur\'an studies taught by Nouman Ali Khan and the Bayyinah team.',
-    category: 'Study',
-  },
-  {
-    title: 'Islamic Awareness',
+    key: 'islamicAwareness',
     url: 'https://www.islamic-awareness.org/',
-    description: 'Scholarly articles on the Qur\'an, early Islam, and comparative religion.',
-    category: 'Research',
+    category: 'research',
   },
 ];
 
 export default function ResourcesPage() {
+  const { t } = useTranslation();
+  const { locale } = useLocalizedPath();
+  const meta = getRouteMeta('/resources')!;
+
   return (
     <>
-      <SeoHead title="Useful External Links" canonical="https://thestraightpath.app/resources" />
+      <SeoHead
+        title={t('resourcesPage.title')}
+        description={locale === 'en' ? meta.description : undefined}
+        canonical={canonicalFor('/resources', locale)}
+        alternatePath="/resources"
+        jsonLd={breadcrumbSchema([
+          { name: t('nav.home'), url: canonicalFor('/', locale) },
+          { name: t('nav.resources'), url: canonicalFor('/resources', locale) },
+        ])}
+      />
       <Container className="py-16">
         <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-          Useful External Links
+          {t('resourcesPage.title')}
         </h1>
         <p className="mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
-          Trusted resources for further study — chosen for their accuracy, accessibility, and tone.
+          {t('resourcesPage.description')}
         </p>
         <ul className="mt-12 grid gap-4 md:grid-cols-2">
           {resources.map((r) => (
@@ -63,14 +64,14 @@ export default function ResourcesPage() {
                 className="card group flex h-full flex-col p-6"
               >
                 <span className="text-xs font-semibold uppercase tracking-wider text-accent-500">
-                  {r.category}
+                  {t(`resourcesPage.categories.${r.category}`)}
                 </span>
                 <h2 className="mt-2 flex items-center gap-2 font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
-                  {r.title}
+                  {t(`resourcesPage.items.${r.key}.title`)}
                   <ExternalLink size={14} aria-hidden="true" />
                 </h2>
                 <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">
-                  {r.description}
+                  {t(`resourcesPage.items.${r.key}.description`)}
                 </p>
               </a>
             </li>

@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import Container from './Container';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
 export default function Footer() {
   const { t } = useTranslation();
+  const { localizePath } = useLocalizedPath();
   const year = new Date().getFullYear();
 
   return (
@@ -13,7 +15,7 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           <div>
             <Link
-              to="/"
+              to={localizePath('/')}
               className="font-serif text-lg font-semibold text-primary-700 dark:text-accent-300"
             >
               {t('site.name')}
@@ -22,24 +24,30 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary-700 dark:text-accent-300">
-              Learn
+              {t('footer.learn')}
             </h3>
             <ul className="space-y-2 text-sm text-ink/70 dark:text-paper/70">
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/learn">
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/learn')}
+                >
                   {t('nav.learn')}
                 </Link>
               </li>
               <li>
                 <Link
                   className="hover:text-primary-700 dark:hover:text-accent-300"
-                  to="/learn/articles"
+                  to={localizePath('/learn/articles')}
                 >
                   {t('nav.articles')}
                 </Link>
               </li>
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/quran">
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/quran')}
+                >
                   {t('nav.quran')}
                 </Link>
               </li>
@@ -47,21 +55,30 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary-700 dark:text-accent-300">
-              Community
+              {t('footer.community')}
             </h3>
             <ul className="space-y-2 text-sm text-ink/70 dark:text-paper/70">
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/resources">
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/resources')}
+                >
                   {t('nav.resources')}
                 </Link>
               </li>
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/faq">
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/faq')}
+                >
                   {t('nav.faq')}
                 </Link>
               </li>
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/social">
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/social')}
+                >
                   {t('nav.social')}
                 </Link>
               </li>
@@ -69,27 +86,39 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary-700 dark:text-accent-300">
-              Project
+              {t('footer.project')}
             </h3>
             <ul className="space-y-2 text-sm text-ink/70 dark:text-paper/70">
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/about">
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/about')}
+                >
                   {t('nav.about')}
                 </Link>
               </li>
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/contact">
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/contact')}
+                >
                   {t('nav.contact')}
                 </Link>
               </li>
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/privacy">
-                  Privacy
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/privacy')}
+                >
+                  {t('nav.privacy')}
                 </Link>
               </li>
               <li>
-                <Link className="hover:text-primary-700 dark:hover:text-accent-300" to="/terms">
-                  Terms
+                <Link
+                  className="hover:text-primary-700 dark:hover:text-accent-300"
+                  to={localizePath('/terms')}
+                >
+                  {t('nav.terms')}
                 </Link>
               </li>
             </ul>

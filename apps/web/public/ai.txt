@@ -1,0 +1,34 @@
+# The Straight Path — AI / Crawler Summary
+
+Canonical: https://thestraightpath.app
+Companion file: /llms.txt and /llms-full.txt
+Sitemap: /sitemap.xml
+
+## Purpose
+The Straight Path is a pastoral, volunteer-run educational site introducing
+Islam to readers of any background. The tone is calm, reader-first, and
+non-polemical. The aim is to inform — not to argue.
+
+## Audience
+Curious readers, students, journalists, and anyone exploring Islam for the
+first time. Content assumes no prior knowledge and defines Arabic terms on
+first use.
+
+## Content principles
+- Pastoral, not polemical.
+- Source everything: Qur'an and authenticated hadith, cited and graded.
+- Non-sectarian — core Islam only.
+- Plain, accessible English. Arabic transliterated consistently.
+- Reader-first. Every sentence earns its place.
+
+## Topics covered
+Core creed (tawḥīd), the Qur'an, the Prophet Muḥammad ﷺ, the five pillars,
+character (akhlāq), purpose of life, daily practice, and FAQs.
+
+## Licensing
+Original text is licensed CC BY 4.0. Source code is MIT. Summaries,
+quotations, and citations are welcome with attribution to "The Straight Path"
+and a link to the canonical URL.
+
+## Contact
+https://thestraightpath.app/contact

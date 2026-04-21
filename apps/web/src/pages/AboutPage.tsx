@@ -1,49 +1,55 @@
+import { useTranslation } from 'react-i18next';
+
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { breadcrumbSchema, graph, organizationSchema } from '@/lib/schema';
+
+interface Principle {
+  label: string;
+  body: string;
+}
 
 export default function AboutPage() {
+  const { t } = useTranslation();
+  const { locale } = useLocalizedPath();
+  const meta = getRouteMeta('/about')!;
+
+  const principles = (t('aboutPage.principles', { returnObjects: true }) as Principle[]) ?? [];
+
   return (
     <>
-      <SeoHead title="About" canonical="https://thestraightpath.app/about" />
+      <SeoHead
+        title={t('aboutPage.title')}
+        description={locale === 'en' ? meta.description : undefined}
+        canonical={canonicalFor('/about', locale)}
+        alternatePath="/about"
+        jsonLd={graph(
+          organizationSchema(),
+          breadcrumbSchema([
+            { name: t('nav.home'), url: canonicalFor('/', locale) },
+            { name: t('nav.about'), url: canonicalFor('/about', locale) },
+          ]),
+        )}
+      />
       <Container className="py-16">
         <div className="mx-auto max-w-3xl">
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-            About The Straight Path
+            {t('aboutPage.title')}
           </h1>
           <div className="prose prose-lg mt-8 dark:prose-invert">
-            <p>
-              The Straight Path is an independent, volunteer effort to share Islam in a calm,
-              reader-first voice. Our aim is not to argue but to invite — to make the essentials
-              of Islam clear, accessible, and honest, for anyone curious enough to open the page.
-            </p>
-            <h2>Our principles</h2>
+            <p>{t('aboutPage.intro')}</p>
+            <h2>{t('aboutPage.principlesTitle')}</h2>
             <ul>
-              <li>
-                <strong>Pastoral, not polemical.</strong> We write as if speaking to a thoughtful
-                stranger over coffee.
-              </li>
-              <li>
-                <strong>Source everything.</strong> Qur'anic verses and authenticated hadith,
-                cited and graded.
-              </li>
-              <li>
-                <strong>Non-sectarian.</strong> We teach core Islam and leave sectarian debates at
-                the door.
-              </li>
-              <li>
-                <strong>Plain language.</strong> Arabic terms are defined on first use and
-                transliterated consistently.
-              </li>
-              <li>
-                <strong>Reader-first.</strong> Every sentence earns its place.
-              </li>
+              {principles.map((p) => (
+                <li key={p.label}>
+                  <strong>{p.label}</strong> {p.body}
+                </li>
+              ))}
             </ul>
-            <h2>How we are funded</h2>
-            <p>
-              This project is volunteer-run. Its infrastructure is intentionally minimal — a
-              static React site on Firebase Hosting, cached aggressively. If you'd like to
-              contribute time or translation help, please reach out.
-            </p>
+            <h2>{t('aboutPage.fundingTitle')}</h2>
+            <p>{t('aboutPage.fundingBody')}</p>
           </div>
         </div>
       </Container>

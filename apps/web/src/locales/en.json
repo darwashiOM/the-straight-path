@@ -1,7 +1,8 @@
 {
   "site": {
     "name": "The Straight Path",
-    "tagline": "A Clear Path to God"
+    "tagline": "A Clear Path to God",
+    "description": "A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur'an, and explore a clear path to God."
   },
   "nav": {
     "home": "Home",
@@ -12,14 +13,30 @@
     "faq": "Ask Questions",
     "social": "On Social Media",
     "about": "About",
-    "contact": "Contact"
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "toggleMenu": "Toggle menu",
+    "switchLanguage": "Switch language"
+  },
+  "footer": {
+    "copyright": "The Straight Path. All rights reserved.",
+    "madeWith": "Built with care and in service.",
+    "learn": "Learn",
+    "community": "Community",
+    "project": "Project"
   },
   "home": {
     "hero": {
+      "eyebrow": "The Straight Path",
       "title": "A Clear Path to God",
       "subtitle": "A pastoral, accessible introduction to Islam — organized around learning, scripture, and reflection.",
       "ctaPrimary": "Start Learning",
       "ctaSecondary": "Read the Qur'an"
+    },
+    "featured": {
+      "eyebrow": "Featured · Foundations",
+      "readArticle": "Read article"
     },
     "sections": {
       "learn": "Learn About Islam",
@@ -27,11 +44,250 @@
       "social": "Islam Explained on Social Media",
       "resources": "Useful External Links",
       "faq": "Frequently Asked Questions",
-      "about": "About Us"
+      "about": "About Us",
+      "viewAll": "View all"
+    },
+    "learnEyebrow": "Learn",
+    "quranBanner": {
+      "headline": "Read the Qur'ān — the word of God, preserved for over 1400 years.",
+      "body": "Quran.com offers the Qur'ān in many languages with a simple, clear interface.",
+      "cta": "Open Quran.com"
+    },
+    "quickLinks": {
+      "socialDesc": "Curated short-form videos explaining Islam.",
+      "resourcesDesc": "Trusted external libraries and sites.",
+      "faqDesc": "Common questions — answered plainly.",
+      "contactTitle": "Get in touch",
+      "contactDesc": "Ask a question. We read every message.",
+      "explore": "Explore"
+    },
+    "aboutPreview": {
+      "headline": "An invitation, not an argument.",
+      "body": "The Straight Path is a small, independent effort to share Islam in a calm, reader-first voice — pastoral rather than polemical, for seekers of every background.",
+      "cta": "Read more about our mission"
     }
   },
-  "footer": {
-    "copyright": "The Straight Path. All rights reserved.",
-    "madeWith": "Built with care and in service."
+  "learn": {
+    "title": "Learn About Islam",
+    "description": "A curated set of articles introducing the core ideas, character, and practices of Islam — written for readers of any background."
+  },
+  "articlesPage": {
+    "title": "Articles",
+    "description": "Essays on the foundations of Islam — the creed, the Prophet, the Qur'an, and the path.",
+    "draft": "Draft",
+    "backToArticles": "All articles",
+    "notFound": "Article not found",
+    "backBtn": "Back to articles",
+    "arabicComingSoon": "This article is available in English for now. An Arabic translation is in preparation, in shā' Allāh."
+  },
+  "quranPage": {
+    "eyebrow": "The Noble Qur'ān",
+    "headline": "Read the word of God, preserved for over 1400 years.",
+    "body": "We recommend Quran.com — a trusted, free resource that offers the Qur'ān in many languages with a simple and beautiful interface.",
+    "cta": "Open Quran.com",
+    "aboutTitle": "About the Qur'ān",
+    "aboutBody1": "The Qur'ān is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.",
+    "aboutBody2": "It is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good."
+  },
+  "resourcesPage": {
+    "title": "Useful External Links",
+    "description": "Trusted resources for further study — chosen for their accuracy, accessibility, and tone.",
+    "categories": {
+      "quran": "Qur'an",
+      "hadith": "Hadith",
+      "research": "Research",
+      "study": "Study"
+    },
+    "items": {
+      "quranCom": {
+        "title": "Quran.com",
+        "description": "The Noble Qur'an with translations in many languages."
+      },
+      "sunnahCom": {
+        "title": "Sunnah.com",
+        "description": "Searchable, authenticated hadith collections with gradings."
+      },
+      "yaqeen": {
+        "title": "Yaqeen Institute",
+        "description": "Research-driven articles addressing contemporary questions about Islam."
+      },
+      "bayyinah": {
+        "title": "Bayyinah TV",
+        "description": "Arabic and Qur'an studies taught by Nouman Ali Khan and the Bayyinah team."
+      },
+      "islamicAwareness": {
+        "title": "Islamic Awareness",
+        "description": "Scholarly articles on the Qur'an, early Islam, and comparative religion."
+      }
+    }
+  },
+  "faqPage": {
+    "title": "Ask Questions",
+    "description": "Plain answers to common questions about Islam — and an open door for the rest.",
+    "items": [
+      {
+        "q": "What is Islam, in one sentence?",
+        "a": "Islam is the voluntary submission of the heart to the one God (Allāh), expressed in worship, ethics, and daily life — a tradition Muslims trace through all the prophets from Noah to Jesus to Muḥammad ﷺ."
+      },
+      {
+        "q": "Do Muslims worship a different God than Christians and Jews?",
+        "a": "No. Muslims worship the same One God who spoke to Abraham, Moses, and Jesus. \"Allāh\" is simply the Arabic word for God. Arabic-speaking Christians and Jews also call God \"Allāh.\""
+      },
+      {
+        "q": "Do I have to learn Arabic to be Muslim?",
+        "a": "No. A Muslim can be of any language. Arabic is the language of the Qur'ān, so many Muslims learn some Arabic for prayer and reading scripture, but full translations are widely available."
+      },
+      {
+        "q": "What are the five pillars of Islam?",
+        "a": "Testimony of faith (shahāda), daily prayer (ṣalāh), charity (zakāh), fasting in Ramadan (ṣawm), and pilgrimage to Mecca once in a lifetime if able (ḥajj)."
+      },
+      {
+        "q": "How do I become Muslim?",
+        "a": "You sincerely declare the testimony of faith: \"There is no god but Allāh, and Muḥammad is the messenger of Allāh.\" That is the beginning of the path; what follows is a lifetime of learning and growth."
+      },
+      {
+        "q": "I have more questions. Who can I ask?",
+        "a": "Please use the contact form. We read every message and respond with care — there is no pressure, just conversation."
+      }
+    ]
+  },
+  "socialPage": {
+    "title": "Islam Explained on Social Media",
+    "description": "A small, curated list of channels that explain Islam with clarity and good character.",
+    "visitChannel": "Visit channel",
+    "channels": {
+      "efdawah": {
+        "name": "EF Dawah",
+        "description": "Long-form dialogues and Q&A with people of all backgrounds."
+      },
+      "yaqeen": {
+        "name": "Yaqeen Institute",
+        "description": "Short, research-driven explainers on contemporary topics."
+      },
+      "muftiMenk": {
+        "name": "Mufti Menk",
+        "description": "Gentle, accessible reminders and life lessons."
+      }
+    }
+  },
+  "aboutPage": {
+    "title": "About The Straight Path",
+    "intro": "The Straight Path is an independent, volunteer effort to share Islam in a calm, reader-first voice. Our aim is not to argue but to invite — to make the essentials of Islam clear, accessible, and honest, for anyone curious enough to open the page.",
+    "principlesTitle": "Our principles",
+    "principles": [
+      {
+        "label": "Pastoral, not polemical.",
+        "body": "We write as if speaking to a thoughtful stranger over coffee."
+      },
+      {
+        "label": "Source everything.",
+        "body": "Qur'anic verses and authenticated hadith, cited and graded."
+      },
+      {
+        "label": "Non-sectarian.",
+        "body": "We teach core Islam and leave sectarian debates at the door."
+      },
+      {
+        "label": "Plain language.",
+        "body": "Arabic terms are defined on first use and transliterated consistently."
+      },
+      {
+        "label": "Reader-first.",
+        "body": "Every sentence earns its place."
+      }
+    ],
+    "fundingTitle": "How we are funded",
+    "fundingBody": "This project is volunteer-run. Its infrastructure is intentionally minimal — a static React site on Firebase Hosting, cached aggressively. If you'd like to contribute time or translation help, please reach out."
+  },
+  "contactPage": {
+    "title": "Contact",
+    "description": "Have a question about Islam? A correction? A thought? We read every message.",
+    "thankYou": "Thank you — your message has been received.",
+    "replySoon": "We'll reply soon, inshā'Allāh.",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message"
+    },
+    "send": "Send message",
+    "sending": "Sending…",
+    "error": "Something went wrong. Please try again in a moment."
+  },
+  "notFound": {
+    "seoTitle": "Page Not Found",
+    "seoDescription": "The page you're looking for isn't here. Try the home page, the articles index, the Qur'an, or send us a message.",
+    "eyebrow": "Error 404",
+    "title": "We couldn't find that page.",
+    "description": "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
+    "searchLabel": "Search articles",
+    "searchPlaceholder": "Search our articles…",
+    "searchButton": "Search",
+    "popularHeading": "Popular places to go",
+    "home": "Home",
+    "articles": "Articles",
+    "quran": "Read the Qur'ān",
+    "contact": "Contact",
+    "contactHint": "Tell us what you were looking for",
+    "links": {
+      "learn": { "label": "Start learning", "hint": "A gentle on-ramp" },
+      "articles": { "label": "Articles", "hint": "Essays and explainers" },
+      "faq": { "label": "FAQ", "hint": "Common questions, honest answers" },
+      "quran": { "label": "Read the Qur'ān", "hint": "The words themselves" },
+      "about": { "label": "About", "hint": "Who we are, why we built this" },
+      "contact": { "label": "Contact", "hint": "We'll write back" }
+    }
+  },
+  "privacyPage": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: April 2026.",
+    "intro": "The Straight Path is a content site. We aim to collect as little personal data as possible.",
+    "whatWeCollect": "What we collect",
+    "collectItems": [
+      {
+        "label": "Contact form submissions.",
+        "body": "When you submit the contact form we store your name, email, and message in Firebase Firestore so we can reply."
+      },
+      {
+        "label": "Basic analytics.",
+        "body": "Aggregate, anonymous page-view data via Firebase Analytics. No cross-site tracking."
+      },
+      {
+        "label": "Technical logs.",
+        "body": "Firebase Hosting records standard request logs (IP, user-agent) for short periods."
+      }
+    ],
+    "whatWeDontTitle": "What we don't do",
+    "whatWeDont": [
+      "We do not sell or share data with advertisers.",
+      "We do not use tracking cookies beyond what's required for the site to work."
+    ],
+    "rightsTitle": "Your rights",
+    "rightsBody": "You may request deletion of any message you've sent us by emailing the address on the contact page."
+  },
+  "termsPage": {
+    "title": "Terms of Use",
+    "lastUpdated": "Last updated: April 2026.",
+    "intro": "The Straight Path is provided free of charge, on an as-is basis, for educational purposes. By using the site you agree to the following:",
+    "items": {
+      "accuracy": "Content is offered in good faith; we strive for accuracy but make no guarantees.",
+      "licensePrefix": "Articles may be quoted with attribution. The source code is available under the MIT License; original text content is under ",
+      "licenseLink": "CC BY 4.0",
+      "licenseSuffix": " unless otherwise noted.",
+      "abuse": "Please don't abuse the contact form or attempt to disrupt the service for others."
+    }
+  },
+  "articles": {
+    "10-things-to-know-about-islam": {
+      "title": "10 Things To Know About Islam",
+      "excerpt": "A pastoral, ten-point introduction to the beliefs, practices, and character at the heart of Islam."
+    },
+    "the-greatest-man-who-ever-lived": {
+      "title": "The Greatest Man Who Ever Lived",
+      "excerpt": "A reflection on the life, character, and enduring legacy of the Prophet Muḥammad ﷺ."
+    },
+    "why-did-god-create-you": {
+      "title": "Why Did God Create You?",
+      "excerpt": "The Qur'an's answer to the oldest question — and what it means for how we live."
+    }
   }
 }

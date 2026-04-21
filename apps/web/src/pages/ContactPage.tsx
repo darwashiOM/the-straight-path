@@ -1,15 +1,22 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { getDb } from '@/lib/firebase';
+import { canonicalFor, getRouteMeta } from '@/lib/routes';
+import { breadcrumbSchema } from '@/lib/schema';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
 export default function ContactPage() {
+  const { t } = useTranslation();
+  const { locale } = useLocalizedPath();
   const [status, setStatus] = useState<Status>('idle');
   const [form, setForm] = useState({ name: '', email: '', message: '', honeypot: '' });
+  const meta = getRouteMeta('/contact')!;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,6 +29,7 @@ export default function ContactPage() {
         message: form.message.slice(0, 5000),
         createdAt: serverTimestamp(),
         source: 'contact-page',
+        locale,
       });
       setStatus('success');
       setForm({ name: '', email: '', message: '', honeypot: '' });
@@ -33,23 +41,32 @@ export default function ContactPage() {
 
   return (
     <>
-      <SeoHead title="Contact" canonical="https://thestraightpath.app/contact" />
+      <SeoHead
+        title={t('contactPage.title')}
+        description={locale === 'en' ? meta.description : undefined}
+        canonical={canonicalFor('/contact', locale)}
+        alternatePath="/contact"
+        jsonLd={breadcrumbSchema([
+          { name: t('nav.home'), url: canonicalFor('/', locale) },
+          { name: t('nav.contact'), url: canonicalFor('/contact', locale) },
+        ])}
+      />
       <Container className="py-16">
         <div className="mx-auto max-w-2xl">
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-            Contact
+            {t('contactPage.title')}
           </h1>
           <p className="mt-4 text-lg text-ink/70 dark:text-paper/70">
-            Have a question about Islam? A correction? A thought? We read every message.
+            {t('contactPage.description')}
           </p>
 
           {status === 'success' ? (
             <div className="card mt-10 p-6">
               <p className="font-serif text-lg text-primary-700 dark:text-accent-300">
-                Thank you — your message has been received.
+                {t('contactPage.thankYou')}
               </p>
               <p className="mt-2 text-sm text-ink/70 dark:text-paper/70">
-                We'll reply soon, inshā'Allāh.
+                {t('contactPage.replySoon')}
               </p>
             </div>
           ) : (
@@ -64,7 +81,7 @@ export default function ContactPage() {
                 onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))}
                 aria-hidden="true"
               />
-              <Field label="Name" required>
+              <Field label={t('contactPage.fields.name')} required>
                 <input
                   required
                   maxLength={120}
@@ -74,7 +91,7 @@ export default function ContactPage() {
                   autoComplete="name"
                 />
               </Field>
-              <Field label="Email" required>
+              <Field label={t('contactPage.fields.email')} required>
                 <input
                   required
                   type="email"
@@ -83,9 +100,10 @@ export default function ContactPage() {
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                   className="input"
                   autoComplete="email"
+                  dir="ltr"
                 />
               </Field>
-              <Field label="Message" required>
+              <Field label={t('contactPage.fields.message')} required>
                 <textarea
                   required
                   rows={6}
@@ -100,12 +118,10 @@ export default function ContactPage() {
                 disabled={status === 'submitting'}
                 className="btn-primary"
               >
-                {status === 'submitting' ? 'Sending…' : 'Send message'}
+                {status === 'submitting' ? t('contactPage.sending') : t('contactPage.send')}
               </button>
               {status === 'error' ? (
-                <p className="text-sm text-sienna">
-                  Something went wrong. Please try again in a moment.
-                </p>
+                <p className="text-sm text-sienna">{t('contactPage.error')}</p>
               ) : null}
             </form>
           )}
@@ -128,7 +144,7 @@ function Field({
     <label className="block">
       <span className="mb-2 block text-sm font-semibold text-ink/80 dark:text-paper/80">
         {label}
-        {required ? <span className="ml-1 text-sienna">*</span> : null}
+        {required ? <span className="ms-1 text-sienna">*</span> : null}
       </span>
       {children}
     </label>

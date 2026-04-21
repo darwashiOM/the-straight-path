@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 
+# TODO: once the admin surface exists, uncomment the line below.
+# Disallow: /admin
+
 # AI crawlers — explicitly allowed and pointed at LLM-friendly content
 User-agent: GPTBot
 Allow: /
