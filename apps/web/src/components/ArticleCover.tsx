@@ -19,6 +19,11 @@ interface ArticleCoverProps {
   slug: string;
   /** Short label overlaid on the cover — usually the article topic. */
   label?: string;
+  /** Optional hero image URL. When present, the image fills the cover
+   *  instead of the gradient. Alt text falls back to the label or slug. */
+  image?: string;
+  /** Alt text for the image (only used when `image` is set). */
+  alt?: string;
   /** Tailwind aspect ratio utility. Default: 16/9. */
   aspect?: string;
   className?: string;
@@ -51,6 +56,8 @@ function hashSlug(slug: string): number {
 export default function ArticleCover({
   slug,
   label,
+  image,
+  alt,
   aspect = 'aspect-[16/9]',
   className,
 }: ArticleCoverProps) {
@@ -61,6 +68,39 @@ export default function ArticleCover({
     const palette: Palette = PALETTES[idx] ?? PALETTES[0]!;
     return palette.join(' ');
   }, [slug]);
+
+  // When a real hero image is provided we render that in the cover slot;
+  // the gradient stays as a background so broken/slow images still show a
+  // tasteful placeholder underneath.
+  if (image) {
+    return (
+      <div
+        className={cn(
+          'relative w-full overflow-hidden bg-gradient-to-br',
+          aspect,
+          gradient,
+          className,
+        )}
+      >
+        <img
+          src={image}
+          alt={alt ?? label ?? slug}
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+          onError={(e) => {
+            // Hide a broken image so the gradient + label show through.
+            (e.currentTarget as HTMLImageElement).style.display = 'none';
+          }}
+        />
+        {label ? (
+          <span className="absolute bottom-3 start-3 rounded-full bg-white/85 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary-800 backdrop-blur-sm dark:bg-primary-900/70 dark:text-accent-200">
+            {label}
+          </span>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div

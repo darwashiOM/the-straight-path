@@ -1,13 +1,31 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, BookOpen, HelpCircle, Link2, MessageSquare, Users } from 'lucide-react';
+import {
+  ArrowRight,
+  BookOpen,
+  HelpCircle,
+  Link2,
+  Mail,
+  MessageSquare,
+  Star,
+  Users,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 import ArticleCover from '@/components/ArticleCover';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import Skeleton from '@/components/Skeleton';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { usePublishedArticles, useSiteSetting } from '@/lib/content';
+import { useArticle, usePublishedArticles, useSiteSetting } from '@/lib/content';
+import type {
+  FeaturedData,
+  HomepageSection,
+  HomepageSectionId,
+  HomepageSectionsData,
+  QuickLinkIcon,
+  QuickLinkItem,
+} from '@/lib/content-schema';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { graph, organizationSchema, websiteSchema } from '@/lib/schema';
 import { formatDate } from '@/lib/utils';
@@ -45,23 +63,69 @@ export default function HomePage() {
   const hero = useSiteSetting<HeroCopy>('hero', locale);
   const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
   const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
+  const quickLinks = useSiteSetting('quickLinks', locale);
+  const sectionsSetting = useSiteSetting('homepageSections', locale);
+  const featuredSetting = useSiteSetting('featured', locale);
   const articlesQuery = usePublishedArticles(locale);
+
+  const sections =
+    ((sectionsSetting.data?.data as HomepageSectionsData | undefined)?.sections ?? [
+      { id: 'hero', visible: true, order: 0 },
+      { id: 'featured', visible: true, order: 1 },
+      { id: 'learnRow', visible: true, order: 2 },
+      { id: 'quranBanner', visible: true, order: 3 },
+      { id: 'quickLinks', visible: true, order: 4 },
+      { id: 'aboutPreview', visible: true, order: 5 },
+    ]) as HomepageSection[];
+
+  const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
+    mode: 'newest' as const,
+  };
+  const manualFeatured = useArticle(
+    featuredConfig.mode === 'manual' ? featuredConfig.articleSlug : undefined,
+    locale,
+  );
+
+  const quickLinkItems = (
+    (quickLinks.data?.data?.items as QuickLinkItem[] | undefined) ?? []
+  )
+    .filter((i) => i && i.visible !== false)
+    .slice()
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   const heroCopy = hero.data?.value;
   const quranCopy = quranBanner.data?.value;
   const aboutCopy = aboutPreview.data?.value;
 
   const articles = (articlesQuery.data ?? []).slice(0, 3);
-  const featured = articles[0];
+  const manualMatch =
+    featuredConfig.mode === 'manual' && manualFeatured.data?.status === 'published'
+      ? manualFeatured.data
+      : undefined;
+  const featured = manualMatch ?? articles[0];
 
   const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
 
-  return (
-    <>
-      <SeoHead alternatePath="/" jsonLd={graph(websiteSchema(), organizationSchema())} />
+  const renderers: Record<HomepageSectionId, () => React.ReactNode> = {
+    hero: () => renderHero(),
+    featured: () => renderFeatured(),
+    learnRow: () => renderLearnRow(),
+    quranBanner: () => renderQuranBanner(),
+    quickLinks: () => renderQuickLinks(),
+    aboutPreview: () => renderAboutPreview(),
+  };
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary-50 to-paper py-24 md:py-32 dark:from-primary-800 dark:to-primary-900">
+  const orderedSections = sections
+    .filter((s) => s && s.visible !== false)
+    .slice()
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  function renderHero() {
+    return (
+      <section
+        key="hero"
+        className="relative overflow-hidden bg-gradient-to-b from-primary-50 to-paper py-24 md:py-32 dark:from-primary-800 dark:to-primary-900"
+      >
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {heroCopy ? (
@@ -95,16 +159,27 @@ export default function HomePage() {
           </div>
         </Container>
       </section>
+    );
+  }
 
-      {/* Featured article */}
-      {featured ? (
-        <section className="py-20">
+  function renderFeatured() {
+    if (featured) {
+      return (
+        <section key="featured" className="py-20">
           <Container>
             <Link
               to={localizePath(`/learn/articles/${featured.slug}`)}
               className="card group block overflow-hidden md:grid md:grid-cols-5"
             >
-              <div className="col-span-2 aspect-[4/3] bg-gradient-to-br from-primary-200 to-accent-200 md:aspect-auto" />
+              <div className="col-span-2 md:aspect-auto">
+                <ArticleCover
+                  slug={featured.slug}
+                  image={featured.heroImage}
+                  alt={featured.title}
+                  aspect="aspect-[4/3] md:aspect-auto md:h-full"
+                  className="h-full"
+                />
+              </div>
               <div className="col-span-3 p-8 md:p-12">
                 <span className="text-xs font-semibold uppercase tracking-wider text-accent-500">
                   {t('home.featured.eyebrow')}
@@ -121,16 +196,23 @@ export default function HomePage() {
             </Link>
           </Container>
         </section>
-      ) : articlesQuery.isLoading ? (
-        <section className="py-20">
+      );
+    }
+    if (articlesQuery.isLoading) {
+      return (
+        <section key="featured" className="py-20">
           <Container>
             <Skeleton variant="card" className="h-72" />
           </Container>
         </section>
-      ) : null}
+      );
+    }
+    return null;
+  }
 
-      {/* Learn section */}
-      <section className="bg-white py-20 dark:bg-primary-800/40">
+  function renderLearnRow() {
+    return (
+      <section key="learnRow" className="bg-white py-20 dark:bg-primary-800/40">
         <Container>
           <div className="mb-10 flex items-end justify-between gap-4">
             <div>
@@ -168,7 +250,12 @@ export default function HomePage() {
                     to={localizePath(`/learn/articles/${a.slug}`)}
                     className="card group flex flex-col overflow-hidden transition-transform hover:-translate-y-0.5"
                   >
-                    <ArticleCover slug={a.slug} label={topicLabel} />
+                    <ArticleCover
+                      slug={a.slug}
+                      label={topicLabel}
+                      image={a.heroImage}
+                      alt={a.title}
+                    />
                     <div className="flex flex-1 flex-col p-6">
                       <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
                         {a.title}
@@ -190,9 +277,12 @@ export default function HomePage() {
           )}
         </Container>
       </section>
+    );
+  }
 
-      {/* Qur'an banner */}
-      <section className="bg-primary-700 py-20 text-paper dark:bg-primary-900">
+  function renderQuranBanner() {
+    return (
+      <section key="quranBanner" className="bg-primary-700 py-20 text-paper dark:bg-primary-900">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {quranCopy ? (
@@ -219,49 +309,39 @@ export default function HomePage() {
           </div>
         </Container>
       </section>
+    );
+  }
 
-      {/* Quick links grid */}
-      <section className="py-20">
+  function renderQuickLinks() {
+    return (
+      <section key="quickLinks" className="py-20">
         <Container>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <FeatureLink
-              to={localizePath('/social')}
-              icon={<Users size={20} />}
-              title={t('home.sections.social')}
-              desc={t('home.quickLinks.socialDesc')}
-              exploreLabel={t('home.quickLinks.explore')}
-              arrow={arrow}
-            />
-            <FeatureLink
-              to={localizePath('/resources')}
-              icon={<Link2 size={20} />}
-              title={t('home.sections.resources')}
-              desc={t('home.quickLinks.resourcesDesc')}
-              exploreLabel={t('home.quickLinks.explore')}
-              arrow={arrow}
-            />
-            <FeatureLink
-              to={localizePath('/faq')}
-              icon={<HelpCircle size={20} />}
-              title={t('home.sections.faq')}
-              desc={t('home.quickLinks.faqDesc')}
-              exploreLabel={t('home.quickLinks.explore')}
-              arrow={arrow}
-            />
-            <FeatureLink
-              to={localizePath('/contact')}
-              icon={<MessageSquare size={20} />}
-              title={t('home.quickLinks.contactTitle')}
-              desc={t('home.quickLinks.contactDesc')}
-              exploreLabel={t('home.quickLinks.explore')}
-              arrow={arrow}
-            />
+            {quickLinkItems.map((item, idx) => {
+              const Icon = QUICK_LINK_ICON_MAP[item.icon] ?? Users;
+              const label = locale === 'ar' ? item.labelAr || item.labelEn : item.labelEn;
+              const desc = locale === 'ar' ? item.descAr || item.descEn : item.descEn;
+              return (
+                <FeatureLink
+                  key={`${item.to}-${idx}`}
+                  to={localizePath(item.to)}
+                  icon={<Icon size={20} />}
+                  title={label}
+                  desc={desc}
+                  exploreLabel={t('home.quickLinks.explore')}
+                  arrow={arrow}
+                />
+              );
+            })}
           </div>
         </Container>
       </section>
+    );
+  }
 
-      {/* About preview */}
-      <section className="bg-paper py-20 dark:bg-primary-900">
+  function renderAboutPreview() {
+    return (
+      <section key="aboutPreview" className="bg-paper py-20 dark:bg-primary-900">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {aboutCopy ? (
@@ -283,9 +363,29 @@ export default function HomePage() {
           </div>
         </Container>
       </section>
+    );
+  }
+
+  return (
+    <>
+      <SeoHead alternatePath="/" jsonLd={graph(websiteSchema(), organizationSchema())} />
+      {orderedSections.map((s) => {
+        const renderFn = renderers[s.id];
+        return renderFn ? renderFn() : null;
+      })}
     </>
   );
 }
+
+const QUICK_LINK_ICON_MAP: Record<QuickLinkIcon, LucideIcon> = {
+  users: Users,
+  link: Link2,
+  help: HelpCircle,
+  message: MessageSquare,
+  book: BookOpen,
+  star: Star,
+  mail: Mail,
+};
 
 function FeatureLink({
   to,

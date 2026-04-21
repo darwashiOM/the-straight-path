@@ -356,7 +356,12 @@ function ArticleGridCard({ article, dateLocale }: ArticleGridCardProps) {
       to={localizePath(`/learn/articles/${slug}`)}
       className="card group flex flex-col overflow-hidden transition-transform hover:-translate-y-0.5"
     >
-      <ArticleCover slug={slug} label={topicLabel} />
+      <ArticleCover
+        slug={slug}
+        label={topicLabel}
+        image={article.heroImage}
+        alt={title}
+      />
       <div className="flex flex-1 flex-col p-6">
         <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
           {title}

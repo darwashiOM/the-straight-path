@@ -10,7 +10,10 @@
 import type {
   ChannelDoc,
   FaqDoc,
+  FooterNavColumn,
+  NavItem,
   PageDoc,
+  QuickLinkItem,
   ResourceDoc,
   SeriesDoc,
   TopicDoc,
@@ -222,7 +225,140 @@ export interface SiteSettingDefault<T = Record<string, string>> {
   data?: Record<string, unknown>;
 }
 
+/**
+ * Default `brand` setting — site identity used in the navbar, footer, and
+ * OG defaults. `logoUrl`/`ogImage` stay empty so the existing accent-dot +
+ * default OG fall through until an editor uploads real assets.
+ */
+export const DEFAULT_BRAND_SETTING: SiteSettingDefault<{
+  siteName: string;
+  tagline?: string;
+}> = {
+  id: 'brand',
+  translations: {
+    en: { siteName: 'The Straight Path', tagline: 'A Clear Path to God' },
+    ar: { siteName: 'الطريق المستقيم', tagline: 'طريق واضح إلى الله' },
+  },
+  data: { logoUrl: '', ogImage: '' },
+};
+
+/**
+ * Default ordered nav items. Paths are canonical (no `/ar` prefix); the
+ * navbar prepends the locale at render time. `key` is a stable identifier
+ * used as a React key and for deep links from other surfaces.
+ */
+export const DEFAULT_NAV_ITEMS: NavItem[] = [
+  { to: '/learn', key: 'learn', labelEn: 'Learn', labelAr: 'تعلّم', visible: true, order: 0 },
+  { to: '/quran', key: 'quran', labelEn: "Read the Qur'an", labelAr: 'اقرأ القرآن', visible: true, order: 1 },
+  { to: '/resources', key: 'resources', labelEn: 'Resources', labelAr: 'روابط مفيدة', visible: true, order: 2 },
+  { to: '/faq', key: 'faq', labelEn: 'Ask Questions', labelAr: 'اطرح سؤالاً', visible: true, order: 3 },
+  { to: '/social', key: 'social', labelEn: 'On Social Media', labelAr: 'على وسائل التواصل', visible: true, order: 4 },
+  { to: '/about', key: 'about', labelEn: 'About', labelAr: 'من نحن', visible: true, order: 5 },
+];
+
+/**
+ * Default quick-links grid — the four cards at the bottom of the homepage.
+ * `to` is canonical (no locale prefix); HomePage localizes at render.
+ */
+export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
+  {
+    to: '/social',
+    icon: 'users',
+    visible: true,
+    order: 0,
+    labelEn: 'On Social Media',
+    labelAr: 'على وسائل التواصل',
+    descEn: 'Follow trusted voices on YouTube and beyond.',
+    descAr: 'تابع أصواتاً موثوقة على يوتيوب وغيره.',
+  },
+  {
+    to: '/resources',
+    icon: 'link',
+    visible: true,
+    order: 1,
+    labelEn: 'Useful External Links',
+    labelAr: 'روابط خارجية مفيدة',
+    descEn: "Qur'an, hadith, research — a small, carefully-picked list.",
+    descAr: 'القرآن، الحديث، البحث — قائمة صغيرة مختارة بعناية.',
+  },
+  {
+    to: '/faq',
+    icon: 'help',
+    visible: true,
+    order: 2,
+    labelEn: 'FAQ',
+    labelAr: 'الأسئلة الشائعة',
+    descEn: 'Short, honest answers to the questions people most often ask.',
+    descAr: 'إجابات قصيرة وصادقة على أكثر الأسئلة تكراراً.',
+  },
+  {
+    to: '/contact',
+    icon: 'message',
+    visible: true,
+    order: 3,
+    labelEn: 'Get in touch',
+    labelAr: 'تواصل معنا',
+    descEn: 'Have a question or want to say hello? Send us a note.',
+    descAr: 'لديك سؤال أو تود إلقاء التحية؟ أرسل لنا رسالة.',
+  },
+];
+
+/**
+ * Default footer navigation columns — three populated columns (Learn,
+ * Community, Project) matching the current hardcoded markup, plus an empty
+ * "Follow" column so editors have a slot to drop social links.
+ */
+export const DEFAULT_FOOTER_NAV: FooterNavColumn[] = [
+  {
+    id: 'learn',
+    titleEn: 'Learn',
+    titleAr: 'تعلّم',
+    order: 0,
+    links: [
+      { to: '/learn', labelEn: 'Learn', labelAr: 'تعلّم' },
+      { to: '/learn/articles', labelEn: 'Articles', labelAr: 'مقالات' },
+      { to: '/quran', labelEn: "Read the Qur'an", labelAr: 'اقرأ القرآن' },
+    ],
+  },
+  {
+    id: 'community',
+    titleEn: 'Community',
+    titleAr: 'المجتمع',
+    order: 1,
+    links: [
+      { to: '/resources', labelEn: 'Resources', labelAr: 'روابط مفيدة' },
+      { to: '/faq', labelEn: 'FAQ', labelAr: 'الأسئلة الشائعة' },
+      { to: '/social', labelEn: 'On Social Media', labelAr: 'على وسائل التواصل' },
+    ],
+  },
+  {
+    id: 'project',
+    titleEn: 'Project',
+    titleAr: 'المشروع',
+    order: 2,
+    links: [
+      { to: '/about', labelEn: 'About', labelAr: 'من نحن' },
+      { to: '/contact', labelEn: 'Contact', labelAr: 'تواصل' },
+      { to: '/privacy', labelEn: 'Privacy', labelAr: 'الخصوصية' },
+      { to: '/terms', labelEn: 'Terms', labelAr: 'الشروط' },
+    ],
+  },
+  {
+    id: 'follow',
+    titleEn: 'Follow',
+    titleAr: 'تابعنا',
+    order: 3,
+    links: [],
+  },
+];
+
 export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
+  DEFAULT_BRAND_SETTING as SiteSettingDefault,
+  {
+    id: 'navItems',
+    translations: { en: {} },
+    data: { items: DEFAULT_NAV_ITEMS },
+  },
   {
     id: 'hero',
     translations: {
@@ -353,6 +489,197 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         copyright: 'الطريق المستقيم. جميع الحقوق محفوظة.',
         madeWith: 'بُنِي بعناية وخدمةً لله.',
       },
+    },
+  },
+  {
+    id: 'quickLinks',
+    translations: { en: {} },
+    data: { items: DEFAULT_QUICK_LINKS },
+  },
+  {
+    id: 'footerNav',
+    translations: { en: {} },
+    data: { columns: DEFAULT_FOOTER_NAV },
+  },
+  {
+    id: 'resourcesHeader',
+    translations: {
+      en: {
+        title: 'Useful External Links',
+        description:
+          'Trusted resources for further study — chosen for their accuracy, accessibility, and tone.',
+      },
+      ar: {
+        title: 'روابط خارجية مفيدة',
+        description: 'موارد موثوقة للمزيد من الدراسة — اخترناها لدقتها ويسرها وطيب أسلوبها.',
+      },
+    },
+  },
+  {
+    id: 'faqHeader',
+    translations: {
+      en: {
+        title: 'Ask Questions',
+        description:
+          'Plain answers to common questions about Islam — and an open door for the rest.',
+      },
+      ar: {
+        title: 'اطرح سؤالاً',
+        description: 'إجابات واضحة عن أسئلة شائعة حول الإسلام — وبابٌ مفتوح لما سواها.',
+      },
+    },
+  },
+  {
+    id: 'socialHeader',
+    translations: {
+      en: {
+        title: 'Islam Explained on Social Media',
+        description:
+          'A small, curated list of channels that explain Islam with clarity and good character.',
+      },
+      ar: {
+        title: 'الإسلام على وسائل التواصل',
+        description: 'قائمة صغيرة مختارة من القنوات التي تشرح الإسلام بوضوح وأدب.',
+      },
+    },
+  },
+  {
+    id: 'contactIntro',
+    translations: {
+      en: {
+        eyebrow: '',
+        title: 'Contact',
+        body:
+          'Have a question about Islam? A correction? A thought? We read every message.',
+      },
+      ar: {
+        eyebrow: '',
+        title: 'تواصل معنا',
+        body: 'هل لديك سؤال عن الإسلام؟ أو تصحيح؟ أو خاطرة؟ نقرأ كل رسالة.',
+      },
+    },
+    data: {
+      formLabels: {
+        en: {
+          name: 'Name',
+          email: 'Email',
+          message: 'Message',
+          submit: 'Send message',
+          submittingLabel: 'Sending…',
+          successTitle: 'Thank you — your message has been received.',
+          successBody: "We'll reply soon, inshā'Allāh.",
+          errorBody: 'Something went wrong. Please try again in a moment.',
+        },
+        ar: {
+          name: 'الاسم',
+          email: 'البريد الإلكتروني',
+          message: 'الرسالة',
+          submit: 'أرسل الرسالة',
+          submittingLabel: 'جارٍ الإرسال…',
+          successTitle: 'شكراً — وصلتنا رسالتك.',
+          successBody: 'سنردّ قريباً إن شاء الله.',
+          errorBody: 'حدث خطأ ما. يرجى المحاولة بعد لحظة.',
+        },
+      },
+    },
+  },
+  {
+    id: 'notFound',
+    translations: {
+      en: {
+        eyebrow: 'Error 404',
+        title: "We couldn't find that page.",
+        body:
+          "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
+      },
+      ar: {
+        eyebrow: 'خطأ 404',
+        title: 'لم نجد هذه الصفحة.',
+        body:
+          'قد يكون الرابط معطوباً، أو نُقِلت الصفحة. إن ضِلّ بك الطريق فلا بأس — لنعد بك إلى المسار.',
+      },
+    },
+    data: {
+      popularLinks: [
+        {
+          to: '/learn',
+          labelEn: 'Start learning',
+          labelAr: 'ابدأ التعلّم',
+          hintEn: 'A gentle on-ramp',
+          hintAr: 'بداية هادئة',
+        },
+        {
+          to: '/learn/articles',
+          labelEn: 'Articles',
+          labelAr: 'المقالات',
+          hintEn: 'Essays and explainers',
+          hintAr: 'مقالات وشروحات',
+        },
+        {
+          to: '/faq',
+          labelEn: 'FAQ',
+          labelAr: 'أسئلة شائعة',
+          hintEn: 'Common questions, honest answers',
+          hintAr: 'أسئلة متكررة بإجابات صادقة',
+        },
+        {
+          to: '/quran',
+          labelEn: "Read the Qur'ān",
+          labelAr: 'اقرأ القرآن',
+          hintEn: 'The words themselves',
+          hintAr: 'الكلمات نفسها',
+        },
+        {
+          to: '/about',
+          labelEn: 'About',
+          labelAr: 'من نحن',
+          hintEn: 'Who we are, why we built this',
+          hintAr: 'من نحن، ولماذا بنينا هذا',
+        },
+        {
+          to: '/contact',
+          labelEn: 'Contact',
+          labelAr: 'تواصل معنا',
+          hintEn: "We'll write back",
+          hintAr: 'سنردّ عليك',
+        },
+      ],
+    },
+  },
+  {
+    id: 'seo',
+    translations: { en: {} },
+    data: {
+      defaults: {
+        titleSuffix: 'The Straight Path',
+        defaultDescriptionEn:
+          'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God.',
+        defaultDescriptionAr:
+          'مقدمة هادئة ورحيمة عن الإسلام. تعلّم الأساسيات، واقرأ القرآن، واستكشف طريقاً واضحاً إلى الله.',
+        defaultOgImageUrl: '/og-default.png',
+      },
+      routes: {},
+    },
+  },
+  {
+    id: 'homepageSections',
+    translations: { en: {} },
+    data: {
+      sections: [
+        { id: 'hero', visible: true, order: 0 },
+        { id: 'featured', visible: true, order: 1 },
+        { id: 'learnRow', visible: true, order: 2 },
+        { id: 'quranBanner', visible: true, order: 3 },
+        { id: 'quickLinks', visible: true, order: 4 },
+        { id: 'aboutPreview', visible: true, order: 5 },
+      ],
+    },
+  },
+  {
+    id: 'featured',
+    translations: { en: {} },
+    data: {
+      mode: 'newest',
     },
   },
 ];

@@ -7,7 +7,7 @@ import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import Skeleton from '@/components/Skeleton';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { useFaqs } from '@/lib/content';
+import { useFaqs, useSiteSetting } from '@/lib/content';
 import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema, faqSchema, graph } from '@/lib/schema';
 import { cn } from '@/lib/utils';
@@ -20,12 +20,15 @@ export default function FaqPage() {
 
   const { data: faqs = [], isLoading } = useFaqs(locale);
   const schemaPairs = faqs.map((f) => ({ q: f.question, a: f.answer }));
+  const header = useSiteSetting<{ title: string; description: string }>('faqHeader', locale);
+  const headerTitle = header.data?.value.title || t('faqPage.title');
+  const headerDescription = header.data?.value.description || t('faqPage.description');
 
   return (
     <>
       <SeoHead
-        title={t('faqPage.title')}
-        description={locale === 'en' ? meta.description : undefined}
+        title={headerTitle}
+        description={headerDescription || (locale === 'en' ? meta.description : undefined)}
         canonical={canonicalFor('/faq', locale)}
         alternatePath="/faq"
         jsonLd={graph(
@@ -44,10 +47,10 @@ export default function FaqPage() {
           }))}
         />
         <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-          {t('faqPage.title')}
+          {headerTitle}
         </h1>
         <p className="mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
-          {t('faqPage.description')}
+          {headerDescription}
         </p>
         {isLoading && faqs.length === 0 ? (
           <div className="mx-auto mt-12 max-w-3xl space-y-4">

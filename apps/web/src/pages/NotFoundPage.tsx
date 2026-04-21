@@ -5,23 +5,35 @@ import { useTranslation } from 'react-i18next';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useSiteSetting } from '@/lib/content';
 
-type LinkKey = 'learn' | 'articles' | 'faq' | 'quran' | 'about' | 'contact';
+interface NotFoundCopy {
+  eyebrow: string;
+  title: string;
+  body: string;
+}
 
-const POPULAR_LINKS: Array<{ to: string; key: LinkKey }> = [
-  { to: '/learn', key: 'learn' },
-  { to: '/learn/articles', key: 'articles' },
-  { to: '/faq', key: 'faq' },
-  { to: '/quran', key: 'quran' },
-  { to: '/about', key: 'about' },
-  { to: '/contact', key: 'contact' },
-];
+interface NotFoundPopularLink {
+  to: string;
+  labelEn: string;
+  labelAr: string;
+  hintEn: string;
+  hintAr: string;
+}
 
 export default function NotFoundPage() {
   const { t } = useTranslation();
-  const { localizePath } = useLocalizedPath();
+  const { locale, localizePath } = useLocalizedPath();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+
+  const notFound = useSiteSetting<NotFoundCopy>('notFound', locale);
+  const copy = notFound.data?.value;
+  const eyebrow = copy?.eyebrow || t('notFound.eyebrow');
+  const titleText = copy?.title || t('notFound.title');
+  const bodyText = copy?.body || t('notFound.description');
+  const popularLinks =
+    (notFound.data?.data?.popularLinks as NotFoundPopularLink[] | undefined) ?? [];
 
   const onSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,13 +53,13 @@ export default function NotFoundPage() {
       <SeoHead title={t('notFound.seoTitle')} description={t('notFound.seoDescription')} noindex />
       <Container className="py-20 text-center md:py-24">
         <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
-          {t('notFound.eyebrow')}
+          {eyebrow}
         </p>
         <h1 className="mx-auto mt-4 max-w-2xl text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
-          {t('notFound.title')}
+          {titleText}
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-ink/70 dark:text-paper/70">
-          {t('notFound.description')}
+          {bodyText}
         </p>
 
         {/* Tasteful, subtle ASCII path illustration. */}
@@ -93,17 +105,17 @@ export default function NotFoundPage() {
             {t('notFound.popularHeading')}
           </h2>
           <ul className="mt-6 grid gap-3 text-start sm:grid-cols-2 md:grid-cols-3">
-            {POPULAR_LINKS.map((link) => (
+            {popularLinks.map((link) => (
               <li key={link.to}>
                 <Link
                   to={localizePath(link.to)}
                   className="block h-full rounded-xl border border-ink/10 p-4 transition hover:border-primary-500/60 hover:bg-paper/60 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-paper/10 dark:hover:bg-ink/40"
                 >
                   <span className="block font-serif text-lg text-primary-700 dark:text-accent-300">
-                    {t(`notFound.links.${link.key}.label`)}
+                    {locale === 'ar' ? link.labelAr : link.labelEn}
                   </span>
                   <span className="mt-1 block text-sm text-ink/60 dark:text-paper/60">
-                    {t(`notFound.links.${link.key}.hint`)}
+                    {locale === 'ar' ? link.hintAr : link.hintEn}
                   </span>
                 </Link>
               </li>

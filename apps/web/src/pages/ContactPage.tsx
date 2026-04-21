@@ -5,9 +5,27 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useSiteSetting } from '@/lib/content';
 import { getDb } from '@/lib/firebase';
 import { canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema } from '@/lib/schema';
+
+interface ContactIntroCopy {
+  eyebrow?: string;
+  title: string;
+  body: string;
+}
+
+interface ContactFormLabels {
+  name: string;
+  email: string;
+  message: string;
+  submit: string;
+  submittingLabel: string;
+  successTitle: string;
+  successBody: string;
+  errorBody: string;
+}
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -17,6 +35,25 @@ export default function ContactPage() {
   const [status, setStatus] = useState<Status>('idle');
   const [form, setForm] = useState({ name: '', email: '', message: '', honeypot: '' });
   const meta = getRouteMeta('/contact')!;
+
+  const intro = useSiteSetting<ContactIntroCopy>('contactIntro', locale);
+  const introCopy = intro.data?.value;
+  const formLabelsByLocale = intro.data?.data?.formLabels as
+    | Record<'en' | 'ar', ContactFormLabels>
+    | undefined;
+  const labels: ContactFormLabels =
+    formLabelsByLocale?.[locale] ?? formLabelsByLocale?.en ?? {
+      name: t('contactPage.fields.name'),
+      email: t('contactPage.fields.email'),
+      message: t('contactPage.fields.message'),
+      submit: t('contactPage.send'),
+      submittingLabel: t('contactPage.sending'),
+      successTitle: t('contactPage.thankYou'),
+      successBody: t('contactPage.replySoon'),
+      errorBody: t('contactPage.error'),
+    };
+  const title = introCopy?.title || t('contactPage.title');
+  const description = introCopy?.body || t('contactPage.description');
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,8 +79,8 @@ export default function ContactPage() {
   return (
     <>
       <SeoHead
-        title={t('contactPage.title')}
-        description={locale === 'en' ? meta.description : undefined}
+        title={title}
+        description={description || (locale === 'en' ? meta.description : undefined)}
         canonical={canonicalFor('/contact', locale)}
         alternatePath="/contact"
         jsonLd={breadcrumbSchema([
@@ -53,20 +90,23 @@ export default function ContactPage() {
       />
       <Container className="py-16">
         <div className="mx-auto max-w-2xl">
+          {introCopy?.eyebrow ? (
+            <p className="mb-3 font-serif text-sm uppercase tracking-widest text-accent-500">
+              {introCopy.eyebrow}
+            </p>
+          ) : null}
           <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-            {t('contactPage.title')}
+            {title}
           </h1>
-          <p className="mt-4 text-lg text-ink/70 dark:text-paper/70">
-            {t('contactPage.description')}
-          </p>
+          <p className="mt-4 text-lg text-ink/70 dark:text-paper/70">{description}</p>
 
           {status === 'success' ? (
             <div className="card mt-10 p-6">
               <p className="font-serif text-lg text-primary-700 dark:text-accent-300">
-                {t('contactPage.thankYou')}
+                {labels.successTitle}
               </p>
               <p className="mt-2 text-sm text-ink/70 dark:text-paper/70">
-                {t('contactPage.replySoon')}
+                {labels.successBody}
               </p>
             </div>
           ) : (
@@ -81,7 +121,7 @@ export default function ContactPage() {
                 onChange={(e) => setForm((f) => ({ ...f, honeypot: e.target.value }))}
                 aria-hidden="true"
               />
-              <Field label={t('contactPage.fields.name')} required>
+              <Field label={labels.name} required>
                 <input
                   required
                   maxLength={120}
@@ -91,7 +131,7 @@ export default function ContactPage() {
                   autoComplete="name"
                 />
               </Field>
-              <Field label={t('contactPage.fields.email')} required>
+              <Field label={labels.email} required>
                 <input
                   required
                   type="email"
@@ -103,7 +143,7 @@ export default function ContactPage() {
                   dir="ltr"
                 />
               </Field>
-              <Field label={t('contactPage.fields.message')} required>
+              <Field label={labels.message} required>
                 <textarea
                   required
                   rows={6}
@@ -118,10 +158,10 @@ export default function ContactPage() {
                 disabled={status === 'submitting'}
                 className="btn-primary"
               >
-                {status === 'submitting' ? t('contactPage.sending') : t('contactPage.send')}
+                {status === 'submitting' ? labels.submittingLabel : labels.submit}
               </button>
               {status === 'error' ? (
-                <p className="text-sm text-sienna">{t('contactPage.error')}</p>
+                <p className="text-sm text-sienna">{labels.errorBody}</p>
               ) : null}
             </form>
           )}

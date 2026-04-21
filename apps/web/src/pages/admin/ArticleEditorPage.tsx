@@ -12,7 +12,9 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Copy, Eye, Save, Send, Trash2 } from 'lucide-react';
+import { ArrowLeft, Copy, Eye, ImageIcon, Save, Send, Trash2 } from 'lucide-react';
+
+import MediaPicker from '@/components/admin/MediaPicker';
 
 import {
   deleteArticleV2,
@@ -93,6 +95,7 @@ export default function ArticleEditorPage() {
   const [locale, setLocale] = useState<Locale>('en');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const mdxConflict = useMemo(
     () => mdxArticles.some((a) => a.frontmatter.slug === form.slug),
@@ -236,6 +239,15 @@ export default function ArticleEditorPage() {
 
   return (
     <form onSubmit={(e) => void submit(e)} className="space-y-4 pb-20">
+      <MediaPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        currentUrl={form.heroImage || undefined}
+        onPick={(url) => {
+          patch('heroImage', url);
+          setPickerOpen(false);
+        }}
+      />
       <div className="flex items-center justify-between">
         <Link
           to="/admin/articles"
@@ -364,14 +376,34 @@ export default function ArticleEditorPage() {
               />
             </Field>
 
-            <Field label="Hero image URL">
-              <input
-                type="url"
-                value={form.heroImage}
-                onChange={(e) => patch('heroImage', e.target.value)}
-                className={inputCls}
-                placeholder="https://…"
-              />
+            <Field label="Hero image">
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={form.heroImage}
+                  onChange={(e) => patch('heroImage', e.target.value)}
+                  className={inputCls}
+                  placeholder="https://…"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPickerOpen(true)}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary-100 bg-white px-3 text-xs font-medium text-primary-700 hover:border-primary-300 hover:bg-primary-50"
+                  title="Pick from library"
+                >
+                  <ImageIcon className="h-3.5 w-3.5" />
+                  Library
+                </button>
+              </div>
+              {form.heroImage ? (
+                <div className="mt-2 overflow-hidden rounded-md border border-primary-100">
+                  <img
+                    src={form.heroImage}
+                    alt=""
+                    className="aspect-video w-full object-cover"
+                  />
+                </div>
+              ) : null}
             </Field>
 
             {!isNew && (

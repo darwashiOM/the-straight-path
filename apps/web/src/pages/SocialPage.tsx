@@ -5,7 +5,7 @@ import Container from '@/components/Container';
 import SeoHead from '@/components/SeoHead';
 import Skeleton from '@/components/Skeleton';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { useChannels } from '@/lib/content';
+import { useChannels, useSiteSetting } from '@/lib/content';
 import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema } from '@/lib/schema';
 
@@ -16,12 +16,18 @@ export default function SocialPage() {
   const arrow = locale === 'ar' ? '←' : '→';
 
   const { data: channels = [], isLoading } = useChannels(locale);
+  const header = useSiteSetting<{ title: string; description: string }>(
+    'socialHeader',
+    locale,
+  );
+  const headerTitle = header.data?.value.title || t('socialPage.title');
+  const headerDescription = header.data?.value.description || t('socialPage.description');
 
   return (
     <>
       <SeoHead
-        title={t('socialPage.title')}
-        description={locale === 'en' ? meta.description : undefined}
+        title={headerTitle}
+        description={headerDescription || (locale === 'en' ? meta.description : undefined)}
         canonical={canonicalFor('/social', locale)}
         alternatePath="/social"
         jsonLd={breadcrumbSchema([
@@ -37,10 +43,10 @@ export default function SocialPage() {
           }))}
         />
         <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
-          {t('socialPage.title')}
+          {headerTitle}
         </h1>
         <p className="mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
-          {t('socialPage.description')}
+          {headerDescription}
         </p>
         {isLoading && channels.length === 0 ? (
           <ul className="mt-12 grid gap-6 md:grid-cols-3">

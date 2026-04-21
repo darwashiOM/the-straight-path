@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, Shield, X } from 'lucide-react';
@@ -10,15 +10,8 @@ import CommandK from './CommandK';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { cn } from '@/lib/utils';
 import * as AuthModule from '@/lib/auth';
-
-const navItems = [
-  { to: '/learn', key: 'learn' },
-  { to: '/quran', key: 'quran' },
-  { to: '/resources', key: 'resources' },
-  { to: '/faq', key: 'faq' },
-  { to: '/social', key: 'social' },
-  { to: '/about', key: 'about' },
-] as const;
+import { useSiteSetting } from '@/lib/content';
+import type { BrandData, BrandTranslations, NavItem, NavItemsData } from '@/lib/content-schema';
 
 /**
  * `useAdminLinkVisibility` — returns true only when the signed-in user is an
@@ -49,9 +42,29 @@ function useAdminLinkVisibility(): boolean {
 
 export default function Navbar() {
   const { t } = useTranslation();
-  const { localizePath } = useLocalizedPath();
+  const { locale, localizePath } = useLocalizedPath();
   const [open, setOpen] = useState(false);
   const showAdminLink = useAdminLinkVisibility();
+
+  const brand = useSiteSetting<BrandTranslations>('brand', locale);
+  const navSetting = useSiteSetting<Record<string, string>>('navItems', locale);
+
+  const siteName = brand.data?.value.siteName ?? t('site.name');
+  const logoUrl = ((brand.data?.data as BrandData | undefined)?.logoUrl ?? '').trim();
+
+  // Navigation items come from Firestore; fall back to the defaults embedded
+  // in the public loader if the doc is missing entirely. We filter hidden
+  // items and sort by explicit order so editors can reorder without
+  // worrying about array position.
+  const items = useMemo<NavItem[]>(() => {
+    const raw = (navSetting.data?.data as NavItemsData | undefined)?.items ?? [];
+    return [...raw]
+      .filter((i) => i && typeof i.to === 'string' && i.visible !== false)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  }, [navSetting.data]);
+
+  const labelFor = (item: NavItem) =>
+    locale === 'ar' ? item.labelAr || item.labelEn : item.labelEn;
 
   return (
     <header className="sticky top-0 z-40 border-b border-primary-500/10 bg-paper/80 backdrop-blur-md dark:border-primary-700/30 dark:bg-primary-900/80">
@@ -61,12 +74,22 @@ export default function Navbar() {
             to={localizePath('/')}
             className="flex items-center gap-2 font-serif text-xl font-semibold text-primary-700 dark:text-accent-300"
           >
-            <span aria-hidden="true" className="inline-block h-2 w-2 rounded-full bg-accent-400" />
-            {t('site.name')}
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={siteName}
+                className="h-8 w-auto object-contain"
+                loading="eager"
+                decoding="async"
+              />
+            ) : (
+              <span aria-hidden="true" className="inline-block h-2 w-2 rounded-full bg-accent-400" />
+            )}
+            {siteName}
           </Link>
 
           <nav className="hidden lg:flex items-center gap-6">
-            {navItems.map((item) => (
+            {items.map((item) => (
               <NavLink
                 key={item.key}
                 to={localizePath(item.to)}
@@ -80,7 +103,7 @@ export default function Navbar() {
                   )
                 }
               >
-                {t(`nav.${item.key}`)}
+                {labelFor(item)}
               </NavLink>
             ))}
           </nav>
@@ -120,7 +143,7 @@ export default function Navbar() {
         {open ? (
           <nav className="lg:hidden pb-4 animate-fade-in">
             <div className="flex flex-col gap-1">
-              {navItems.map((item) => (
+              {items.map((item) => (
                 <NavLink
                   key={item.key}
                   to={localizePath(item.to)}
@@ -135,7 +158,7 @@ export default function Navbar() {
                     )
                   }
                 >
-                  {t(`nav.${item.key}`)}
+                  {labelFor(item)}
                 </NavLink>
               ))}
               {showAdminLink ? (
