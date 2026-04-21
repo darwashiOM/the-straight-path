@@ -33,13 +33,14 @@ You are now authorized. The admin dashboard lists Articles, Resources, FAQ, Chan
 
 ---
 
-## Optional: Enable Firebase Storage (for article hero images)
+## Optional: Enable Firebase Storage (for Media Library)
 
-Storage is currently not initialized. To enable:
+The admin `/admin/media` page can host images once Storage is initialized.
 
 1. Open <https://console.firebase.google.com/project/the-straight-path-tsp/storage>
-2. Click **Get Started** → accept the default region (`us-east4`).
+2. Click **Get Started** → accept the default region (`us-east4` — closest to Delaware).
 3. Redeploy storage rules: `firebase deploy --only storage`.
+4. `/admin/media` will immediately start accepting uploads (≤10 MB, `image/*`).
 
 ## Optional: Upgrade to Blaze (for email delivery + Functions)
 
