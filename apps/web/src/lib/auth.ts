@@ -63,7 +63,19 @@ export function useAuth(): AuthState {
   const qc = useQueryClient();
 
   useEffect(() => {
-    const unsub = onAuthChange((user) => {
+    const unsub = onAuthChange(async (user) => {
+      if (user) {
+        // Force a fresh ID token so custom claims (e.g. { admin: true })
+        // granted server-side via the Admin SDK propagate to this session
+        // without requiring the user to sign out. Storage rules read
+        // `request.auth.token.admin`, so the claim needs to be in the
+        // token that Firebase SDK attaches to each request.
+        try {
+          await user.getIdToken(true);
+        } catch {
+          // Non-fatal — old token keeps working for ordinary reads/writes.
+        }
+      }
       setState({ user, loading: false });
       // Tell anything subscribing via React Query to revalidate.
       qc.invalidateQueries({ queryKey: ['auth'] });

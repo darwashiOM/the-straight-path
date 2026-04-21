@@ -2,9 +2,13 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
+    // Admin status is carried on the user's custom claims. We set the
+    // `admin: true` claim whenever a UID is added to the Firestore
+    // `/admins` collection (see scripts/set-admin-claims.mjs). Checking
+    // the claim avoids Firebase Storage's cross-service call to Firestore,
+    // which requires the Blaze plan.
     function isAdmin() {
-      return request.auth != null
-        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+      return request.auth != null && request.auth.token.admin == true;
     }
 
     // Public read for all assets; admin-only write, images up to 10MB.
