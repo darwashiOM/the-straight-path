@@ -15,6 +15,7 @@ import {
   FileText,
   FolderTree,
   HelpCircle,
+  Image as ImageIcon,
   Layers,
   LayoutDashboard,
   Link as LinkIcon,
@@ -40,6 +41,7 @@ const NAV = [
   { to: '/admin/series', label: 'Series', icon: Layers },
   { to: '/admin/topics', label: 'Topics', icon: FolderTree },
   { to: '/admin/pages', label: 'Pages', icon: Notebook },
+  { to: '/admin/media', label: 'Media', icon: ImageIcon },
 ];
 
 export default function AdminLayout() {

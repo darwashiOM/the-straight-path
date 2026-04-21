@@ -12,7 +12,7 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Copy, Save, Send, Trash2 } from 'lucide-react';
+import { ArrowLeft, Copy, Eye, Save, Send, Trash2 } from 'lucide-react';
 
 import {
   deleteArticleV2,
@@ -22,6 +22,7 @@ import {
   saveArticleV2,
 } from '@/lib/admin-firestore';
 import type { ArticleDoc, ArticleStatus, Locale } from '@/lib/content-schema';
+import { stagePreview } from '@/lib/preview';
 import { articles as mdxArticles } from '@/content/articles';
 import LocaleTabs from '@/components/admin/LocaleTabs';
 import MarkdownPreview from '@/components/admin/MarkdownPreview';
@@ -152,6 +153,41 @@ export default function ArticleEditorPage() {
     });
   }
 
+  function buildPayload(status: ArticleStatus): ArticleDoc {
+    return {
+      slug: form.slug,
+      status,
+      publishedAt: form.publishedAt,
+      ...(status === 'scheduled' && form.scheduledAt ? { scheduledAt: form.scheduledAt } : {}),
+      author: form.author,
+      tags: form.tags,
+      ...(form.topic ? { topic: form.topic } : {}),
+      ...(form.series ? { series: form.series } : {}),
+      ...(form.heroImage ? { heroImage: form.heroImage } : {}),
+      translations: {
+        en: { ...form.en },
+        ...(form.arEnabled && (form.ar.title || form.ar.body || form.ar.excerpt)
+          ? { ar: { ...form.ar } }
+          : {}),
+      },
+      schemaVersion: 1,
+    };
+  }
+
+  function handlePreview() {
+    if (!form.slug) {
+      setError('Slug is required to preview.');
+      return;
+    }
+    setError(null);
+    stagePreview('article', form.slug, buildPayload(form.status));
+    window.open(
+      `/learn/articles/${encodeURIComponent(form.slug)}?preview=1`,
+      '_blank',
+      'noopener,noreferrer',
+    );
+  }
+
   async function submit(e: FormEvent | null, nextStatus?: ArticleStatus) {
     e?.preventDefault();
     setError(null);
@@ -166,26 +202,7 @@ export default function ArticleEditorPage() {
     setSaving(true);
     try {
       const status = nextStatus ?? form.status;
-      const payload: ArticleDoc = {
-        slug: form.slug,
-        status,
-        publishedAt: form.publishedAt,
-        ...(status === 'scheduled' && form.scheduledAt
-          ? { scheduledAt: form.scheduledAt }
-          : {}),
-        author: form.author,
-        tags: form.tags,
-        ...(form.topic ? { topic: form.topic } : {}),
-        ...(form.series ? { series: form.series } : {}),
-        ...(form.heroImage ? { heroImage: form.heroImage } : {}),
-        translations: {
-          en: { ...form.en },
-          ...(form.arEnabled && (form.ar.title || form.ar.body || form.ar.excerpt)
-            ? { ar: { ...form.ar } }
-            : {}),
-        },
-        schemaVersion: 1,
-      };
+      const payload: ArticleDoc = buildPayload(status);
       await saveArticleV2(form.slug, payload);
       await qc.invalidateQueries({ queryKey: ['admin', 'articlesV2'] });
       await qc.invalidateQueries({ queryKey: ['admin', 'articleV2', form.slug] });
@@ -471,6 +488,16 @@ export default function ArticleEditorPage() {
           <span className="mr-auto text-xs text-ink/50">
             Status: <span className="font-medium text-ink/80">{form.status}</span>
           </span>
+          <button
+            type="button"
+            onClick={handlePreview}
+            disabled={saving}
+            className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm text-amber-800 hover:bg-amber-100 disabled:opacity-50"
+            title="Open the public page with unsaved changes"
+          >
+            <Eye className="h-4 w-4" />
+            Preview
+          </button>
           <button
             type="button"
             onClick={() => void submit(null, 'draft')}

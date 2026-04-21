@@ -9,7 +9,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ExternalLink, Save, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, Save, Trash2 } from 'lucide-react';
 
 import {
   getSiteSetting,
@@ -19,6 +19,7 @@ import {
 } from '@/lib/admin-firestore';
 import type { SiteSettingId } from '@/lib/content-schema';
 import { DEFAULT_SITE_SETTINGS } from '@/lib/content-defaults';
+import { stagePreview } from '@/lib/preview';
 
 // ---------- Field definitions, per settings id ----------
 
@@ -218,6 +219,24 @@ function SettingCard({
     setState((s) => ({ ...s, [which]: { ...s[which], [key]: value } }));
   }
 
+  function handlePreview() {
+    const payload: {
+      translations: { en: Values; ar?: Values };
+      data?: Record<string, unknown>;
+    } = {
+      translations: {
+        en: pickFields(state.en, spec.fields),
+        ...(state.arEnabled ? { ar: pickFields(state.ar, spec.fields) } : {}),
+      },
+    };
+    if (spec.hasData) {
+      payload.data = { articleSlugs: state.articleSlugs };
+    }
+    stagePreview('siteSetting', spec.id, payload);
+    const sep = spec.previewPath.includes('?') ? '&' : '?';
+    window.open(`${spec.previewPath}${sep}preview=1`, '_blank', 'noopener,noreferrer');
+  }
+
   async function save() {
     setError(null);
     setSaving(true);
@@ -255,15 +274,15 @@ function SettingCard({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href={spec.previewPath}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+          <button
+            type="button"
+            onClick={handlePreview}
+            className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
+            title="Open the public page with unsaved changes"
           >
-            <ExternalLink className="h-3 w-3" />
-            Preview on site
-          </a>
+            <Eye className="h-3 w-3" />
+            Preview
+          </button>
           {!state.arEnabled && (
             <button
               type="button"

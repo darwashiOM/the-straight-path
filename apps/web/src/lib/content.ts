@@ -32,6 +32,7 @@ import {
   DEFAULT_SITE_SETTINGS,
   DEFAULT_TOPICS,
 } from './content-defaults';
+import { isPreviewMode, readPreview } from './preview';
 
 const STALE = 1000 * 60; // 1 minute
 
@@ -133,11 +134,15 @@ export function usePublishedArticles(locale: Locale) {
 
 export function useArticle(slug: string | undefined, locale: Locale) {
   return useQuery({
-    queryKey: ['content', 'article', slug ?? '', locale],
+    queryKey: ['content', 'article', slug ?? '', locale, isPreviewMode() ? 'preview' : 'live'],
     enabled: !!slug,
     staleTime: STALE,
     queryFn: async (): Promise<PublicArticle | null> => {
       if (!slug) return null;
+      if (isPreviewMode()) {
+        const staged = readPreview<ArticleDoc>('article', slug);
+        if (staged) return projectArticle(staged, locale);
+      }
       return firestoreOr(async () => {
         const snap = await getDoc(doc(getDb(), 'articles', slug));
         if (!snap.exists()) return null;
@@ -219,9 +224,22 @@ export function useTopics(locale: Locale) {
 
 export function useSiteSetting<T = Record<string, string>>(id: SiteSettingId, locale: Locale) {
   return useQuery({
-    queryKey: ['content', 'siteSettings', id, locale],
+    queryKey: ['content', 'siteSettings', id, locale, isPreviewMode() ? 'preview' : 'live'],
     staleTime: STALE,
     queryFn: async (): Promise<PublicSiteSetting<T>> => {
+      if (isPreviewMode()) {
+        const staged = readPreview<{
+          translations: { en: T; ar?: T };
+          data?: Record<string, unknown>;
+        }>('siteSetting', id);
+        if (staged) {
+          return {
+            id,
+            value: pickLocale(staged.translations, locale),
+            data: staged.data,
+          };
+        }
+      }
       return firestoreOr(async () => {
         const snap = await getDoc(doc(getDb(), 'siteSettings', id));
         if (!snap.exists()) return fallbackSiteSetting<T>(id, locale);
@@ -238,9 +256,16 @@ export function useSiteSetting<T = Record<string, string>>(id: SiteSettingId, lo
 
 export function usePage(slug: 'about' | 'privacy' | 'terms', locale: Locale) {
   return useQuery({
-    queryKey: ['content', 'pages', slug, locale],
+    queryKey: ['content', 'pages', slug, locale, isPreviewMode() ? 'preview' : 'live'],
     staleTime: STALE,
     queryFn: async (): Promise<PublicPage | null> => {
+      if (isPreviewMode()) {
+        const staged = readPreview<PageDoc>('page', slug);
+        if (staged) {
+          const tr = pickLocale(staged.translations, locale);
+          return { slug, title: tr.title, body: tr.body };
+        }
+      }
       return firestoreOr(async () => {
         const snap = await getDoc(doc(getDb(), 'pages', slug));
         if (!snap.exists()) return fallbackPage(slug, locale);

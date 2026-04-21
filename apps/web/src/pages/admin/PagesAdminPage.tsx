@@ -5,11 +5,12 @@
  */
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ChevronRight, FileText, Save, X } from 'lucide-react';
+import { ChevronRight, Eye, FileText, Save, X } from 'lucide-react';
 
 import { getPageAdmin, savePage, type PageSlug } from '@/lib/admin-editorial';
 import MarkdownPreview from '@/components/admin/MarkdownPreview';
 import type { PageDoc } from '@/lib/content-schema';
+import { stagePreview } from '@/lib/preview';
 
 const CARDS: Array<{ slug: PageSlug; title: string; blurb: string }> = [
   {
@@ -268,7 +269,29 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
         </div>
       )}
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            const data: PageDoc = {
+              slug,
+              translations: {
+                en: { title: enTitle, body: enBody },
+                ...(arEnabled && (arTitle.trim() || arBody.trim())
+                  ? { ar: { title: arTitle, body: arBody } }
+                  : {}),
+              },
+              schemaVersion: 1,
+            };
+            stagePreview('page', slug, data);
+            window.open(`/${slug}?preview=1`, '_blank', 'noopener,noreferrer');
+          }}
+          className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm text-amber-800 hover:bg-amber-100"
+          title="Open the public page with unsaved changes"
+        >
+          <Eye className="h-4 w-4" />
+          Preview
+        </button>
         <button
           type="button"
           onClick={() => void handleSave()}

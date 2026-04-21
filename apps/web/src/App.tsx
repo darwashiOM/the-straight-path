@@ -36,6 +36,7 @@ const ActivityPage = lazy(() => import('@/pages/admin/ActivityPage'));
 const SeriesAdminPage = lazy(() => import('@/pages/admin/SeriesAdminPage'));
 const TopicsAdminPage = lazy(() => import('@/pages/admin/TopicsAdminPage'));
 const PagesAdminPage = lazy(() => import('@/pages/admin/PagesAdminPage'));
+const MediaPage = lazy(() => import('@/pages/admin/MediaPage'));
 
 /**
  * Keeps i18next in lock-step with the route. The URL is the single source of
@@ -106,6 +107,7 @@ export default function App() {
             <Route path="series" element={<SeriesAdminPage />} />
             <Route path="topics" element={<TopicsAdminPage />} />
             <Route path="pages" element={<PagesAdminPage />} />
+            <Route path="media" element={<MediaPage />} />
           </Route>
         </Routes>
       </Suspense>

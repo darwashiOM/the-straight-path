@@ -7,12 +7,12 @@ service firebase.storage {
         && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
     }
 
-    // Public read for all assets; admin-only write
+    // Public read for all assets; admin-only write, images up to 10MB.
     match /{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin()
         && request.resource.size < 10 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*|audio/.*|video/.*');
+        && request.resource.contentType.matches('image/.*');
     }
   }
 }
