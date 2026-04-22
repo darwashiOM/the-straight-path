@@ -1,0 +1,107 @@
+{
+  "character": {
+    "createdAt": "2026-04-21T04:37:41.155Z",
+    "order": 4,
+    "schemaVersion": 1,
+    "slug": "character",
+    "translations": {
+      "ar": {
+        "label": "الأخلاق"
+      },
+      "en": {
+        "label": "Character"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.155Z"
+  },
+  "comparative-religion": {
+    "createdAt": "2026-04-21T04:37:41.252Z",
+    "order": 6,
+    "schemaVersion": 1,
+    "slug": "comparative-religion",
+    "translations": {
+      "ar": {
+        "label": "مقارنة الأديان"
+      },
+      "en": {
+        "label": "Comparative Religion"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.252Z"
+  },
+  "creed": {
+    "createdAt": "2026-04-21T04:37:41.038Z",
+    "order": 1,
+    "schemaVersion": 1,
+    "slug": "creed",
+    "translations": {
+      "ar": {
+        "label": "العقيدة"
+      },
+      "en": {
+        "label": "Creed"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.038Z"
+  },
+  "foundations": {
+    "createdAt": "2026-04-21T04:37:40.994Z",
+    "order": 0,
+    "schemaVersion": 1,
+    "slug": "foundations",
+    "translations": {
+      "ar": {
+        "label": "الأساسيات"
+      },
+      "en": {
+        "label": "Foundations"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:40.994Z"
+  },
+  "practice": {
+    "createdAt": "2026-04-21T04:37:41.206Z",
+    "order": 5,
+    "schemaVersion": 1,
+    "slug": "practice",
+    "translations": {
+      "ar": {
+        "label": "العبادة"
+      },
+      "en": {
+        "label": "Practice"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.206Z"
+  },
+  "prophet": {
+    "createdAt": "2026-04-21T04:37:41.115Z",
+    "order": 3,
+    "schemaVersion": 1,
+    "slug": "prophet",
+    "translations": {
+      "ar": {
+        "label": "النبي ﷺ"
+      },
+      "en": {
+        "label": "Prophet"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.115Z"
+  },
+  "quran": {
+    "createdAt": "2026-04-21T04:37:41.075Z",
+    "order": 2,
+    "schemaVersion": 1,
+    "slug": "quran",
+    "translations": {
+      "ar": {
+        "label": "القرآن"
+      },
+      "en": {
+        "label": "Qur'an"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.075Z"
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "bayyinah": {
+    "category": "study",
+    "createdAt": "2026-04-21T04:37:41.762Z",
+    "order": 3,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "دروس في العربية والقرآن يقدمها نعمان علي خان وفريق البينة.",
+        "title": "Bayyinah TV"
+      },
+      "en": {
+        "description": "Arabic and Qur'an studies taught by Nouman Ali Khan and the Bayyinah team.",
+        "title": "Bayyinah TV"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.762Z",
+    "url": "https://bayyinah.tv/"
+  },
+  "islamicAwareness": {
+    "category": "research",
+    "createdAt": "2026-04-21T04:37:41.793Z",
+    "order": 4,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "مقالات أكاديمية عن القرآن وصدر الإسلام والأديان المقارنة.",
+        "title": "Islamic Awareness"
+      },
+      "en": {
+        "description": "Scholarly articles on the Qur'an, early Islam, and comparative religion.",
+        "title": "Islamic Awareness"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.793Z",
+    "url": "https://www.islamic-awareness.org/"
+  },
+  "quranCom": {
+    "category": "quran",
+    "createdAt": "2026-04-21T04:37:41.695Z",
+    "order": 0,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "القرآن الكريم مع ترجماته بلغات متعددة.",
+        "title": "Quran.com"
+      },
+      "en": {
+        "description": "The Noble Qur'an with translations in many languages.",
+        "title": "Quran.com"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.695Z",
+    "url": "https://quran.com/"
+  },
+  "sunnahCom": {
+    "category": "hadith",
+    "createdAt": "2026-04-21T04:37:41.717Z",
+    "order": 1,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "مجموعات الحديث الموثّقة قابلة للبحث، مع درجاتها.",
+        "title": "Sunnah.com"
+      },
+      "en": {
+        "description": "Searchable, authenticated hadith collections with gradings.",
+        "title": "Sunnah.com"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.717Z",
+    "url": "https://sunnah.com/"
+  },
+  "yaqeen": {
+    "category": "research",
+    "createdAt": "2026-04-21T04:37:41.740Z",
+    "order": 2,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "مقالات بحثية تعالج الأسئلة المعاصرة عن الإسلام.",
+        "title": "معهد يقين"
+      },
+      "en": {
+        "description": "Research-driven articles addressing contemporary questions about Islam.",
+        "title": "Yaqeen Institute"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.740Z",
+    "url": "https://yaqeeninstitute.org/"
+  }
+}

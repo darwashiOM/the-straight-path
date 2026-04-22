@@ -1,0 +1,25 @@
+{
+  "foundations-of-islam": {
+    "articleSlugs": [
+      "what-is-islam",
+      "why-did-god-create-you",
+      "the-five-pillars",
+      "10-things-to-know-about-islam"
+    ],
+    "createdAt": "2026-04-21T04:37:41.296Z",
+    "order": 0,
+    "schemaVersion": 1,
+    "slug": "foundations-of-islam",
+    "translations": {
+      "ar": {
+        "description": "ابدأ من البداية. ترتيب قراءة قصير يغطي ماهية الإسلام، ولماذا خُلقنا، والعبادات الأساسية، ونظرة عامة في عشر نقاط للمهتم.",
+        "title": "أساسيات الإسلام"
+      },
+      "en": {
+        "description": "Start at the beginning. A short reading order covering what Islam is, why we were created, the core practices, and a ten-point overview for the curious.",
+        "title": "Foundations of Islam"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.296Z"
+  }
+}
