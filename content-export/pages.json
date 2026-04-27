@@ -1,0 +1,42 @@
+{
+  "about": {
+    "createdAt": "2026-04-21T04:37:42.330Z",
+    "schemaVersion": 1,
+    "slug": "about",
+    "translations": {
+      "ar": {
+        "body": "الطريق المستقيم جهد مستقل تطوعي لمشاركة الإسلام بصوتٍ هادئ يراعي القارئ. هدفنا ليس المجادلة بل الدعوة — أن نُقدّم أساسيات الإسلام واضحةً ميسّرةً صادقة، لكل فضوليٍّ يفتح الصفحة.\n\n## مبادئنا\n\n- **رعوي، لا جدلي.** نكتب كأنّنا نحدِّث غريباً متأمّلاً على فنجان قهوة.\n- **التوثيق دائماً.** آيات القرآن والأحاديث الموثّقة، موثَّقةً ومدرّجة.\n- **غير طائفيّ.** نُعلِّم الإسلام الجامع ونترك النقاشات الطائفية خارج الباب.\n- **لغة واضحة.** نُعرِّف المصطلحات العربية عند أول استخدام، ونضبط رسمها بانتظام.\n- **القارئ أولاً.** كلّ جملة تستحق مكانها.\n\n## كيف نموّل هذا المشروع\n\nهذا المشروع تطوّعي. بنيته التحتية بسيطة عمداً — موقع React ثابت على Firebase Hosting، مع تخزين مؤقت مكثّف. إن رغبت في المساهمة بوقتك أو بترجمة، فتواصل معنا.",
+        "title": "عن الطريق المستقيم"
+      },
+      "en": {
+        "body": "The Straight Path is an independent, volunteer effort to share Islam in a calm, reader-first voice. Our aim is not to argue but to invite — to make the essentials of Islam clear, accessible, and honest, for anyone curious enough to open the page.\n\n## Our principles\n\n- **Pastoral, not polemical.** We write as if speaking to a thoughtful stranger over coffee.\n- **Source everything.** Qur'anic verses and authenticated hadith, cited and graded.\n- **Non-sectarian.** We teach core Islam and leave sectarian debates at the door.\n- **Plain language.** Arabic terms are defined on first use and transliterated consistently.\n- **Reader-first.** Every sentence earns its place.\n\n## How we are funded\n\nThis project is volunteer-run. Its infrastructure is intentionally minimal — a static React site on Firebase Hosting, cached aggressively. If you'd like to contribute time or translation help, please reach out.",
+        "title": "About The Straight Path"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.330Z"
+  },
+  "privacy": {
+    "createdAt": "2026-04-21T04:37:42.357Z",
+    "schemaVersion": 1,
+    "slug": "privacy",
+    "translations": {
+      "en": {
+        "body": "Last updated: April 2026.\n\nThe Straight Path is a content site. We aim to collect as little personal data as possible.\n\n## What we collect\n\n- **Contact form submissions.** When you submit the contact form we store your name, email, and message in Firebase Firestore so we can reply.\n- **Basic analytics.** Aggregate, anonymous page-view data via Firebase Analytics. No cross-site tracking.\n- **Technical logs.** Firebase Hosting records standard request logs (IP, user-agent) for short periods.\n\n## What we don't do\n\n- We do not sell or share data with advertisers.\n- We do not use tracking cookies beyond what's required for the site to work.\n\n## Your rights\n\nYou may request deletion of any message you've sent us by emailing the address on the contact page.",
+        "title": "Privacy Policy"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.357Z"
+  },
+  "terms": {
+    "createdAt": "2026-04-21T04:37:42.457Z",
+    "schemaVersion": 1,
+    "slug": "terms",
+    "translations": {
+      "en": {
+        "body": "Last updated: April 2026.\n\nThe Straight Path is provided free of charge, on an as-is basis, for educational purposes. By using the site you agree to the following:\n\n- Content is offered in good faith; we strive for accuracy but make no guarantees.\n- Articles may be quoted with attribution. The source code is available under the MIT License; original text content is under \n- CC BY 4.0\n-  unless otherwise noted.\n- Please don't abuse the contact form or attempt to disrupt the service for others.",
+        "title": "Terms of Use"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.457Z"
+  }
+}

@@ -1,0 +1,613 @@
+{
+  "aboutPreview": {
+    "createdAt": "2026-04-21T04:37:42.179Z",
+    "id": "aboutPreview",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "body": "الطريق المستقيم جهد صغير مستقل لمشاركة الإسلام بصوتٍ هادئ يراعي القارئ — رعوي لا جدلي، لكل باحث من أيّ خلفية.",
+        "cta": "اقرأ المزيد عن رسالتنا",
+        "eyebrow": "من نحن",
+        "headline": "دعوةٌ، لا مجادلة."
+      },
+      "en": {
+        "body": "The Straight Path is a small, independent effort to share Islam in a calm, reader-first voice — pastoral rather than polemical, for seekers of every background.",
+        "cta": "Read more about our mission",
+        "eyebrow": "About Us",
+        "headline": "An invitation, not an argument."
+      }
+    },
+    "updatedAt": "2026-04-21T05:47:07.575Z"
+  },
+  "articlesHeader": {
+    "createdAt": "2026-04-21T04:37:42.258Z",
+    "id": "articlesHeader",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "مقالات في أسس الإسلام — العقيدة، والنبي ﷺ، والقرآن، والطريق.",
+        "title": "المقالات"
+      },
+      "en": {
+        "description": "Essays on the foundations of Islam — the creed, the Prophet, the Qur'an, and the path.",
+        "title": "Articles"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.258Z"
+  },
+  "brand": {
+    "createdAt": "2026-04-21T06:26:59.508Z",
+    "data": {
+      "logoUrl": "",
+      "ogImage": ""
+    },
+    "id": "brand",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "siteName": "الطريق المستقيم",
+        "tagline": "طريق واضح إلى الله"
+      },
+      "en": {
+        "siteName": "The Straight Path",
+        "tagline": "A Clear Path to God"
+      }
+    },
+    "updatedAt": "2026-04-21T06:26:59.508Z"
+  },
+  "contactIntro": {
+    "createdAt": "2026-04-21T06:27:00.296Z",
+    "data": {
+      "formLabels": {
+        "ar": {
+          "email": "البريد الإلكتروني",
+          "errorBody": "حدث خطأ ما. يرجى المحاولة بعد لحظة.",
+          "message": "الرسالة",
+          "name": "الاسم",
+          "submit": "أرسل الرسالة",
+          "submittingLabel": "جارٍ الإرسال…",
+          "successBody": "سنردّ قريباً إن شاء الله.",
+          "successTitle": "شكراً — وصلتنا رسالتك."
+        },
+        "en": {
+          "email": "Email",
+          "errorBody": "Something went wrong. Please try again in a moment.",
+          "message": "Message",
+          "name": "Name",
+          "submit": "Send message",
+          "submittingLabel": "Sending…",
+          "successBody": "We'll reply soon, inshā'Allāh.",
+          "successTitle": "Thank you — your message has been received."
+        }
+      }
+    },
+    "id": "contactIntro",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "body": "هل لديك سؤال عن الإسلام؟ أو تصحيح؟ أو خاطرة؟ نقرأ كل رسالة.",
+        "eyebrow": "",
+        "title": "تواصل معنا"
+      },
+      "en": {
+        "body": "Have a question about Islam? A correction? A thought? We read every message.",
+        "eyebrow": "",
+        "title": "Contact"
+      }
+    },
+    "updatedAt": "2026-04-21T06:27:00.296Z"
+  },
+  "faqHeader": {
+    "createdAt": "2026-04-21T06:27:00.059Z",
+    "id": "faqHeader",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "إجابات واضحة عن أسئلة شائعة حول الإسلام — وبابٌ مفتوح لما سواها.",
+        "title": "اطرح سؤالاً"
+      },
+      "en": {
+        "description": "Plain answers to common questions about Islam — and an open door for the rest.",
+        "title": "Ask Questions"
+      }
+    },
+    "updatedAt": "2026-04-21T06:27:00.059Z"
+  },
+  "featured": {
+    "createdAt": "2026-04-21T06:27:00.593Z",
+    "data": {
+      "mode": "newest"
+    },
+    "id": "featured",
+    "schemaVersion": 1,
+    "translations": {
+      "en": {}
+    },
+    "updatedAt": "2026-04-21T06:27:00.593Z"
+  },
+  "footer": {
+    "createdAt": "2026-04-21T04:37:42.304Z",
+    "id": "footer",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "copyright": "الطريق المستقيم. جميع الحقوق محفوظة.",
+        "madeWith": "بُنِي بعناية وخدمةً لله."
+      },
+      "en": {
+        "copyright": "The Straight Path. All rights reserved.",
+        "madeWith": "Built with care and in service."
+      }
+    },
+    "updatedAt": "2026-04-21T05:47:07.664Z"
+  },
+  "footerNav": {
+    "createdAt": "2026-04-21T06:26:59.880Z",
+    "data": {
+      "columns": [
+        {
+          "id": "learn",
+          "links": [
+            {
+              "labelAr": "تعلّم",
+              "labelEn": "Learn",
+              "to": "/learn"
+            },
+            {
+              "labelAr": "مقالات",
+              "labelEn": "Articles",
+              "to": "/learn/articles"
+            },
+            {
+              "labelAr": "اقرأ القرآن",
+              "labelEn": "Read the Qur'an",
+              "to": "/quran"
+            }
+          ],
+          "order": 0,
+          "titleAr": "تعلّم",
+          "titleEn": "Learn"
+        },
+        {
+          "id": "community",
+          "links": [
+            {
+              "labelAr": "روابط مفيدة",
+              "labelEn": "Resources",
+              "to": "/resources"
+            },
+            {
+              "labelAr": "الأسئلة الشائعة",
+              "labelEn": "FAQ",
+              "to": "/faq"
+            },
+            {
+              "labelAr": "على وسائل التواصل",
+              "labelEn": "On Social Media",
+              "to": "/social"
+            }
+          ],
+          "order": 1,
+          "titleAr": "المجتمع",
+          "titleEn": "Community"
+        },
+        {
+          "id": "project",
+          "links": [
+            {
+              "labelAr": "من نحن",
+              "labelEn": "About",
+              "to": "/about"
+            },
+            {
+              "labelAr": "تواصل",
+              "labelEn": "Contact",
+              "to": "/contact"
+            },
+            {
+              "labelAr": "الخصوصية",
+              "labelEn": "Privacy",
+              "to": "/privacy"
+            },
+            {
+              "labelAr": "الشروط",
+              "labelEn": "Terms",
+              "to": "/terms"
+            }
+          ],
+          "order": 2,
+          "titleAr": "المشروع",
+          "titleEn": "Project"
+        },
+        {
+          "id": "follow",
+          "links": [],
+          "order": 3,
+          "titleAr": "تابعنا",
+          "titleEn": "Follow"
+        }
+      ]
+    },
+    "id": "footerNav",
+    "schemaVersion": 1,
+    "translations": {
+      "en": {}
+    },
+    "updatedAt": "2026-04-21T06:26:59.880Z"
+  },
+  "hero": {
+    "id": "hero",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "ctaPrimary": "ابدأ التعلّم",
+        "ctaSecondary": "اقرأ القرآن",
+        "eyebrow": "الطريق المستقيم",
+        "subtitle": "مقدمة هادئة ورحيمة عن الإسلام — مُنظَّمة حول التعلم والكتاب والتأمل.",
+        "title": "طريق واضح إلى الله"
+      },
+      "en": {
+        "ctaPrimary": "Start Learning",
+        "ctaSecondary": "Read the Qur'an",
+        "eyebrow": "The Straight Path",
+        "subtitle": "An accessible introduction to Islam — organized around learning, scripture, and reflection.",
+        "title": "A Clear Path to God"
+      }
+    },
+    "updatedAt": {
+      "_methodName": "serverTimestamp"
+    }
+  },
+  "homepageSections": {
+    "createdAt": "2026-04-21T06:27:00.514Z",
+    "data": {
+      "sections": [
+        {
+          "id": "hero",
+          "order": 0,
+          "visible": true
+        },
+        {
+          "id": "featured",
+          "order": 1,
+          "visible": true
+        },
+        {
+          "id": "learnRow",
+          "order": 2,
+          "visible": true
+        },
+        {
+          "id": "quranBanner",
+          "order": 3,
+          "visible": true
+        },
+        {
+          "id": "quickLinks",
+          "order": 4,
+          "visible": true
+        },
+        {
+          "id": "aboutPreview",
+          "order": 5,
+          "visible": true
+        }
+      ]
+    },
+    "id": "homepageSections",
+    "schemaVersion": 1,
+    "translations": {
+      "en": {}
+    },
+    "updatedAt": "2026-04-21T06:27:00.514Z"
+  },
+  "learnHeader": {
+    "createdAt": "2026-04-21T04:37:42.234Z",
+    "id": "learnHeader",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "مجموعة مختارة من المقالات تُعرِّف بأفكار الإسلام الجوهرية وأخلاقه وعباداته — مكتوبة لقرّاء من أيّ خلفية.",
+        "title": "تعلّم عن الإسلام"
+      },
+      "en": {
+        "description": "A curated set of articles introducing the core ideas, character, and practices of Islam — written for readers of any background.",
+        "title": "Learn About Islam"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.234Z"
+  },
+  "navItems": {
+    "createdAt": "2026-04-21T06:26:59.689Z",
+    "data": {
+      "items": [
+        {
+          "key": "learn",
+          "labelAr": "تعلّم",
+          "labelEn": "Learn",
+          "order": 0,
+          "to": "/learn",
+          "visible": true
+        },
+        {
+          "key": "quran",
+          "labelAr": "اقرأ القرآن",
+          "labelEn": "Read the Qur'an",
+          "order": 1,
+          "to": "/quran",
+          "visible": true
+        },
+        {
+          "key": "resources",
+          "labelAr": "روابط مفيدة",
+          "labelEn": "Resources",
+          "order": 2,
+          "to": "/resources",
+          "visible": true
+        },
+        {
+          "key": "faq",
+          "labelAr": "اطرح سؤالاً",
+          "labelEn": "Ask Questions",
+          "order": 3,
+          "to": "/faq",
+          "visible": true
+        },
+        {
+          "key": "social",
+          "labelAr": "على وسائل التواصل",
+          "labelEn": "On Social Media",
+          "order": 4,
+          "to": "/social",
+          "visible": true
+        },
+        {
+          "key": "about",
+          "labelAr": "من نحن",
+          "labelEn": "About",
+          "order": 5,
+          "to": "/about",
+          "visible": true
+        }
+      ]
+    },
+    "id": "navItems",
+    "schemaVersion": 1,
+    "translations": {
+      "en": {}
+    },
+    "updatedAt": "2026-04-21T06:26:59.689Z"
+  },
+  "notFound": {
+    "createdAt": "2026-04-21T06:27:00.381Z",
+    "data": {
+      "popularLinks": [
+        {
+          "hintAr": "بداية هادئة",
+          "hintEn": "A gentle on-ramp",
+          "labelAr": "ابدأ التعلّم",
+          "labelEn": "Start learning",
+          "to": "/learn"
+        },
+        {
+          "hintAr": "مقالات وشروحات",
+          "hintEn": "Essays and explainers",
+          "labelAr": "المقالات",
+          "labelEn": "Articles",
+          "to": "/learn/articles"
+        },
+        {
+          "hintAr": "أسئلة متكررة بإجابات صادقة",
+          "hintEn": "Common questions, honest answers",
+          "labelAr": "أسئلة شائعة",
+          "labelEn": "FAQ",
+          "to": "/faq"
+        },
+        {
+          "hintAr": "الكلمات نفسها",
+          "hintEn": "The words themselves",
+          "labelAr": "اقرأ القرآن",
+          "labelEn": "Read the Qur'ān",
+          "to": "/quran"
+        },
+        {
+          "hintAr": "من نحن، ولماذا بنينا هذا",
+          "hintEn": "Who we are, why we built this",
+          "labelAr": "من نحن",
+          "labelEn": "About",
+          "to": "/about"
+        },
+        {
+          "hintAr": "سنردّ عليك",
+          "hintEn": "We'll write back",
+          "labelAr": "تواصل معنا",
+          "labelEn": "Contact",
+          "to": "/contact"
+        }
+      ]
+    },
+    "id": "notFound",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "body": "قد يكون الرابط معطوباً، أو نُقِلت الصفحة. إن ضِلّ بك الطريق فلا بأس — لنعد بك إلى المسار.",
+        "eyebrow": "خطأ 404",
+        "title": "لم نجد هذه الصفحة."
+      },
+      "en": {
+        "body": "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
+        "eyebrow": "Error 404",
+        "title": "We couldn't find that page."
+      }
+    },
+    "updatedAt": "2026-04-21T06:27:00.381Z"
+  },
+  "quickLinks": {
+    "createdAt": "2026-04-21T06:26:59.776Z",
+    "data": {
+      "items": [
+        {
+          "descAr": "تابع أصواتاً موثوقة على يوتيوب وغيره.",
+          "descEn": "Follow trusted voices on YouTube and beyond.",
+          "icon": "users",
+          "labelAr": "على وسائل التواصل",
+          "labelEn": "On Social Media",
+          "order": 0,
+          "to": "/social",
+          "visible": true
+        },
+        {
+          "descAr": "القرآن، الحديث، البحث — قائمة صغيرة مختارة بعناية.",
+          "descEn": "Qur'an, hadith, research — a small, carefully-picked list.",
+          "icon": "link",
+          "labelAr": "روابط خارجية مفيدة",
+          "labelEn": "Useful External Links",
+          "order": 1,
+          "to": "/resources",
+          "visible": true
+        },
+        {
+          "descAr": "إجابات قصيرة وصادقة على أكثر الأسئلة تكراراً.",
+          "descEn": "Short, honest answers to the questions people most often ask.",
+          "icon": "help",
+          "labelAr": "الأسئلة الشائعة",
+          "labelEn": "FAQ",
+          "order": 2,
+          "to": "/faq",
+          "visible": true
+        },
+        {
+          "descAr": "لديك سؤال أو تود إلقاء التحية؟ أرسل لنا رسالة.",
+          "descEn": "Have a question or want to say hello? Send us a note.",
+          "icon": "message",
+          "labelAr": "تواصل معنا",
+          "labelEn": "Get in touch",
+          "order": 3,
+          "to": "/contact",
+          "visible": true
+        }
+      ]
+    },
+    "id": "quickLinks",
+    "schemaVersion": 1,
+    "translations": {
+      "en": {}
+    },
+    "updatedAt": "2026-04-21T06:26:59.776Z"
+  },
+  "quranAbout": {
+    "createdAt": "2026-04-21T04:37:42.282Z",
+    "id": "quranAbout",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "body": "القرآن هو الوحي الخاتم من الله، أنزله جبريل عليه السلام على النبي محمد ﷺ على مدى ثلاث وعشرين سنة. وقد حُفِظ — حرفاً حرفاً، بلغته العربية الأصلية — نقلاً مكتوباً وحفظاً متواصلاً جيلاً بعد جيل.\n\nوهو الكتاب المركزي في الإسلام — كتاب هداية ورحمة وحكمة. ويؤمن المسلمون أن حفظه مكفول بعناية الله، وأن رسالته امتداد لما بُعث به الأنبياء السابقون: اعبدوا الله وحده، واعملوا الخير.",
+        "title": "عن القرآن الكريم"
+      },
+      "en": {
+        "body": "The Qur'ān is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.\n\nIt is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good.",
+        "title": "About the Qur'ān"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.282Z"
+  },
+  "quranBanner": {
+    "createdAt": "2026-04-21T04:37:42.154Z",
+    "id": "quranBanner",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "body": "يُوفِّر موقع Quran.com القرآن الكريم بلغات متعددة، بواجهة بسيطة وواضحة.",
+        "cta": "افتح Quran.com",
+        "ctaUrl": "https://quran.com/",
+        "eyebrow": "اقرأ القرآن",
+        "headline": "اقرأ القرآن الكريم — كلام الله، محفوظاً منذ أكثر من 1400 عام."
+      },
+      "en": {
+        "body": "Quran.com offers the Qur'ān in many languages with a simple, clear interface.",
+        "cta": "Open Quran.com",
+        "ctaUrl": "https://quran.com/",
+        "eyebrow": "Read the Qur'an",
+        "headline": "Read the Qur'ān — the word of God, preserved for over 1400 years."
+      }
+    },
+    "updatedAt": "2026-04-21T05:47:07.522Z"
+  },
+  "resourcesHeader": {
+    "createdAt": "2026-04-21T06:26:59.964Z",
+    "id": "resourcesHeader",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "موارد موثوقة للمزيد من الدراسة — اخترناها لدقتها ويسرها وطيب أسلوبها.",
+        "title": "روابط خارجية مفيدة"
+      },
+      "en": {
+        "description": "Trusted resources for further study — chosen for their accuracy, accessibility, and tone.",
+        "title": "Useful External Links"
+      }
+    },
+    "updatedAt": "2026-04-21T06:26:59.964Z"
+  },
+  "seo": {
+    "createdAt": "2026-04-21T06:27:00.460Z",
+    "data": {
+      "defaults": {
+        "defaultDescriptionAr": "مقدمة هادئة ورحيمة عن الإسلام. تعلّم الأساسيات، واقرأ القرآن، واستكشف طريقاً واضحاً إلى الله.",
+        "defaultDescriptionEn": "A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God.",
+        "defaultOgImageUrl": "/og-default.png",
+        "titleSuffix": "The Straight Path"
+      },
+      "routes": {}
+    },
+    "id": "seo",
+    "schemaVersion": 1,
+    "translations": {
+      "en": {}
+    },
+    "updatedAt": "2026-04-21T06:27:00.460Z"
+  },
+  "socialHeader": {
+    "createdAt": "2026-04-21T06:27:00.216Z",
+    "id": "socialHeader",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "قائمة صغيرة مختارة من القنوات التي تشرح الإسلام بوضوح وأدب.",
+        "title": "الإسلام على وسائل التواصل"
+      },
+      "en": {
+        "description": "A small, curated list of channels that explain Islam with clarity and good character.",
+        "title": "Islam Explained on Social Media"
+      }
+    },
+    "updatedAt": "2026-04-21T06:27:00.216Z"
+  },
+  "startHere": {
+    "data": {
+      "articleSlugs": [
+        "what-is-islam",
+        "why-did-god-create-you",
+        "10-things-to-know-about-islam",
+        "the-five-pillars"
+      ]
+    },
+    "id": "startHere",
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "body": "ثلاث مقالات قصيرة بالترتيب. اقرأها في جلسة واحدة، أو واحدة في اليوم — كما يناسبك.",
+        "eyebrow": "ابدأ من هنا",
+        "title": "جديد على الإسلام؟ ابدأ من هنا."
+      },
+      "en": {
+        "body": "Three short articles, in order. Read them in one sitting, or one a day — whichever feels right.",
+        "eyebrow": "Start Here",
+        "title": "New to Islam? Start here."
+      }
+    },
+    "updatedAt": {
+      "_methodName": "serverTimestamp"
+    }
+  }
+}
