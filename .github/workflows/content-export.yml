@@ -51,7 +51,7 @@ jobs:
         run: rm -f "${{ steps.key.outputs.path }}"
 
       - name: Create pull request if content changed
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: bot/content-export
