@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -107,7 +108,12 @@ export default function HomePage() {
   const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
 
   const renderers: Record<HomepageSectionId, () => React.ReactNode> = {
-    hero: () => renderHero(),
+    hero: () => (
+      <>
+        {renderHero()}
+        {renderHeroButtons()}
+      </>
+    ),
     featured: () => renderFeatured(),
     learnRow: () => renderLearnRow(),
     quranBanner: () => renderQuranBanner(),
@@ -121,11 +127,65 @@ export default function HomePage() {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   function renderHero() {
+    const [textIndex, setTextIndex] = useState(0);
+    const phrases = [
+      "Find Purpose and Inner Peace",
+      "Islam... the straight path"
+    ];
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setTextIndex((prev) => (prev + 1) % phrases.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }, []);
+
     return (
       <section
         key="hero"
-        className="relative overflow-hidden bg-gradient-to-b from-primary-50 to-paper py-24 md:py-32 dark:from-primary-800 dark:to-primary-900"
+        className="relative overflow-hidden"
+        style={{
+          backgroundImage: 'url(/Masjid Nabawi - Gemini- cropped.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '500px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
       >
+        <div style={{
+          textAlign: 'center',
+          animation: 'fadeIn 0.5s ease-in-out'
+        }}>
+          <h1 style={{
+            fontSize: '48px',
+            fontWeight: 'bold',
+            color: '#1a3a3a',
+            marginBottom: '20px',
+            fontFamily: 'serif'
+          }}>
+            The Straight Path
+          </h1>
+          <p style={{
+            fontSize: '24px',
+            color: '#666',
+            minHeight: '35px',
+            fontFamily: 'serif'
+          }}>
+            {phrases[textIndex]}
+          </p>
+        </div>
+
+        <style>{`
+          @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+        `}</style>
+      </section>
+    );
+  }
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {heroCopy ? (
@@ -161,7 +221,45 @@ export default function HomePage() {
       </section>
     );
   }
-
+function renderHeroButtons() {
+    return (
+      <div style={{
+        textAlign: 'center',
+        padding: '40px',
+        display: 'flex',
+        gap: '20px',
+        justifyContent: 'center',
+        backgroundColor: '#f5f5f5'
+      }}>
+        <Link to={localizePath('/learn/articles')} style={{
+          backgroundColor: '#2a5a5a',
+          color: 'white',
+          padding: '12px 30px',
+          border: 'none',
+          borderRadius: '25px',
+          fontSize: '16px',
+          cursor: 'pointer',
+          textDecoration: 'none',
+          display: 'inline-block'
+        }}>
+          Learn More →
+        </Link>
+        <Link to={localizePath('/quran')} style={{
+          backgroundColor: 'white',
+          color: '#333',
+          padding: '12px 30px',
+          border: '1px solid #ddd',
+          borderRadius: '25px',
+          fontSize: '16px',
+          cursor: 'pointer',
+          textDecoration: 'none',
+          display: 'inline-block'
+        }}>
+          Read the Qur'an
+        </Link>
+      </div>
+    );
+  }
   function renderFeatured() {
     if (featured) {
       return (
