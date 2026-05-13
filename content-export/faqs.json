@@ -1,0 +1,104 @@
+{
+  "f1": {
+    "category": "general",
+    "createdAt": "2026-04-21T04:37:41.820Z",
+    "order": 0,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "answer": "الإسلام هو الاستسلام الطوعي للقلب لله الواحد، ويتجلى في العبادة والأخلاق وحياة اليوم — وهو تقليد يرى المسلمون أنه ممتد عبر جميع الأنبياء من نوح إلى عيسى إلى محمد ﷺ.",
+        "question": "ما هو الإسلام في جملة واحدة؟"
+      },
+      "en": {
+        "answer": "Islam is the voluntary submission of the heart to the one God (Allāh), expressed in worship, ethics, and daily life — a tradition Muslims trace through all the prophets from Noah to Jesus to Muḥammad ﷺ.",
+        "question": "What is Islam, in one sentence?"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.820Z"
+  },
+  "f2": {
+    "category": "general",
+    "createdAt": "2026-04-21T04:37:41.930Z",
+    "order": 1,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "answer": "لا. يعبد المسلمون الإله الواحد نفسه الذي كلّم إبراهيم وموسى وعيسى. و«الله» هي كلمة عربية تعني الإله. والمسيحيون واليهود الناطقون بالعربية يُسمّون الله أيضاً «الله».",
+        "question": "هل يعبد المسلمون إلهاً مختلفاً عن إله المسيحيين واليهود؟"
+      },
+      "en": {
+        "answer": "No. Muslims worship the same One God who spoke to Abraham, Moses, and Jesus. \"Allāh\" is simply the Arabic word for God. Arabic-speaking Christians and Jews also call God \"Allāh.\"",
+        "question": "Do Muslims worship a different God than Christians and Jews?"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.930Z"
+  },
+  "f3": {
+    "category": "general",
+    "createdAt": "2026-04-21T04:37:41.956Z",
+    "order": 2,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "answer": "لا. يمكن للمسلم أن يكون من أي لغة. العربية هي لغة القرآن، فيتعلم كثير من المسلمين شيئاً منها للصلاة وقراءة الكتاب، لكن الترجمات الكاملة متاحة على نطاق واسع.",
+        "question": "هل يجب تعلّم العربية لأكون مسلماً؟"
+      },
+      "en": {
+        "answer": "No. A Muslim can be of any language. Arabic is the language of the Qur'ān, so many Muslims learn some Arabic for prayer and reading scripture, but full translations are widely available.",
+        "question": "Do I have to learn Arabic to be Muslim?"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.956Z"
+  },
+  "f4": {
+    "category": "general",
+    "createdAt": "2026-04-21T04:37:41.980Z",
+    "order": 3,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "answer": "شهادة التوحيد، والصلاة، والزكاة، وصوم رمضان، وحجّ البيت لمن استطاع إليه سبيلاً مرة في العمر.",
+        "question": "ما هي أركان الإسلام الخمسة؟"
+      },
+      "en": {
+        "answer": "Testimony of faith (shahāda), daily prayer (ṣalāh), charity (zakāh), fasting in Ramadan (ṣawm), and pilgrimage to Mecca once in a lifetime if able (ḥajj).",
+        "question": "What are the five pillars of Islam?"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:41.980Z"
+  },
+  "f5": {
+    "category": "general",
+    "createdAt": "2026-04-21T04:37:42.005Z",
+    "order": 4,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "answer": "تُعلِن شهادة التوحيد صادقاً: «أشهد أن لا إله إلا الله وأشهد أنّ محمداً رسول الله». هذه بداية الطريق، وما بعدها حياةٌ من التعلّم والنمو.",
+        "question": "كيف أصبح مسلماً؟"
+      },
+      "en": {
+        "answer": "You sincerely declare the testimony of faith: \"There is no god but Allāh, and Muḥammad is the messenger of Allāh.\" That is the beginning of the path; what follows is a lifetime of learning and growth.",
+        "question": "How do I become Muslim?"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.005Z"
+  },
+  "f6": {
+    "category": "general",
+    "createdAt": "2026-04-21T04:37:42.032Z",
+    "order": 5,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "answer": "يرجى استخدام نموذج التواصل. نقرأ كل رسالة ونردّ عليها بعناية — لا ضغط، بل حوار.",
+        "question": "لديّ أسئلة أخرى. بمن أتصل؟"
+      },
+      "en": {
+        "answer": "Please use the contact form. We read every message and respond with care — there is no pressure, just conversation.",
+        "question": "I have more questions. Who can I ask?"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.032Z"
+  }
+}

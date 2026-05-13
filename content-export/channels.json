@@ -1,0 +1,53 @@
+{
+  "efdawah": {
+    "createdAt": "2026-04-21T04:37:42.058Z",
+    "order": 0,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "حوارات مطوّلة وأسئلة وأجوبة مع أناس من خلفيات متنوعة.",
+        "name": "EF Dawah"
+      },
+      "en": {
+        "description": "Long-form dialogues and Q&A with people of all backgrounds.",
+        "name": "EF Dawah"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.058Z",
+    "url": "https://www.youtube.com/@EFDawah"
+  },
+  "muftimenk": {
+    "createdAt": "2026-04-21T04:37:42.107Z",
+    "order": 2,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "تذكيرات لطيفة ودروس حياتية ميسّرة.",
+        "name": "مفتي منك"
+      },
+      "en": {
+        "description": "Gentle, accessible reminders and life lessons.",
+        "name": "Mufti Menk"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.107Z",
+    "url": "https://www.youtube.com/@muftimenkofficial"
+  },
+  "yaqeen": {
+    "createdAt": "2026-04-21T04:37:42.081Z",
+    "order": 1,
+    "schemaVersion": 1,
+    "translations": {
+      "ar": {
+        "description": "شروحات قصيرة قائمة على البحث لمواضيع معاصرة.",
+        "name": "معهد يقين"
+      },
+      "en": {
+        "description": "Short, research-driven explainers on contemporary topics.",
+        "name": "Yaqeen Institute"
+      }
+    },
+    "updatedAt": "2026-04-21T04:37:42.081Z",
+    "url": "https://www.youtube.com/@YaqeenInstituteOfficial"
+  }
+}
