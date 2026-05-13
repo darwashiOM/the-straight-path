@@ -37,12 +37,12 @@ export default function Navbar() {
     locale === 'ar' ? item.labelAr || item.labelEn : item.labelEn;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-primary-500/10 bg-paper/80 backdrop-blur-md dark:border-primary-700/30 dark:bg-primary-900/80">
+    <header className="border-primary-500/10 bg-paper/80 dark:border-primary-700/30 dark:bg-primary-900/80 sticky top-0 z-40 border-b backdrop-blur-md">
       <Container>
         <div className="flex h-16 items-center justify-between gap-4">
           <Link
             to={localizePath('/')}
-            className="flex items-center gap-2 font-serif text-xl font-semibold text-primary-700 dark:text-accent-300"
+            className="text-primary-700 dark:text-accent-300 flex items-center gap-2 font-serif text-xl font-semibold"
           >
             {logoUrl ? (
               <img
@@ -53,12 +53,15 @@ export default function Navbar() {
                 decoding="async"
               />
             ) : (
-              <span aria-hidden="true" className="inline-block h-2 w-2 rounded-full bg-accent-400" />
+              <span
+                aria-hidden="true"
+                className="bg-accent-400 inline-block h-2 w-2 rounded-full"
+              />
             )}
             {siteName}
           </Link>
 
-          <nav className="hidden xl:flex items-center gap-6">
+          <nav className="hidden items-center gap-6 xl:flex">
             {items.map((item) => (
               <NavLink
                 key={item.key}
@@ -83,13 +86,13 @@ export default function Navbar() {
             <DarkModeToggle />
             <Link
               to={localizePath('/contact')}
-              className="hidden xl:inline-flex btn-accent !px-4 !py-2 text-sm"
+              className="btn-accent hidden !px-4 !py-2 text-sm xl:inline-flex"
             >
               {t('nav.contact')}
             </Link>
             <button
               type="button"
-              className="xl:hidden btn-ghost !px-2 !py-2"
+              className="btn-ghost !px-2 !py-2 xl:hidden"
               onClick={() => setOpen((v) => !v)}
               aria-label={t('nav.toggleMenu')}
               aria-expanded={open}
@@ -100,7 +103,7 @@ export default function Navbar() {
         </div>
 
         {open ? (
-          <nav className="xl:hidden pb-4 animate-fade-in">
+          <nav className="animate-fade-in pb-4 xl:hidden">
             <div className="flex flex-col gap-1">
               {items.map((item) => (
                 <NavLink
@@ -123,7 +126,7 @@ export default function Navbar() {
               <Link
                 to={localizePath('/contact')}
                 onClick={() => setOpen(false)}
-                className="mt-2 btn-accent text-sm"
+                className="btn-accent mt-2 text-sm"
               >
                 {t('nav.contact')}
               </Link>

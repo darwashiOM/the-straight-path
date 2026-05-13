@@ -53,9 +53,7 @@ export default function LanguageSwitcher({ className, compact = true }: Language
       lang={target}
     >
       <Globe size={16} aria-hidden="true" />
-      <span className="text-xs font-semibold uppercase">
-        {compact ? label.short : label.long}
-      </span>
+      <span className="text-xs font-semibold uppercase">{compact ? label.short : label.long}</span>
     </Link>
   );
 }

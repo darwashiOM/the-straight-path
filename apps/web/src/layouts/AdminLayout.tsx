@@ -67,24 +67,24 @@ export default function AdminLayout() {
 
   if (!isAdmin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-paper px-6">
-        <div className="max-w-md rounded-xl border border-primary-100 bg-white p-8 text-center shadow-sm">
-          <h1 className="font-serif text-2xl text-primary-700">Not authorised</h1>
-          <p className="mt-3 text-sm text-ink/70">
+      <div className="bg-paper flex min-h-screen items-center justify-center px-6">
+        <div className="border-primary-100 max-w-md rounded-xl border bg-white p-8 text-center shadow-sm">
+          <h1 className="text-primary-700 font-serif text-2xl">Not authorised</h1>
+          <p className="text-ink/70 mt-3 text-sm">
             You are signed in as <span className="font-mono">{user.email}</span>, but this account
             is not on the admin allowlist. Ask an existing admin to add your UID to{' '}
             <span className="font-mono">/admins</span>.
           </p>
-          <p className="mt-2 font-mono text-xs text-ink/60">UID: {user.uid}</p>
+          <p className="text-ink/60 mt-2 font-mono text-xs">UID: {user.uid}</p>
           <div className="mt-6 flex items-center justify-center gap-3">
             <button
               type="button"
               onClick={() => void signOut()}
-              className="btn bg-primary-500 text-white hover:bg-primary-600"
+              className="btn bg-primary-500 hover:bg-primary-600 text-white"
             >
               Sign out
             </button>
-            <Link to="/" className="text-sm text-primary-500 hover:text-primary-600">
+            <Link to="/" className="text-primary-500 hover:text-primary-600 text-sm">
               Back to site
             </Link>
           </div>
@@ -94,11 +94,11 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-paper">
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-primary-100 bg-white md:flex">
-        <div className="flex h-16 items-center gap-2 border-b border-primary-100 px-5">
-          <BookOpen className="h-5 w-5 text-primary-500" />
-          <span className="font-serif text-lg text-primary-700">TSP Admin</span>
+    <div className="bg-paper flex min-h-screen">
+      <aside className="border-primary-100 hidden w-60 shrink-0 flex-col border-r bg-white md:flex">
+        <div className="border-primary-100 flex h-16 items-center gap-2 border-b px-5">
+          <BookOpen className="text-primary-500 h-5 w-5" />
+          <span className="text-primary-700 font-serif text-lg">TSP Admin</span>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {NAV.map(({ to, label, icon: Icon, end }) => (
@@ -119,7 +119,7 @@ export default function AdminLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="border-t border-primary-100 p-3 text-xs text-ink/50">
+        <div className="border-primary-100 text-ink/50 border-t p-3 text-xs">
           <Link to="/" className="hover:text-primary-600">
             View public site →
           </Link>
@@ -127,14 +127,14 @@ export default function AdminLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between border-b border-primary-100 bg-white px-6">
-          <h1 className="font-serif text-xl text-primary-700">{pageTitle}</h1>
+        <header className="border-primary-100 flex h-16 items-center justify-between border-b bg-white px-6">
+          <h1 className="text-primary-700 font-serif text-xl">{pageTitle}</h1>
           <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-ink/70 sm:inline">{user.email}</span>
+            <span className="text-ink/70 hidden text-sm sm:inline">{user.email}</span>
             <button
               type="button"
               onClick={() => void signOut()}
-              className="inline-flex items-center gap-2 rounded-lg border border-primary-100 px-3 py-1.5 text-sm text-ink/70 hover:border-primary-300 hover:text-primary-700"
+              className="border-primary-100 text-ink/70 hover:border-primary-300 hover:text-primary-700 inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm"
             >
               <LogOut className="h-4 w-4" />
               Sign out

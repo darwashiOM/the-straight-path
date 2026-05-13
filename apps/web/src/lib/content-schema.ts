@@ -29,17 +29,17 @@ export type ArticleStatus = 'draft' | 'scheduled' | 'published';
 export interface ArticleDoc {
   slug: string;
   status: ArticleStatus;
-  publishedAt: string;      // ISO date
-  scheduledAt?: string;     // ISO date, when status === 'scheduled'
+  publishedAt: string; // ISO date
+  scheduledAt?: string; // ISO date, when status === 'scheduled'
   author: string;
   tags: string[];
-  topic?: string;           // slug of /topics/{topic}
-  series?: string;          // slug of /series/{series}
+  topic?: string; // slug of /topics/{topic}
+  series?: string; // slug of /series/{series}
   heroImage?: string;
   translations: Translatable<{
     title: string;
     excerpt: string;
-    body: string;           // markdown source
+    body: string; // markdown source
   }>;
   schemaVersion: 1;
   createdAt?: Timestamp;
@@ -51,7 +51,7 @@ export interface ArticleDoc {
 
 export interface ResourceDoc {
   url: string;
-  category: string;         // slug — e.g. 'quran', 'hadith', 'research', 'study'
+  category: string; // slug — e.g. 'quran', 'hadith', 'research', 'study'
   order: number;
   translations: Translatable<{
     title: string;
@@ -263,14 +263,7 @@ export interface NavItemsData {
  * renderer localizes it. `icon` maps to a lucide-react component in
  * HomePage.
  */
-export type QuickLinkIcon =
-  | 'users'
-  | 'link'
-  | 'help'
-  | 'message'
-  | 'book'
-  | 'star'
-  | 'mail';
+export type QuickLinkIcon = 'users' | 'link' | 'help' | 'message' | 'book' | 'star' | 'mail';
 
 export interface QuickLinkItem {
   to: string;

@@ -83,15 +83,15 @@ interface PaneProps<T extends string> {
 
 function Pane<T extends string>({ title, dir, keys, values, onSet, extra }: PaneProps<T>) {
   return (
-    <section className="rounded-lg border border-primary-100 bg-paper/30 p-3">
+    <section className="border-primary-100 bg-paper/30 rounded-lg border p-3">
       <div className="mb-2 flex items-center justify-between">
-        <h4 className="text-xs font-semibold uppercase tracking-wide text-primary-700">{title}</h4>
-        <span className="text-[10px] uppercase tracking-wide text-ink/50">{dir}</span>
+        <h4 className="text-primary-700 text-xs font-semibold uppercase tracking-wide">{title}</h4>
+        <span className="text-ink/50 text-[10px] uppercase tracking-wide">{dir}</span>
       </div>
       <div className="space-y-3">
         {keys.map((k) => (
           <label key={k.key} className="block">
-            <span className="block text-xs font-medium text-ink/70">{k.label}</span>
+            <span className="text-ink/70 block text-xs font-medium">{k.label}</span>
             {k.multiline ? (
               <textarea
                 dir={dir}
@@ -99,7 +99,7 @@ function Pane<T extends string>({ title, dir, keys, values, onSet, extra }: Pane
                 value={values[k.key] ?? ''}
                 onChange={(e) => onSet(k.key, e.target.value)}
                 placeholder={k.placeholder}
-                className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                className="border-primary-100 focus:border-primary-400 focus:ring-primary-400 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
               />
             ) : (
               <input
@@ -108,7 +108,7 @@ function Pane<T extends string>({ title, dir, keys, values, onSet, extra }: Pane
                 value={values[k.key] ?? ''}
                 onChange={(e) => onSet(k.key, e.target.value)}
                 placeholder={k.placeholder}
-                className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                className="border-primary-100 focus:border-primary-400 focus:ring-primary-400 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
               />
             )}
           </label>

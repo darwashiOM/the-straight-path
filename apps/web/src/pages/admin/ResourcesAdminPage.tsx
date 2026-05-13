@@ -71,12 +71,12 @@ export default function ResourcesAdminPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-lg text-primary-700">Resources</h2>
+        <h2 className="text-primary-700 font-serif text-lg">Resources</h2>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
+      <div className="border-primary-100 overflow-hidden rounded-xl border bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-primary-50 text-left text-xs uppercase tracking-wide text-primary-700">
+          <thead className="bg-primary-50 text-primary-700 text-left text-xs uppercase tracking-wide">
             <tr>
               <th className="w-16 px-3 py-3">Order</th>
               <th className="px-3 py-3">EN Title</th>
@@ -86,7 +86,7 @@ export default function ResourcesAdminPage() {
               <th className="w-40 px-3 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-primary-100">
+          <tbody className="divide-primary-100 divide-y">
             <QuickAddRow
               onCreate={async (partial) => {
                 const doc: ResourceDoc = {
@@ -104,21 +104,21 @@ export default function ResourcesAdminPage() {
             />
             {isLoading && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-ink/50">
+                <td colSpan={6} className="text-ink/50 px-4 py-6 text-center">
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-ink/50">
+                <td colSpan={6} className="text-ink/50 px-4 py-6 text-center">
                   No resources yet.
                 </td>
               </tr>
             )}
             {rows.map((row, i) => (
               <tr key={row.id} className="hover:bg-primary-50/30">
-                <td className="px-3 py-3 align-top text-ink/80">
+                <td className="text-ink/80 px-3 py-3 align-top">
                   <div className="flex items-center gap-1">
                     <span className="w-6 tabular-nums">{row.order}</span>
                     <button
@@ -128,7 +128,7 @@ export default function ResourcesAdminPage() {
                         const prev = rows[i - 1];
                         if (prev) void swap(row, prev);
                       }}
-                      className="rounded p-1 text-ink/50 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                      className="text-ink/50 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                       aria-label="Move up"
                     >
                       <ArrowUp className="h-3 w-3" />
@@ -140,14 +140,14 @@ export default function ResourcesAdminPage() {
                         const next = rows[i + 1];
                         if (next) void swap(row, next);
                       }}
-                      className="rounded p-1 text-ink/50 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                      className="text-ink/50 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                       aria-label="Move down"
                     >
                       <ArrowDown className="h-3 w-3" />
                     </button>
                   </div>
                 </td>
-                <td className="px-3 py-3 align-top text-ink/90">
+                <td className="text-ink/90 px-3 py-3 align-top">
                   {row.translations.en.title || <span className="text-ink/40">—</span>}
                 </td>
                 <td className="px-3 py-3 align-top">
@@ -155,22 +155,26 @@ export default function ResourcesAdminPage() {
                     href={row.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700"
+                    className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1"
                   >
                     <span className="max-w-[200px] truncate">{row.url}</span>
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </td>
-                <td className="px-3 py-3 align-top text-ink/70">{row.category}</td>
-                <td className="px-3 py-3 align-top text-ink/80" dir="rtl">
-                  {row.translations.ar?.title || <span className="text-ink/40" dir="ltr">—</span>}
+                <td className="text-ink/70 px-3 py-3 align-top">{row.category}</td>
+                <td className="text-ink/80 px-3 py-3 align-top" dir="rtl">
+                  {row.translations.ar?.title || (
+                    <span className="text-ink/40" dir="ltr">
+                      —
+                    </span>
+                  )}
                 </td>
                 <td className="px-3 py-3 text-right">
                   <div className="flex items-center justify-end gap-3">
                     <button
                       type="button"
                       onClick={() => setEditing(row)}
-                      className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700"
+                      className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 text-xs"
                     >
                       <Pencil className="h-3 w-3" />
                       Edit
@@ -178,10 +182,9 @@ export default function ResourcesAdminPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        if (window.confirm('Delete this resource?'))
-                          deleteMut.mutate(row.id);
+                        if (window.confirm('Delete this resource?')) deleteMut.mutate(row.id);
                       }}
-                      className="inline-flex items-center gap-1 text-xs text-sienna hover:text-sienna/80"
+                      className="text-sienna hover:text-sienna/80 inline-flex items-center gap-1 text-xs"
                     >
                       <Trash2 className="h-3 w-3" />
                       Delete
@@ -253,14 +256,14 @@ function QuickAddRow({
 
   return (
     <tr className="bg-primary-50/40">
-      <td className="px-3 py-2 text-xs text-primary-700">New</td>
+      <td className="text-primary-700 px-3 py-2 text-xs">New</td>
       <td className="px-3 py-2">
         <input
           type="text"
           placeholder="English title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded border border-primary-200 bg-white px-2 py-1 text-sm"
+          className="border-primary-200 w-full rounded border bg-white px-2 py-1 text-sm"
         />
       </td>
       <td className="px-3 py-2">
@@ -269,14 +272,14 @@ function QuickAddRow({
           placeholder="https://…"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="w-full rounded border border-primary-200 bg-white px-2 py-1 text-sm"
+          className="border-primary-200 w-full rounded border bg-white px-2 py-1 text-sm"
         />
       </td>
       <td className="px-3 py-2">
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded border border-primary-200 bg-white px-2 py-1 text-sm"
+          className="border-primary-200 w-full rounded border bg-white px-2 py-1 text-sm"
         >
           {CATEGORIES.map((c) => (
             <option key={c} value={c}>
@@ -285,13 +288,13 @@ function QuickAddRow({
           ))}
         </select>
       </td>
-      <td className="px-3 py-2 text-ink/40">—</td>
+      <td className="text-ink/40 px-3 py-2">—</td>
       <td className="px-3 py-2 text-right">
         <button
           type="button"
           onClick={() => void submit()}
           disabled={!canSave || busy}
-          className="btn bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-50"
+          className="btn bg-primary-500 hover:bg-primary-600 text-white disabled:opacity-50"
         >
           <Plus className="h-3 w-3" />
           {busy ? 'Saving…' : 'Save'}
@@ -327,20 +330,20 @@ function ResourceEditor({ initial, initialId, onClose, onSave, onDelete }: Edito
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
           <label className="block md:col-span-2">
-            <span className="block text-xs font-medium text-ink/70">URL</span>
+            <span className="text-ink/70 block text-xs font-medium">URL</span>
             <input
               type="url"
               value={doc.url}
               onChange={(e) => setDoc({ ...doc, url: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm"
+              className="border-primary-100 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm"
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-ink/70">Category</span>
+            <span className="text-ink/70 block text-xs font-medium">Category</span>
             <select
               value={doc.category}
               onChange={(e) => setDoc({ ...doc, category: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm"
+              className="border-primary-100 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm"
             >
               {CATEGORIES.map((c) => (
                 <option key={c} value={c}>
@@ -350,14 +353,14 @@ function ResourceEditor({ initial, initialId, onClose, onSave, onDelete }: Edito
             </select>
           </label>
           <label className="block">
-            <span className="block text-xs font-medium text-ink/70">Order</span>
+            <span className="text-ink/70 block text-xs font-medium">Order</span>
             <input
               type="number"
               value={doc.order}
               onChange={(e) =>
                 setDoc({ ...doc, order: e.target.value === '' ? 0 : Number(e.target.value) })
               }
-              className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm"
+              className="border-primary-100 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm"
             />
           </label>
         </div>
@@ -366,15 +369,15 @@ function ResourceEditor({ initial, initialId, onClose, onSave, onDelete }: Edito
           keys={LOCALE_KEYS}
           en={doc.translations.en}
           ar={doc.translations.ar}
-          onChangeEn={(next) =>
-            setDoc({ ...doc, translations: { ...doc.translations, en: next } })
-          }
+          onChangeEn={(next) => setDoc({ ...doc, translations: { ...doc.translations, en: next } })}
           onChangeAr={(next) =>
             setDoc({
               ...doc,
               translations: {
                 en: doc.translations.en,
-                ...(next ? { ar: { title: next.title ?? '', description: next.description ?? '' } } : {}),
+                ...(next
+                  ? { ar: { title: next.title ?? '', description: next.description ?? '' } }
+                  : {}),
               },
             })
           }
@@ -387,7 +390,7 @@ function ResourceEditor({ initial, initialId, onClose, onSave, onDelete }: Edito
             <button
               type="button"
               onClick={() => void onDelete()}
-              className="text-sm text-sienna hover:text-sienna/80"
+              className="text-sienna hover:text-sienna/80 text-sm"
             >
               Delete
             </button>
@@ -397,7 +400,7 @@ function ResourceEditor({ initial, initialId, onClose, onSave, onDelete }: Edito
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-primary-100 px-3 py-1.5 text-sm text-ink/70 hover:bg-primary-50"
+            className="border-primary-100 text-ink/70 hover:bg-primary-50 rounded-lg border px-3 py-1.5 text-sm"
           >
             Cancel
           </button>
@@ -405,7 +408,7 @@ function ResourceEditor({ initial, initialId, onClose, onSave, onDelete }: Edito
             type="button"
             onClick={() => void save()}
             disabled={submitting}
-            className="btn bg-primary-500 text-white hover:bg-primary-600"
+            className="btn bg-primary-500 hover:bg-primary-600 text-white"
           >
             {submitting ? 'Saving…' : 'Save'}
           </button>

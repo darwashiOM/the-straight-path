@@ -77,10 +77,7 @@ export default function Skeleton({
         role="status"
         aria-live="polite"
         aria-label={label}
-        className={clsx(
-          'rounded-2xl border border-ink/10 p-4 dark:border-paper/10',
-          className,
-        )}
+        className={clsx('border-ink/10 dark:border-paper/10 rounded-2xl border p-4', className)}
         style={style}
         {...rest}
       >

@@ -13,36 +13,33 @@ export default function Footer() {
   const locale = i18n.language === 'ar' ? 'ar' : 'en';
 
   const footerNav = useSiteSetting('footerNav', locale);
-  const columns = (
-    (footerNav.data?.data?.columns as FooterNavColumn[] | undefined) ?? []
-  )
+  const columns = ((footerNav.data?.data?.columns as FooterNavColumn[] | undefined) ?? [])
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
-    <footer className="border-t border-primary-500/10 bg-white py-12 dark:border-primary-700/30 dark:bg-primary-900">
+    <footer className="border-primary-500/10 dark:border-primary-700/30 dark:bg-primary-900 border-t bg-white py-12">
       <Container>
         <div className="grid gap-8 md:grid-cols-4">
           <div>
             <Link
               to={localizePath('/')}
-              className="font-serif text-lg font-semibold text-primary-700 dark:text-accent-300"
+              className="text-primary-700 dark:text-accent-300 font-serif text-lg font-semibold"
             >
               {t('site.name')}
             </Link>
-            <p className="mt-3 text-sm text-ink/70 dark:text-paper/70">{t('site.tagline')}</p>
+            <p className="text-ink/70 dark:text-paper/70 mt-3 text-sm">{t('site.tagline')}</p>
           </div>
           {columns.map((col) => {
             const title = locale === 'ar' ? col.titleAr || col.titleEn : col.titleEn;
             return (
               <div key={col.id}>
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary-700 dark:text-accent-300">
+                <h3 className="text-primary-700 dark:text-accent-300 mb-3 text-xs font-semibold uppercase tracking-wider">
                   {title}
                 </h3>
-                <ul className="space-y-2 text-sm text-ink/70 dark:text-paper/70">
+                <ul className="text-ink/70 dark:text-paper/70 space-y-2 text-sm">
                   {col.links.map((link, i) => {
-                    const label =
-                      locale === 'ar' ? link.labelAr || link.labelEn : link.labelEn;
+                    const label = locale === 'ar' ? link.labelAr || link.labelEn : link.labelEn;
                     const key = `${col.id}-${link.to}-${i}`;
                     if (link.external) {
                       return (
@@ -74,7 +71,7 @@ export default function Footer() {
             );
           })}
         </div>
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-primary-500/10 pt-6 text-xs text-ink/60 dark:border-primary-700/30 dark:text-paper/60 md:flex-row">
+        <div className="border-primary-500/10 text-ink/60 dark:border-primary-700/30 dark:text-paper/60 mt-10 flex flex-col items-center justify-between gap-3 border-t pt-6 text-xs md:flex-row">
           <span>
             &copy; {year} {t('footer.copyright')}
           </span>

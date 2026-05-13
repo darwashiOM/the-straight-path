@@ -52,21 +52,17 @@ export default function NotFoundPage() {
     <>
       <SeoHead title={t('notFound.seoTitle')} description={t('notFound.seoDescription')} noindex />
       <Container className="py-20 text-center md:py-24">
-        <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
-          {eyebrow}
-        </p>
-        <h1 className="mx-auto mt-4 max-w-2xl text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
+        <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">{eyebrow}</p>
+        <h1 className="text-primary-700 dark:text-accent-300 mx-auto mt-4 max-w-2xl text-balance font-serif text-5xl font-semibold md:text-6xl">
           {titleText}
         </h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-ink/70 dark:text-paper/70">
-          {bodyText}
-        </p>
+        <p className="text-ink/70 dark:text-paper/70 mx-auto mt-4 max-w-xl text-lg">{bodyText}</p>
 
         {/* Tasteful, subtle ASCII path illustration. */}
         <pre
           aria-hidden="true"
           dir="ltr"
-          className="mx-auto mt-10 select-none font-mono text-[0.7rem] leading-tight text-ink/30 dark:text-paper/30 md:text-xs"
+          className="text-ink/30 dark:text-paper/30 mx-auto mt-10 select-none font-mono text-[0.7rem] leading-tight md:text-xs"
         >
           {`       .                      .
       / \\                    / \\
@@ -79,7 +75,7 @@ export default function NotFoundPage() {
         {/* Search suggestion box. */}
         <form
           onSubmit={onSearch}
-          className="mx-auto mt-10 flex w-full max-w-md flex-col gap-2 rounded-2xl border border-ink/10 bg-paper/50 p-4 text-start shadow-sm dark:border-paper/10 dark:bg-ink/30 sm:flex-row sm:items-center"
+          className="border-ink/10 bg-paper/50 dark:border-paper/10 dark:bg-ink/30 mx-auto mt-10 flex w-full max-w-md flex-col gap-2 rounded-2xl border p-4 text-start shadow-sm sm:flex-row sm:items-center"
           role="search"
           aria-label={t('notFound.searchLabel')}
         >
@@ -92,7 +88,7 @@ export default function NotFoundPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('notFound.searchPlaceholder')}
-            className="flex-1 rounded-lg border border-ink/10 bg-paper px-3 py-2 text-ink placeholder:text-ink/40 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-paper/10 dark:bg-ink/50 dark:text-paper dark:placeholder:text-paper/40"
+            className="border-ink/10 bg-paper text-ink placeholder:text-ink/40 focus:border-primary-500 focus:ring-primary-500/40 dark:border-paper/10 dark:bg-ink/50 dark:text-paper dark:placeholder:text-paper/40 flex-1 rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
           />
           <button type="submit" className="btn-primary sm:shrink-0">
             {t('notFound.searchButton')}
@@ -101,7 +97,7 @@ export default function NotFoundPage() {
 
         {/* Popular links. */}
         <div className="mx-auto mt-12 max-w-3xl">
-          <h2 className="font-serif text-xl text-primary-700 dark:text-accent-300">
+          <h2 className="text-primary-700 dark:text-accent-300 font-serif text-xl">
             {t('notFound.popularHeading')}
           </h2>
           <ul className="mt-6 grid gap-3 text-start sm:grid-cols-2 md:grid-cols-3">
@@ -109,12 +105,12 @@ export default function NotFoundPage() {
               <li key={link.to}>
                 <Link
                   to={localizePath(link.to)}
-                  className="block h-full rounded-xl border border-ink/10 p-4 transition hover:border-primary-500/60 hover:bg-paper/60 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-paper/10 dark:hover:bg-ink/40"
+                  className="border-ink/10 hover:border-primary-500/60 hover:bg-paper/60 focus:ring-primary-500/40 dark:border-paper/10 dark:hover:bg-ink/40 block h-full rounded-xl border p-4 transition focus:outline-none focus:ring-2"
                 >
-                  <span className="block font-serif text-lg text-primary-700 dark:text-accent-300">
+                  <span className="text-primary-700 dark:text-accent-300 block font-serif text-lg">
                     {locale === 'ar' ? link.labelAr : link.labelEn}
                   </span>
-                  <span className="mt-1 block text-sm text-ink/60 dark:text-paper/60">
+                  <span className="text-ink/60 dark:text-paper/60 mt-1 block text-sm">
                     {locale === 'ar' ? link.hintAr : link.hintEn}
                   </span>
                 </Link>

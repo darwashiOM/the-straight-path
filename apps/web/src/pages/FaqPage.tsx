@@ -46,10 +46,10 @@ export default function FaqPage() {
             to: n.path === '/faq' ? undefined : localizePath(n.path),
           }))}
         />
-        <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
+        <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
           {headerTitle}
         </h1>
-        <p className="mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
+        <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
           {headerDescription}
         </p>
         {isLoading && faqs.length === 0 ? (
@@ -59,7 +59,7 @@ export default function FaqPage() {
             ))}
           </div>
         ) : (
-          <ul className="mx-auto mt-12 max-w-3xl divide-y divide-primary-500/10 dark:divide-primary-700/40">
+          <ul className="divide-primary-500/10 dark:divide-primary-700/40 mx-auto mt-12 max-w-3xl divide-y">
             {faqs.map((f, i) => (
               <li key={f.id}>
                 <button
@@ -68,19 +68,19 @@ export default function FaqPage() {
                   aria-expanded={open === i}
                   className="flex w-full items-center justify-between gap-4 py-5 text-start"
                 >
-                  <span className="font-serif text-lg font-semibold text-primary-700 dark:text-accent-300">
+                  <span className="text-primary-700 dark:text-accent-300 font-serif text-lg font-semibold">
                     {f.question}
                   </span>
                   <ChevronDown
                     size={20}
                     className={cn(
-                      'shrink-0 text-primary-600 transition-transform dark:text-accent-400',
+                      'text-primary-600 dark:text-accent-400 shrink-0 transition-transform',
                       open === i && 'rotate-180',
                     )}
                   />
                 </button>
                 {open === i ? (
-                  <p className="animate-fade-in pb-5 pe-10 text-ink/70 dark:text-paper/70">
+                  <p className="animate-fade-in text-ink/70 dark:text-paper/70 pb-5 pe-10">
                     {f.answer}
                   </p>
                 ) : null}

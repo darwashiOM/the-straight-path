@@ -52,17 +52,17 @@ export default function PrevNextArticle({ currentSlug, pool }: PrevNextArticlePr
   return (
     <nav
       aria-label={t('articlesPage.articleNav', 'Article navigation') as string}
-      className="mt-12 grid gap-4 border-t border-primary-500/10 pt-8 sm:grid-cols-2 dark:border-primary-700/40"
+      className="border-primary-500/10 dark:border-primary-700/40 mt-12 grid gap-4 border-t pt-8 sm:grid-cols-2"
     >
       {prev ? (
         <Link
           to={localizePath(`/learn/articles/${prev.slug}`)}
-          className="group rounded-xl border border-primary-500/10 bg-paper/50 p-5 transition hover:border-accent-400 hover:shadow-md dark:border-primary-700/40 dark:bg-primary-800/40"
+          className="border-primary-500/10 bg-paper/50 hover:border-accent-400 dark:border-primary-700/40 dark:bg-primary-800/40 group rounded-xl border p-5 transition hover:shadow-md"
         >
-          <span className="inline-flex items-center gap-2 font-serif text-xs uppercase tracking-widest text-accent-500">
+          <span className="text-accent-500 inline-flex items-center gap-2 font-serif text-xs uppercase tracking-widest">
             <PrevIcon size={14} /> {prevLabel}
           </span>
-          <p className="mt-2 font-serif text-lg text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200">
+          <p className="text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200 mt-2 font-serif text-lg">
             {prev.title}
           </p>
         </Link>
@@ -73,12 +73,12 @@ export default function PrevNextArticle({ currentSlug, pool }: PrevNextArticlePr
       {next ? (
         <Link
           to={localizePath(`/learn/articles/${next.slug}`)}
-          className="group rounded-xl border border-primary-500/10 bg-paper/50 p-5 text-right transition hover:border-accent-400 hover:shadow-md dark:border-primary-700/40 dark:bg-primary-800/40"
+          className="border-primary-500/10 bg-paper/50 hover:border-accent-400 dark:border-primary-700/40 dark:bg-primary-800/40 group rounded-xl border p-5 text-right transition hover:shadow-md"
         >
-          <span className="inline-flex items-center gap-2 font-serif text-xs uppercase tracking-widest text-accent-500">
+          <span className="text-accent-500 inline-flex items-center gap-2 font-serif text-xs uppercase tracking-widest">
             {nextLabel} <NextIcon size={14} />
           </span>
-          <p className="mt-2 font-serif text-lg text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200">
+          <p className="text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200 mt-2 font-serif text-lg">
             {next.title}
           </p>
         </Link>

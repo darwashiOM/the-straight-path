@@ -4,7 +4,7 @@
 
 Canonical site: https://thestraightpath.app
 License: original text is CC BY 4.0. Source code is MIT. Please attribute with a link back to the canonical article URL.
-Generated: 2026-04-21T10:49:11.576Z
+Generated: 2026-05-13T01:28:53.577Z
 
 ## About this file
 
@@ -49,7 +49,7 @@ He sent messengers to guide humanity to the truth. He is perfectly just and does
 
 ## 3. Islam transforms the heart
 
-Revelation in Islam is not only guidance for outward behavior; it reshapes the inner life. It introduces sincerity (*ikhlāṣ*) as a central principle of worship.
+Revelation in Islam is not only guidance for outward behavior; it reshapes the inner life. It introduces sincerity (_ikhlāṣ_) as a central principle of worship.
 
 While it is natural for people to seek recognition, Islam teaches that Allāh accepts actions only when they are done purely for His sake. This purifies intention and reorients motivation. Charity, for example, is given to seek the pleasure of Allāh and to help those in need — not to be seen or praised by others.
 
@@ -111,6 +111,6 @@ The first revelation of the Qur'ān begins:
 
 From its beginning, the Qur'ān calls people to reflection on the natural world, human origins, and the pursuit of knowledge — encouraging observation, reasoning, and learning.
 
-This intellectual spirit is reflected in the legacy of early Muslim scholars. In the introduction to *The Compendious Book on Calculation by Completion and Balancing*, Al-Khwārizmī praises Allāh and explains that his work was written to solve practical problems in Islamic inheritance law. He viewed beneficial knowledge as a form of worship. His work went on to lay the foundations of what is now known as algebra.
+This intellectual spirit is reflected in the legacy of early Muslim scholars. In the introduction to _The Compendious Book on Calculation by Completion and Balancing_, Al-Khwārizmī praises Allāh and explains that his work was written to solve practical problems in Islamic inheritance law. He viewed beneficial knowledge as a form of worship. His work went on to lay the foundations of what is now known as algebra.
 
 ---

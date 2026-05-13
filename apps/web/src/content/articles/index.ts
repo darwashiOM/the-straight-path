@@ -58,8 +58,7 @@ export const articles: ArticleModule[] = Object.values(modules)
   })
   .sort(
     (a, b) =>
-      new Date(b.frontmatter.publishedAt).getTime() -
-      new Date(a.frontmatter.publishedAt).getTime(),
+      new Date(b.frontmatter.publishedAt).getTime() - new Date(a.frontmatter.publishedAt).getTime(),
   );
 
 export function getArticle(slug: string): ArticleModule | undefined {

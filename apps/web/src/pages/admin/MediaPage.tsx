@@ -14,7 +14,15 @@
  */
 import { useCallback, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AlertTriangle, ExternalLink, Image as ImageIcon, Loader2, RefreshCw, Trash2, Upload } from 'lucide-react';
+import {
+  AlertTriangle,
+  ExternalLink,
+  Image as ImageIcon,
+  Loader2,
+  RefreshCw,
+  Trash2,
+  Upload,
+} from 'lucide-react';
 
 import { deleteMedia, listMedia, StorageNotConfiguredError, uploadMedia } from '@/lib/media';
 import type { MediaDoc } from '@/lib/content-schema';
@@ -44,12 +52,15 @@ export default function MediaPage() {
     setError(null);
   }, []);
 
-  const onDrop = useCallback((e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
-    const f = e.dataTransfer.files?.[0];
-    if (f) onPick(f);
-  }, [onPick]);
+  const onDrop = useCallback(
+    (e: DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setDragOver(false);
+      const f = e.dataTransfer.files?.[0];
+      if (f) onPick(f);
+    },
+    [onPick],
+  );
 
   async function handleUpload() {
     if (!file || !alt.trim()) return;
@@ -101,8 +112,8 @@ export default function MediaPage() {
   return (
     <div className="space-y-6 pb-8">
       <header className="space-y-1">
-        <h2 className="font-serif text-lg text-primary-700">Media library</h2>
-        <p className="text-sm text-ink/60">
+        <h2 className="text-primary-700 font-serif text-lg">Media library</h2>
+        <p className="text-ink/60 text-sm">
           Upload images used across the site. Alt text is required so assets stay accessible.
         </p>
       </header>
@@ -115,22 +126,20 @@ export default function MediaPage() {
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
         className={`rounded-xl border-2 border-dashed p-6 transition-colors ${
-          dragOver
-            ? 'border-primary-400 bg-primary-50/60'
-            : 'border-primary-200 bg-white'
+          dragOver ? 'border-primary-400 bg-primary-50/60' : 'border-primary-200 bg-white'
         }`}
       >
         <div className="grid gap-4 md:grid-cols-[1fr_minmax(0,260px)]">
           <div>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50 text-primary-600">
+              <div className="bg-primary-50 text-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
                 <Upload className="h-5 w-5" />
               </div>
               <div>
-                <div className="text-sm font-medium text-ink">
+                <div className="text-ink text-sm font-medium">
                   {file ? file.name : 'Drop an image here or click to choose'}
                 </div>
-                <div className="text-xs text-ink/50">
+                <div className="text-ink/50 text-xs">
                   {file
                     ? `${formatSize(file.size)} · ${file.type || 'unknown type'}`
                     : 'PNG, JPG, GIF, WebP, SVG up to 10 MB'}
@@ -142,29 +151,27 @@ export default function MediaPage() {
               ref={inputRef}
               type="file"
               accept="image/*"
-              className="mt-3 block w-full text-xs text-ink/70 file:mr-3 file:rounded-lg file:border-0 file:bg-primary-50 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-primary-700 hover:file:bg-primary-100"
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                onPick(e.target.files?.[0] ?? null)
-              }
+              className="text-ink/70 file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 mt-3 block w-full text-xs file:mr-3 file:rounded-lg file:border-0 file:px-3 file:py-1.5 file:text-xs file:font-medium"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => onPick(e.target.files?.[0] ?? null)}
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <label className="block">
-              <span className="block text-xs font-medium text-ink/80">Alt text (required)</span>
+              <span className="text-ink/80 block text-xs font-medium">Alt text (required)</span>
               <input
                 type="text"
                 value={alt}
                 onChange={(e) => setAlt(e.target.value)}
                 placeholder="Describe the image"
-                className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                className="border-primary-100 focus:border-primary-400 focus:ring-primary-400 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
               />
             </label>
             <button
               type="button"
               onClick={() => void handleUpload()}
               disabled={!canUpload}
-              className="mt-auto inline-flex items-center justify-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 mt-auto inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {uploading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -179,7 +186,7 @@ export default function MediaPage() {
         {error && (
           <div
             role="alert"
-            className="mt-4 rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna"
+            className="border-sienna/30 bg-sienna/5 text-sienna mt-4 rounded-lg border px-3 py-2 text-sm"
           >
             {error}
           </div>
@@ -188,16 +195,14 @@ export default function MediaPage() {
 
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-serif text-base text-primary-700">
+          <h3 className="text-primary-700 font-serif text-base">
             Library{' '}
-            <span className="text-xs font-normal text-ink/50">
-              ({media.data?.length ?? 0})
-            </span>
+            <span className="text-ink/50 text-xs font-normal">({media.data?.length ?? 0})</span>
           </h3>
         </div>
 
         {media.isLoading ? (
-          <div className="text-sm text-ink/60">Loading…</div>
+          <div className="text-ink/60 text-sm">Loading…</div>
         ) : media.data && media.data.length > 0 ? (
           <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {media.data.map((m) => (
@@ -205,8 +210,8 @@ export default function MediaPage() {
             ))}
           </ul>
         ) : (
-          <div className="rounded-xl border border-dashed border-primary-100 bg-primary-50/30 p-8 text-center text-sm text-ink/60">
-            <ImageIcon className="mx-auto mb-2 h-6 w-6 text-primary-400" />
+          <div className="border-primary-100 bg-primary-50/30 text-ink/60 rounded-xl border border-dashed p-8 text-center text-sm">
+            <ImageIcon className="text-primary-400 mx-auto mb-2 h-6 w-6" />
             No media yet. Upload an image above to get started.
           </div>
         )}
@@ -218,8 +223,8 @@ export default function MediaPage() {
 function MediaTile({ media, onDelete }: { media: MediaDoc; onDelete: () => void }) {
   const size = useMemo(() => formatSize(media.size ?? 0), [media.size]);
   return (
-    <li className="group overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
-      <div className="aspect-video w-full overflow-hidden bg-primary-50/50">
+    <li className="border-primary-100 group overflow-hidden rounded-xl border bg-white shadow-sm">
+      <div className="bg-primary-50/50 aspect-video w-full overflow-hidden">
         {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
         <img
           src={media.url}
@@ -229,15 +234,15 @@ function MediaTile({ media, onDelete }: { media: MediaDoc; onDelete: () => void 
         />
       </div>
       <div className="p-3">
-        <div className="truncate text-sm font-medium text-ink" title={media.alt}>
-          {media.alt || <span className="italic text-ink/50">No alt text</span>}
+        <div className="text-ink truncate text-sm font-medium" title={media.alt}>
+          {media.alt || <span className="text-ink/50 italic">No alt text</span>}
         </div>
-        <div className="mt-0.5 flex items-center justify-between text-xs text-ink/50">
+        <div className="text-ink/50 mt-0.5 flex items-center justify-between text-xs">
           <span className="truncate">{size}</span>
           <button
             type="button"
             onClick={onDelete}
-            className="inline-flex items-center gap-1 rounded p-1 text-sienna hover:bg-sienna/10"
+            className="text-sienna hover:bg-sienna/10 inline-flex items-center gap-1 rounded p-1"
             aria-label="Delete media"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -248,7 +253,7 @@ function MediaTile({ media, onDelete }: { media: MediaDoc; onDelete: () => void 
             href={media.url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700"
+            className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 text-xs"
           >
             Open <ExternalLink className="h-3 w-3" />
           </a>
@@ -265,13 +270,11 @@ function StorageSetupCard({ onRetry }: { onRetry: () => Promise<void> | void }) 
       <div className="flex items-start gap-3">
         <AlertTriangle className="mt-1 h-5 w-5 flex-shrink-0 text-amber-600" />
         <div className="flex-1">
-          <h2 className="font-serif text-lg text-amber-900">
-            Firebase Storage isn’t enabled yet
-          </h2>
+          <h2 className="font-serif text-lg text-amber-900">Firebase Storage isn’t enabled yet</h2>
           <p className="mt-2 text-sm text-amber-900/80">
             The media library needs Firebase Storage to be initialised once from the Firebase
-            Console. It’s a single click on the Spark plan and doesn’t cost anything until
-            traffic shows up.
+            Console. It’s a single click on the Spark plan and doesn’t cost anything until traffic
+            shows up.
           </p>
           <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-amber-900/90">
             <li>
@@ -279,7 +282,9 @@ function StorageSetupCard({ onRetry }: { onRetry: () => Promise<void> | void }) 
               <span className="font-semibold">Get started</span>.
             </li>
             <li>Accept the default security rules — we override them on deploy anyway.</li>
-            <li>Come back here and hit <span className="font-semibold">Retry</span>.</li>
+            <li>
+              Come back here and hit <span className="font-semibold">Retry</span>.
+            </li>
           </ol>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <a

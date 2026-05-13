@@ -41,8 +41,8 @@ export default function ContactPage() {
   const formLabelsByLocale = intro.data?.data?.formLabels as
     | Record<'en' | 'ar', ContactFormLabels>
     | undefined;
-  const labels: ContactFormLabels =
-    formLabelsByLocale?.[locale] ?? formLabelsByLocale?.en ?? {
+  const labels: ContactFormLabels = formLabelsByLocale?.[locale] ??
+    formLabelsByLocale?.en ?? {
       name: t('contactPage.fields.name'),
       email: t('contactPage.fields.email'),
       message: t('contactPage.fields.message'),
@@ -91,23 +91,21 @@ export default function ContactPage() {
       <Container className="py-16">
         <div className="mx-auto max-w-2xl">
           {introCopy?.eyebrow ? (
-            <p className="mb-3 font-serif text-sm uppercase tracking-widest text-accent-500">
+            <p className="text-accent-500 mb-3 font-serif text-sm uppercase tracking-widest">
               {introCopy.eyebrow}
             </p>
           ) : null}
-          <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
+          <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
             {title}
           </h1>
-          <p className="mt-4 text-lg text-ink/70 dark:text-paper/70">{description}</p>
+          <p className="text-ink/70 dark:text-paper/70 mt-4 text-lg">{description}</p>
 
           {status === 'success' ? (
             <div className="card mt-10 p-6">
-              <p className="font-serif text-lg text-primary-700 dark:text-accent-300">
+              <p className="text-primary-700 dark:text-accent-300 font-serif text-lg">
                 {labels.successTitle}
               </p>
-              <p className="mt-2 text-sm text-ink/70 dark:text-paper/70">
-                {labels.successBody}
-              </p>
+              <p className="text-ink/70 dark:text-paper/70 mt-2 text-sm">{labels.successBody}</p>
             </div>
           ) : (
             <form onSubmit={onSubmit} className="mt-10 space-y-5">
@@ -153,15 +151,11 @@ export default function ContactPage() {
                   className="input resize-y"
                 />
               </Field>
-              <button
-                type="submit"
-                disabled={status === 'submitting'}
-                className="btn-primary"
-              >
+              <button type="submit" disabled={status === 'submitting'} className="btn-primary">
                 {status === 'submitting' ? labels.submittingLabel : labels.submit}
               </button>
               {status === 'error' ? (
-                <p className="text-sm text-sienna">{labels.errorBody}</p>
+                <p className="text-sienna text-sm">{labels.errorBody}</p>
               ) : null}
             </form>
           )}
@@ -182,9 +176,9 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-ink/80 dark:text-paper/80">
+      <span className="text-ink/80 dark:text-paper/80 mb-2 block text-sm font-semibold">
         {label}
-        {required ? <span className="ms-1 text-sienna">*</span> : null}
+        {required ? <span className="text-sienna ms-1">*</span> : null}
       </span>
       {children}
     </label>

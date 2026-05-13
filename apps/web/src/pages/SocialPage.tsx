@@ -16,10 +16,7 @@ export default function SocialPage() {
   const arrow = locale === 'ar' ? '←' : '→';
 
   const { data: channels = [], isLoading } = useChannels(locale);
-  const header = useSiteSetting<{ title: string; description: string }>(
-    'socialHeader',
-    locale,
-  );
+  const header = useSiteSetting<{ title: string; description: string }>('socialHeader', locale);
   const headerTitle = header.data?.value.title || t('socialPage.title');
   const headerDescription = header.data?.value.description || t('socialPage.description');
 
@@ -42,10 +39,10 @@ export default function SocialPage() {
             to: n.path === '/social' ? undefined : localizePath(n.path),
           }))}
         />
-        <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
+        <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
           {headerTitle}
         </h1>
-        <p className="mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
+        <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
           {headerDescription}
         </p>
         {isLoading && channels.length === 0 ? (
@@ -66,11 +63,11 @@ export default function SocialPage() {
                   rel="noopener noreferrer"
                   className="card group flex h-full flex-col p-6"
                 >
-                  <h2 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+                  <h2 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 font-serif text-xl font-semibold">
                     {c.name}
                   </h2>
-                  <p className="mt-2 text-sm text-ink/70 dark:text-paper/70">{c.description}</p>
-                  <span className="mt-4 text-xs font-semibold text-primary-600 dark:text-accent-400">
+                  <p className="text-ink/70 dark:text-paper/70 mt-2 text-sm">{c.description}</p>
+                  <span className="text-primary-600 dark:text-accent-400 mt-4 text-xs font-semibold">
                     {t('socialPage.visitChannel')} {arrow}
                   </span>
                 </a>

@@ -27,18 +27,18 @@ export default function SeriesCard({ series, articles }: SeriesCardProps) {
   return (
     <section className="card overflow-hidden md:grid md:grid-cols-5">
       {/* Left column — series identity & CTA. */}
-      <div className="col-span-2 flex flex-col justify-between gap-6 bg-gradient-to-br from-primary-600 to-primary-800 p-8 text-paper dark:from-primary-700 dark:to-primary-900">
+      <div className="from-primary-600 to-primary-800 text-paper dark:from-primary-700 dark:to-primary-900 col-span-2 flex flex-col justify-between gap-6 bg-gradient-to-br p-8">
         <div>
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-accent-200">
+          <p className="text-accent-200 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest">
             <BookOpen size={14} aria-hidden="true" />
             {t('learn.series.eyebrow')}
           </p>
           <h3 className="mt-3 font-serif text-2xl font-semibold md:text-3xl">{series.title}</h3>
-          <p className="mt-3 text-sm text-paper/80">{series.description}</p>
+          <p className="text-paper/80 mt-3 text-sm">{series.description}</p>
         </div>
         <Link
           to={localizePath(`/learn/articles/${first.slug}`)}
-          className="inline-flex w-fit items-center gap-2 rounded-xl bg-accent-400 px-4 py-2 text-sm font-semibold text-primary-900 transition-colors hover:bg-accent-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400"
+          className="bg-accent-400 text-primary-900 hover:bg-accent-300 focus-visible:outline-accent-400 inline-flex w-fit items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           {t('learn.series.start')}
           <ArrowRight size={14} aria-hidden="true" className={arrowIconClass} />
@@ -46,31 +46,31 @@ export default function SeriesCard({ series, articles }: SeriesCardProps) {
       </div>
 
       {/* Right column — the stacked article list. */}
-      <ol className="col-span-3 divide-y divide-primary-500/10 p-2 dark:divide-primary-700/40">
+      <ol className="divide-primary-500/10 dark:divide-primary-700/40 col-span-3 divide-y p-2">
         {articles.map((a, i) => (
           <li key={a.slug}>
             <Link
               to={localizePath(`/learn/articles/${a.slug}`)}
-              className="group flex items-center gap-4 rounded-xl p-4 transition-colors hover:bg-primary-50 dark:hover:bg-primary-700/40"
+              className="hover:bg-primary-50 dark:hover:bg-primary-700/40 group flex items-center gap-4 rounded-xl p-4 transition-colors"
             >
               <span
                 aria-hidden="true"
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-100 font-serif text-sm font-semibold text-primary-700 dark:bg-primary-700 dark:text-accent-300"
+                className="bg-primary-100 text-primary-700 dark:bg-primary-700 dark:text-accent-300 flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-serif text-sm font-semibold"
               >
                 {i + 1}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-serif text-base font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+                <p className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 truncate font-serif text-base font-semibold">
                   {a.title}
                 </p>
-                <p className="truncate text-xs text-ink/60 dark:text-paper/60">
+                <p className="text-ink/60 dark:text-paper/60 truncate text-xs">
                   {t('learn.readingTime', { minutes: readingTimeMinutes(a.body) })}
                 </p>
               </div>
               <ArrowRight
                 size={16}
                 aria-hidden="true"
-                className={`shrink-0 text-primary-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-accent-400 ${arrowIconClass ?? ''}`}
+                className={`text-primary-400 dark:text-accent-400 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 ${arrowIconClass ?? ''}`}
               />
             </Link>
           </li>

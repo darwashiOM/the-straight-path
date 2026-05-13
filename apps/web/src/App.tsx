@@ -64,11 +64,7 @@ function pageRoutes(keyPrefix: string): ReactElement[] {
     <Route key={`${keyPrefix}-index`} index element={<HomePage />} />,
     <Route key={`${keyPrefix}-learn`} path="learn" element={<LearnPage />} />,
     <Route key={`${keyPrefix}-articles`} path="learn/articles" element={<ArticleIndexPage />} />,
-    <Route
-      key={`${keyPrefix}-article`}
-      path="learn/articles/:slug"
-      element={<ArticlePage />}
-    />,
+    <Route key={`${keyPrefix}-article`} path="learn/articles/:slug" element={<ArticlePage />} />,
     <Route key={`${keyPrefix}-quran`} path="quran" element={<QuranPage />} />,
     <Route key={`${keyPrefix}-resources`} path="resources" element={<ResourcesPage />} />,
     <Route key={`${keyPrefix}-faq`} path="faq" element={<FaqPage />} />,

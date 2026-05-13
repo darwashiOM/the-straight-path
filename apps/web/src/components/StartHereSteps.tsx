@@ -43,22 +43,20 @@ export default function StartHereSteps({
   return (
     <section
       aria-labelledby="start-here-heading"
-      className="relative overflow-hidden rounded-3xl border border-primary-500/10 bg-gradient-to-br from-primary-50 via-white to-accent-50 p-6 shadow-sm dark:border-primary-700/40 dark:from-primary-800 dark:via-primary-900 dark:to-primary-800 md:p-10"
+      className="border-primary-500/10 from-primary-50 to-accent-50 dark:border-primary-700/40 dark:from-primary-800 dark:via-primary-900 dark:to-primary-800 relative overflow-hidden rounded-3xl border bg-gradient-to-br via-white p-6 shadow-sm md:p-10"
     >
       <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+          <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
             {eyebrowText}
           </p>
           <h2
             id="start-here-heading"
-            className="mt-2 font-serif text-3xl font-semibold text-primary-700 dark:text-accent-300 md:text-4xl"
+            className="text-primary-700 dark:text-accent-300 mt-2 font-serif text-3xl font-semibold md:text-4xl"
           >
             {titleText}
           </h2>
-          <p className="mt-2 max-w-xl text-ink/70 dark:text-paper/70">
-            {descriptionText}
-          </p>
+          <p className="text-ink/70 dark:text-paper/70 mt-2 max-w-xl">{descriptionText}</p>
         </div>
       </div>
 
@@ -69,18 +67,18 @@ export default function StartHereSteps({
             <li key={a.slug} className="contents">
               <Link
                 to={localizePath(`/learn/articles/${a.slug}`)}
-                className="group relative flex h-full flex-col rounded-2xl border border-primary-500/10 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400 dark:border-primary-700/40 dark:bg-primary-800"
+                className="border-primary-500/10 focus-visible:outline-accent-400 dark:border-primary-700/40 dark:bg-primary-800 group relative flex h-full flex-col rounded-2xl border bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
                 <span
                   aria-hidden="true"
-                  className="font-serif text-5xl font-semibold leading-none text-primary-300 transition-colors group-hover:text-accent-400 dark:text-primary-600"
+                  className="text-primary-300 group-hover:text-accent-400 dark:text-primary-600 font-serif text-5xl font-semibold leading-none transition-colors"
                 >
                   {stepNumber}
                 </span>
-                <h3 className="mt-4 font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+                <h3 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 mt-4 font-serif text-xl font-semibold">
                   {a.title}
                 </h3>
-                <span className="mt-auto pt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-accent-400">
+                <span className="text-primary-600 dark:text-accent-400 mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold">
                   {t('learn.startHere.step', { n: i + 1 })}
                   <ArrowRight size={14} className={arrowIconClass} aria-hidden="true" />
                 </span>

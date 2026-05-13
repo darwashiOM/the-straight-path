@@ -32,10 +32,7 @@ export function useLocalizedPath() {
 
   const canonicalPath = stripLocalePrefix(pathname);
 
-  const localizePath = useCallback(
-    (path: string) => withLocalePrefix(path, locale),
-    [locale],
-  );
+  const localizePath = useCallback((path: string) => withLocalePrefix(path, locale), [locale]);
 
   const pathForLocale = useCallback(
     (target: Locale) => `${withLocalePrefix(canonicalPath, target)}${search}${hash}`,

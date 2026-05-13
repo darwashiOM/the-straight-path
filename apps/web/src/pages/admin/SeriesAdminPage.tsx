@@ -10,11 +10,7 @@ import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2, X } from 'lucide-react';
 
-import {
-  deleteSeries,
-  listSeries,
-  saveSeries,
-} from '@/lib/admin-editorial';
+import { deleteSeries, listSeries, saveSeries } from '@/lib/admin-editorial';
 import { listArticlesV2, type AdminArticleV2 } from '@/lib/admin-firestore';
 import type { SeriesDoc } from '@/lib/content-schema';
 
@@ -56,20 +52,20 @@ export default function SeriesAdminPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-lg text-primary-700">Series</h2>
+        <h2 className="text-primary-700 font-serif text-lg">Series</h2>
         <button
           type="button"
           onClick={() => setEditing('new')}
-          className="btn bg-primary-500 text-white hover:bg-primary-600"
+          className="btn bg-primary-500 hover:bg-primary-600 text-white"
         >
           <Plus className="h-4 w-4" />
           New series
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
+      <div className="border-primary-100 overflow-hidden rounded-xl border bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-primary-50 text-left text-xs uppercase tracking-wide text-primary-700">
+          <thead className="bg-primary-50 text-primary-700 text-left text-xs uppercase tracking-wide">
             <tr>
               <th className="px-4 py-3">Slug</th>
               <th className="px-4 py-3">Title (EN)</th>
@@ -78,17 +74,17 @@ export default function SeriesAdminPage() {
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-primary-100">
+          <tbody className="divide-primary-100 divide-y">
             {isLoading && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-ink/50">
+                <td colSpan={5} className="text-ink/50 px-4 py-6 text-center">
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && (data ?? []).length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-ink/50">
+                <td colSpan={5} className="text-ink/50 px-4 py-6 text-center">
                   No series yet. Click “New series” to create your first.
                 </td>
               </tr>
@@ -97,14 +93,14 @@ export default function SeriesAdminPage() {
               <tr
                 key={row.id}
                 onClick={() => setEditing(row)}
-                className="cursor-pointer hover:bg-primary-50/30"
+                className="hover:bg-primary-50/30 cursor-pointer"
               >
-                <td className="px-4 py-3 font-mono text-xs text-ink/70">{row.slug}</td>
-                <td className="px-4 py-3 text-ink/80">{row.translations.en.title}</td>
-                <td className="px-4 py-3 text-ink/70">{row.articleSlugs?.length ?? 0}</td>
-                <td className="px-4 py-3 text-ink/70">{row.order}</td>
+                <td className="text-ink/70 px-4 py-3 font-mono text-xs">{row.slug}</td>
+                <td className="text-ink/80 px-4 py-3">{row.translations.en.title}</td>
+                <td className="text-ink/70 px-4 py-3">{row.articleSlugs?.length ?? 0}</td>
+                <td className="text-ink/70 px-4 py-3">{row.order}</td>
                 <td className="px-4 py-3 text-right">
-                  <span className="inline-flex items-center gap-1 text-xs text-primary-600">
+                  <span className="text-primary-600 inline-flex items-center gap-1 text-xs">
                     <Pencil className="h-3 w-3" />
                     Edit
                   </span>
@@ -258,16 +254,16 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
   const canUsePicker = articles.isSuccess && availableArticles.length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+    <div className="bg-ink/40 fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-serif text-lg text-primary-700">
+          <h3 className="text-primary-700 font-serif text-lg">
             {isNew ? 'New series' : `Edit series — ${initial?.slug}`}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 text-ink/50 hover:bg-primary-50 hover:text-primary-700"
+            className="text-ink/50 hover:bg-primary-50 hover:text-primary-700 rounded p-1"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
@@ -294,7 +290,10 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
                 type="number"
                 value={form.order}
                 onChange={(e) =>
-                  setForm((f) => ({ ...f, order: e.target.value === '' ? 0 : Number(e.target.value) }))
+                  setForm((f) => ({
+                    ...f,
+                    order: e.target.value === '' ? 0 : Number(e.target.value),
+                  }))
                 }
                 className={inputCls}
               />
@@ -302,8 +301,8 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-3 rounded-lg border border-primary-100 p-3">
-              <div className="text-xs font-semibold uppercase tracking-wide text-primary-700">
+            <div className="border-primary-100 space-y-3 rounded-lg border p-3">
+              <div className="text-primary-700 text-xs font-semibold uppercase tracking-wide">
                 English
               </div>
               <Field label="Title">
@@ -324,8 +323,8 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
                 />
               </Field>
             </div>
-            <div className="space-y-3 rounded-lg border border-primary-100 p-3">
-              <div className="text-xs font-semibold uppercase tracking-wide text-primary-700">
+            <div className="border-primary-100 space-y-3 rounded-lg border p-3">
+              <div className="text-primary-700 text-xs font-semibold uppercase tracking-wide">
                 Arabic (optional)
               </div>
               <Field label="Title">
@@ -349,27 +348,27 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
             </div>
           </div>
 
-          <div className="rounded-lg border border-primary-100 p-3">
+          <div className="border-primary-100 rounded-lg border p-3">
             <div className="mb-2 flex items-center justify-between">
-              <div className="text-sm font-semibold text-primary-700">Articles in this series</div>
-              <div className="text-xs text-ink/50">{form.articleSlugs.length} total</div>
+              <div className="text-primary-700 text-sm font-semibold">Articles in this series</div>
+              <div className="text-ink/50 text-xs">{form.articleSlugs.length} total</div>
             </div>
 
             {form.articleSlugs.length === 0 ? (
-              <p className="text-sm text-ink/50">
+              <p className="text-ink/50 text-sm">
                 No articles yet. Add one below — drag order is via the arrow buttons.
               </p>
             ) : (
-              <ul className="divide-y divide-primary-100 rounded border border-primary-100">
+              <ul className="divide-primary-100 border-primary-100 divide-y rounded border">
                 {form.articleSlugs.map((slug, idx) => (
                   <li
                     key={`${slug}-${idx}`}
                     className="flex items-center justify-between gap-2 px-3 py-2"
                   >
                     <div className="min-w-0 flex-1">
-                      <div className="font-mono text-xs text-ink/60">{slug}</div>
+                      <div className="text-ink/60 font-mono text-xs">{slug}</div>
                       {articleTitleBySlug.get(slug) && (
-                        <div className="truncate text-sm text-ink/80">
+                        <div className="text-ink/80 truncate text-sm">
                           {articleTitleBySlug.get(slug)}
                         </div>
                       )}
@@ -379,7 +378,7 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
                         type="button"
                         onClick={() => moveArticle(idx, -1)}
                         disabled={idx === 0}
-                        className="rounded p-1 text-ink/60 hover:bg-primary-50 disabled:opacity-30"
+                        className="text-ink/60 hover:bg-primary-50 rounded p-1 disabled:opacity-30"
                         aria-label="Move up"
                       >
                         <ArrowUp className="h-3 w-3" />
@@ -388,7 +387,7 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
                         type="button"
                         onClick={() => moveArticle(idx, 1)}
                         disabled={idx === form.articleSlugs.length - 1}
-                        className="rounded p-1 text-ink/60 hover:bg-primary-50 disabled:opacity-30"
+                        className="text-ink/60 hover:bg-primary-50 rounded p-1 disabled:opacity-30"
                         aria-label="Move down"
                       >
                         <ArrowDown className="h-3 w-3" />
@@ -396,7 +395,7 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
                       <button
                         type="button"
                         onClick={() => removeArticle(idx)}
-                        className="rounded p-1 text-sienna hover:bg-sienna/5"
+                        className="text-sienna hover:bg-sienna/5 rounded p-1"
                         aria-label="Remove"
                       >
                         <Trash2 className="h-3 w-3" />
@@ -432,7 +431,7 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
                         setPickerSlug('');
                       }
                     }}
-                    className="rounded-lg border border-primary-200 px-3 py-1.5 text-sm text-primary-700 hover:bg-primary-50"
+                    className="border-primary-200 text-primary-700 hover:bg-primary-50 rounded-lg border px-3 py-1.5 text-sm"
                   >
                     Add
                   </button>
@@ -453,7 +452,7 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
                       addArticle(manualSlug);
                       setManualSlug('');
                     }}
-                    className="rounded-lg border border-primary-200 px-3 py-1.5 text-sm text-primary-700 hover:bg-primary-50"
+                    className="border-primary-200 text-primary-700 hover:bg-primary-50 rounded-lg border px-3 py-1.5 text-sm"
                   >
                     Add
                   </button>
@@ -465,7 +464,7 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
           {error && (
             <div
               role="alert"
-              className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna"
+              className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm"
             >
               {error}
             </div>
@@ -477,7 +476,7 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
                 <button
                   type="button"
                   onClick={() => void handleDelete()}
-                  className="inline-flex items-center gap-1 rounded-lg border border-sienna/30 px-3 py-1.5 text-sm text-sienna hover:bg-sienna/5"
+                  className="border-sienna/30 text-sienna hover:bg-sienna/5 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm"
                 >
                   <Trash2 className="h-4 w-4" />
                   Delete series
@@ -488,14 +487,14 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-lg border border-primary-100 px-3 py-1.5 text-sm text-ink/70 hover:bg-primary-50"
+                className="border-primary-100 text-ink/70 hover:bg-primary-50 rounded-lg border px-3 py-1.5 text-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="btn bg-primary-500 text-white hover:bg-primary-600"
+                className="btn bg-primary-500 hover:bg-primary-600 text-white"
               >
                 {saving ? 'Saving…' : 'Save'}
               </button>
@@ -521,9 +520,9 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium text-ink/80">{label}</span>
+      <span className="text-ink/80 block text-sm font-medium">{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-ink/50">{hint}</span>}
+      {hint && <span className="text-ink/50 mt-1 block text-xs">{hint}</span>}
     </label>
   );
 }

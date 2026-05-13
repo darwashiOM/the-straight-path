@@ -40,10 +40,7 @@ function requireAdminAuth() {
 }
 
 /** Snapshot a doc's current data for audit `before` — returns null when absent. */
-async function snapshotOr(
-  coll: string,
-  id: string,
-): Promise<Record<string, unknown> | undefined> {
+async function snapshotOr(coll: string, id: string): Promise<Record<string, unknown> | undefined> {
   try {
     const snap = await getDoc(doc(getDb(), coll, id));
     return snap.exists() ? (snap.data() as Record<string, unknown>) : undefined;
@@ -172,9 +169,9 @@ export interface AdminResource {
 const RESOURCES = 'resources';
 
 export async function listResources(): Promise<AdminResource[]> {
-  const snap = await getDocs(
-    query(collection(getDb(), RESOURCES), orderBy('order', 'asc')),
-  ).catch(async () => getDocs(collection(getDb(), RESOURCES)));
+  const snap = await getDocs(query(collection(getDb(), RESOURCES), orderBy('order', 'asc'))).catch(
+    async () => getDocs(collection(getDb(), RESOURCES)),
+  );
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<AdminResource, 'id'>) }));
 }
 
@@ -234,10 +231,7 @@ export async function createFaq(
   return ref.id;
 }
 
-export async function updateFaq(
-  id: string,
-  data: Partial<Omit<AdminFaq, 'id'>>,
-): Promise<void> {
+export async function updateFaq(id: string, data: Partial<Omit<AdminFaq, 'id'>>): Promise<void> {
   requireAdminAuth();
   await updateDoc(doc(getDb(), FAQS, id), { ...data, updatedAt: serverTimestamp() });
 }
@@ -441,10 +435,13 @@ export interface AdminTopic extends TopicDoc {
 }
 
 export async function listTopics(): Promise<AdminTopic[]> {
-  const snap = await getDocs(
-    query(collection(getDb(), TOPICS), orderBy('order', 'asc')),
-  ).catch(async () => getDocs(collection(getDb(), TOPICS)));
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<TopicDoc, 'id'>) })) as AdminTopic[];
+  const snap = await getDocs(query(collection(getDb(), TOPICS), orderBy('order', 'asc'))).catch(
+    async () => getDocs(collection(getDb(), TOPICS)),
+  );
+  return snap.docs.map((d) => ({
+    id: d.id,
+    ...(d.data() as Omit<TopicDoc, 'id'>),
+  })) as AdminTopic[];
 }
 
 export async function saveTopic(slug: string, data: TopicDoc): Promise<void> {
@@ -479,10 +476,13 @@ export interface AdminSeries extends SeriesDoc {
 }
 
 export async function listSeries(): Promise<AdminSeries[]> {
-  const snap = await getDocs(
-    query(collection(getDb(), SERIES), orderBy('order', 'asc')),
-  ).catch(async () => getDocs(collection(getDb(), SERIES)));
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<SeriesDoc, 'id'>) })) as AdminSeries[];
+  const snap = await getDocs(query(collection(getDb(), SERIES), orderBy('order', 'asc'))).catch(
+    async () => getDocs(collection(getDb(), SERIES)),
+  );
+  return snap.docs.map((d) => ({
+    id: d.id,
+    ...(d.data() as Omit<SeriesDoc, 'id'>),
+  })) as AdminSeries[];
 }
 
 export async function saveSeries(slug: string, data: SeriesDoc): Promise<void> {

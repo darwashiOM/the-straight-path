@@ -8,11 +8,7 @@ import { type FormEvent, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2, X } from 'lucide-react';
 
-import {
-  deleteTopic,
-  listTopicsAdmin,
-  saveTopic,
-} from '@/lib/admin-editorial';
+import { deleteTopic, listTopicsAdmin, saveTopic } from '@/lib/admin-editorial';
 import type { TopicDoc } from '@/lib/content-schema';
 
 type Row = TopicDoc & { id: string };
@@ -94,30 +90,28 @@ export default function TopicsAdminPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-lg text-primary-700">Topics</h2>
+        <h2 className="text-primary-700 font-serif text-lg">Topics</h2>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
+      <div className="border-primary-100 overflow-hidden rounded-xl border bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-primary-50 text-left text-xs uppercase tracking-wide text-primary-700">
+          <thead className="bg-primary-50 text-primary-700 text-left text-xs uppercase tracking-wide">
             <tr>
-              <th className="px-4 py-3 w-24">Order</th>
+              <th className="w-24 px-4 py-3">Order</th>
               <th className="px-4 py-3">Slug</th>
               <th className="px-4 py-3">Label (EN)</th>
               <th className="px-4 py-3">Label (AR)</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-primary-100">
+          <tbody className="divide-primary-100 divide-y">
             {/* Inline "new topic" row. */}
             <tr className="bg-primary-50/30">
               <td className="px-4 py-2">
                 <input
                   type="number"
                   value={newOrder}
-                  onChange={(e) =>
-                    setNewOrder(e.target.value === '' ? 0 : Number(e.target.value))
-                  }
+                  onChange={(e) => setNewOrder(e.target.value === '' ? 0 : Number(e.target.value))}
                   className={inputSmall}
                 />
               </td>
@@ -154,7 +148,7 @@ export default function TopicsAdminPage() {
                   type="button"
                   onClick={() => createMut.mutate()}
                   disabled={createMut.isPending}
-                  className="btn bg-primary-500 text-white hover:bg-primary-600"
+                  className="btn bg-primary-500 hover:bg-primary-600 text-white"
                 >
                   <Plus className="h-4 w-4" />
                   {createMut.isPending ? 'Adding…' : 'Add'}
@@ -166,7 +160,7 @@ export default function TopicsAdminPage() {
               <tr>
                 <td
                   colSpan={5}
-                  className="border-t border-sienna/30 bg-sienna/5 px-4 py-2 text-sm text-sienna"
+                  className="border-sienna/30 bg-sienna/5 text-sienna border-t px-4 py-2 text-sm"
                 >
                   {newError}
                 </td>
@@ -175,14 +169,14 @@ export default function TopicsAdminPage() {
 
             {isLoading && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-ink/50">
+                <td colSpan={5} className="text-ink/50 px-4 py-6 text-center">
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-ink/50">
+                <td colSpan={5} className="text-ink/50 px-4 py-6 text-center">
                   No topics yet. Add one using the row above.
                 </td>
               </tr>
@@ -205,8 +199,7 @@ export default function TopicsAdminPage() {
                   onMoveUp={() => reorderMut.mutate({ row, dir: -1 })}
                   onMoveDown={() => reorderMut.mutate({ row, dir: 1 })}
                   onDelete={() => {
-                    if (window.confirm(`Delete topic "${row.slug}"?`))
-                      deleteMut.mutate(row.slug);
+                    if (window.confirm(`Delete topic "${row.slug}"?`)) deleteMut.mutate(row.slug);
                   }}
                 />
               );
@@ -248,12 +241,12 @@ function RowView({
       <tr className="hover:bg-primary-50/20">
         <td className="px-4 py-3 align-top">
           <div className="flex items-center gap-1">
-            <span className="w-6 text-ink/60">{row.order}</span>
+            <span className="text-ink/60 w-6">{row.order}</span>
             <button
               type="button"
               onClick={onMoveUp}
               disabled={isFirst}
-              className="rounded p-1 text-ink/60 hover:bg-primary-50 disabled:opacity-30"
+              className="text-ink/60 hover:bg-primary-50 rounded p-1 disabled:opacity-30"
               aria-label="Move up"
             >
               <ArrowUp className="h-3 w-3" />
@@ -262,16 +255,16 @@ function RowView({
               type="button"
               onClick={onMoveDown}
               disabled={isLast}
-              className="rounded p-1 text-ink/60 hover:bg-primary-50 disabled:opacity-30"
+              className="text-ink/60 hover:bg-primary-50 rounded p-1 disabled:opacity-30"
               aria-label="Move down"
             >
               <ArrowDown className="h-3 w-3" />
             </button>
           </div>
         </td>
-        <td className="px-4 py-3 align-top font-mono text-xs text-ink/70">{row.slug}</td>
-        <td className="px-4 py-3 align-top text-ink/80">{row.translations.en.label}</td>
-        <td className="px-4 py-3 align-top text-ink/80" dir="rtl">
+        <td className="text-ink/70 px-4 py-3 align-top font-mono text-xs">{row.slug}</td>
+        <td className="text-ink/80 px-4 py-3 align-top">{row.translations.en.label}</td>
+        <td className="text-ink/80 px-4 py-3 align-top" dir="rtl">
           {row.translations.ar?.label ?? ''}
         </td>
         <td className="px-4 py-3 text-right align-top">
@@ -279,7 +272,7 @@ function RowView({
             <button
               type="button"
               onClick={onEdit}
-              className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700"
+              className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 text-xs"
             >
               <Pencil className="h-3 w-3" />
               {isEditing ? 'Close' : 'Edit'}
@@ -287,7 +280,7 @@ function RowView({
             <button
               type="button"
               onClick={onDelete}
-              className="inline-flex items-center gap-1 text-xs text-sienna hover:text-sienna/80"
+              className="text-sienna hover:text-sienna/80 inline-flex items-center gap-1 text-xs"
             >
               <Trash2 className="h-3 w-3" />
               Delete
@@ -297,7 +290,7 @@ function RowView({
       </tr>
       {isEditing && (
         <tr>
-          <td colSpan={5} className="border-t border-primary-100 bg-primary-50/20 p-4">
+          <td colSpan={5} className="border-primary-100 bg-primary-50/20 border-t p-4">
             <InlineEdit row={row} onClose={onClose} onSaved={onSaved} />
           </td>
         </tr>
@@ -352,7 +345,7 @@ function InlineEdit({
     <form onSubmit={(e) => void submit(e)} className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-4">
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Slug</span>
+          <span className="text-ink/70 block text-xs font-medium">Slug</span>
           <input
             type="text"
             value={row.slug}
@@ -361,7 +354,7 @@ function InlineEdit({
           />
         </label>
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Order</span>
+          <span className="text-ink/70 block text-xs font-medium">Order</span>
           <input
             type="number"
             value={order}
@@ -370,7 +363,7 @@ function InlineEdit({
           />
         </label>
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Label (EN)</span>
+          <span className="text-ink/70 block text-xs font-medium">Label (EN)</span>
           <input
             type="text"
             value={en}
@@ -379,7 +372,7 @@ function InlineEdit({
           />
         </label>
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Label (AR)</span>
+          <span className="text-ink/70 block text-xs font-medium">Label (AR)</span>
           <input
             type="text"
             dir="rtl"
@@ -390,7 +383,7 @@ function InlineEdit({
         </label>
       </div>
       {error && (
-        <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+        <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
           {error}
         </div>
       )}
@@ -398,7 +391,7 @@ function InlineEdit({
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex items-center gap-1 rounded-lg border border-primary-100 px-3 py-1.5 text-sm text-ink/70 hover:bg-primary-50"
+          className="border-primary-100 text-ink/70 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm"
         >
           <X className="h-4 w-4" />
           Cancel
@@ -406,7 +399,7 @@ function InlineEdit({
         <button
           type="submit"
           disabled={saving}
-          className="btn bg-primary-500 text-white hover:bg-primary-600"
+          className="btn bg-primary-500 hover:bg-primary-600 text-white"
         >
           {saving ? 'Saving…' : 'Save'}
         </button>

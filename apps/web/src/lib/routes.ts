@@ -8,14 +8,7 @@
  * Keep descriptions 140–160 characters, action-oriented, no keyword stuffing.
  */
 
-export type ChangeFreq =
-  | 'always'
-  | 'hourly'
-  | 'daily'
-  | 'weekly'
-  | 'monthly'
-  | 'yearly'
-  | 'never';
+export type ChangeFreq = 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
 
 export interface RouteMeta {
   /** Path, without locale prefix, always starting with "/". */

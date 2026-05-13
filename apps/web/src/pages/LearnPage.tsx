@@ -101,7 +101,7 @@ export default function LearnPage() {
   // while drafts ship.
   const startHereSlugs = useMemo(() => {
     const raw = startHereSetting.data?.data?.articleSlugs;
-    return Array.isArray(raw) ? (raw.filter((s): s is string => typeof s === 'string')) : [];
+    return Array.isArray(raw) ? raw.filter((s): s is string => typeof s === 'string') : [];
   }, [startHereSetting.data]);
 
   const startHereArticles = useMemo<PublicArticle[]>(() => {
@@ -153,16 +153,14 @@ export default function LearnPage() {
         />
         {/* Header */}
         <header className="mx-auto max-w-3xl text-center">
-          <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
+          <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold md:text-6xl">
             {headerTitle}
           </h1>
-          <p className="mt-4 text-lg text-ink/70 dark:text-paper/70">
-            {headerDescription}
-          </p>
+          <p className="text-ink/70 dark:text-paper/70 mt-4 text-lg">{headerDescription}</p>
         </header>
 
         {showDrafts ? (
-          <p className="mx-auto mt-6 max-w-2xl rounded-xl border border-accent-400/40 bg-accent-50 px-4 py-3 text-center text-sm text-primary-800 dark:border-accent-400/30 dark:bg-primary-800 dark:text-accent-200">
+          <p className="border-accent-400/40 bg-accent-50 text-primary-800 dark:border-accent-400/30 dark:bg-primary-800 dark:text-accent-200 mx-auto mt-6 max-w-2xl rounded-xl border px-4 py-3 text-center text-sm">
             {t('learn.drafts.notice')}
           </p>
         ) : null}
@@ -187,7 +185,7 @@ export default function LearnPage() {
         {featuredSeries && featuredSeriesArticles.length > 0 ? (
           <section className="mt-16">
             <div className="mb-6 flex items-end justify-between gap-4">
-              <h2 className="font-serif text-2xl font-semibold text-primary-700 dark:text-accent-300 md:text-3xl">
+              <h2 className="text-primary-700 dark:text-accent-300 font-serif text-2xl font-semibold md:text-3xl">
                 {t('learn.series.heading')}
               </h2>
             </div>
@@ -201,17 +199,17 @@ export default function LearnPage() {
             <div>
               <h2
                 id="articles-heading"
-                className="font-serif text-2xl font-semibold text-primary-700 dark:text-accent-300 md:text-3xl"
+                className="text-primary-700 dark:text-accent-300 font-serif text-2xl font-semibold md:text-3xl"
               >
                 {t('learn.articles.heading')}
               </h2>
-              <p className="mt-2 text-sm text-ink/60 dark:text-paper/60">
+              <p className="text-ink/60 dark:text-paper/60 mt-2 text-sm">
                 {t('learn.topics.heading')}
               </p>
             </div>
             <Link
               to={localizePath('/learn/articles')}
-              className="text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-accent-400"
+              className="text-primary-600 hover:text-primary-700 dark:text-accent-400 text-sm font-semibold"
             >
               {t('home.sections.viewAll')} {arrow}
             </Link>
@@ -228,7 +226,7 @@ export default function LearnPage() {
               ))}
             </ul>
           ) : filteredArticles.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-primary-500/30 p-8 text-center text-ink/60 dark:border-primary-700/60 dark:text-paper/60">
+            <p className="border-primary-500/30 text-ink/60 dark:border-primary-700/60 dark:text-paper/60 rounded-2xl border border-dashed p-8 text-center">
               {t('learn.articles.empty')}
             </p>
           ) : (
@@ -246,22 +244,22 @@ export default function LearnPage() {
         <section className="mt-24 grid gap-6 md:grid-cols-2">
           {/* FAQ preview */}
           <div className="card flex flex-col p-8">
-            <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+            <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
               {t('learn.faqPreview.eyebrow')}
             </p>
-            <h3 className="mt-2 font-serif text-2xl font-semibold text-primary-700 dark:text-accent-300">
+            <h3 className="text-primary-700 dark:text-accent-300 mt-2 font-serif text-2xl font-semibold">
               {t('learn.faqPreview.title')}
             </h3>
             <ul className="mt-6 flex-1 space-y-3">
               {faqPreviews.map((f) => (
                 <li
                   key={f.id}
-                  className="flex items-start gap-3 text-sm text-ink/80 dark:text-paper/80"
+                  className="text-ink/80 dark:text-paper/80 flex items-start gap-3 text-sm"
                 >
                   <ChevronDown
                     size={16}
                     aria-hidden="true"
-                    className="-rotate-90 shrink-0 text-primary-400 dark:text-accent-400"
+                    className="text-primary-400 dark:text-accent-400 shrink-0 -rotate-90"
                   />
                   <span className="leading-relaxed">{f.question}</span>
                 </li>
@@ -269,7 +267,7 @@ export default function LearnPage() {
             </ul>
             <Link
               to={localizePath('/faq')}
-              className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-accent-400"
+              className="text-primary-600 hover:text-primary-700 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold"
             >
               {t('learn.faqPreview.seeAll')}
               <ArrowRight size={14} aria-hidden="true" className={arrowIconClass} />
@@ -278,10 +276,10 @@ export default function LearnPage() {
 
           {/* Resources preview */}
           <div className="card flex flex-col p-8">
-            <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+            <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
               {t('learn.resourcesPreview.eyebrow')}
             </p>
-            <h3 className="mt-2 font-serif text-2xl font-semibold text-primary-700 dark:text-accent-300">
+            <h3 className="text-primary-700 dark:text-accent-300 mt-2 font-serif text-2xl font-semibold">
               {t('learn.resourcesPreview.title')}
             </h3>
             <ul className="mt-6 flex-1 space-y-3">
@@ -291,18 +289,18 @@ export default function LearnPage() {
                     href={r.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-start justify-between gap-3 rounded-lg p-2 transition-colors hover:bg-primary-50 dark:hover:bg-primary-700/40"
+                    className="hover:bg-primary-50 dark:hover:bg-primary-700/40 group flex items-start justify-between gap-3 rounded-lg p-2 transition-colors"
                   >
                     <div>
-                      <p className="font-serif text-base font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+                      <p className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 font-serif text-base font-semibold">
                         {r.title}
                       </p>
-                      <p className="text-xs text-ink/60 dark:text-paper/60">{r.description}</p>
+                      <p className="text-ink/60 dark:text-paper/60 text-xs">{r.description}</p>
                     </div>
                     <ExternalLink
                       size={14}
                       aria-hidden="true"
-                      className="mt-1 shrink-0 text-primary-400 dark:text-accent-400"
+                      className="text-primary-400 dark:text-accent-400 mt-1 shrink-0"
                     />
                   </a>
                 </li>
@@ -310,7 +308,7 @@ export default function LearnPage() {
             </ul>
             <Link
               to={localizePath('/resources')}
-              className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-accent-400"
+              className="text-primary-600 hover:text-primary-700 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold"
             >
               {t('learn.resourcesPreview.seeAll')}
               <ArrowRight size={14} aria-hidden="true" className={arrowIconClass} />
@@ -319,11 +317,11 @@ export default function LearnPage() {
         </section>
 
         {/* Reference the full-library view so the crawl surface is clear. */}
-        <p className="mt-16 text-center text-sm text-ink/60 dark:text-paper/60">
+        <p className="text-ink/60 dark:text-paper/60 mt-16 text-center text-sm">
           {allArticles.length > 0 ? (
             <Link
               to={localizePath('/learn/articles')}
-              className="font-semibold text-primary-600 hover:text-primary-700 dark:text-accent-400"
+              className="text-primary-600 hover:text-primary-700 dark:text-accent-400 font-semibold"
             >
               {t('home.sections.viewAll')} {arrow}
             </Link>
@@ -356,35 +354,30 @@ function ArticleGridCard({ article, dateLocale }: ArticleGridCardProps) {
       to={localizePath(`/learn/articles/${slug}`)}
       className="card group flex flex-col overflow-hidden transition-transform hover:-translate-y-0.5"
     >
-      <ArticleCover
-        slug={slug}
-        label={topicLabel}
-        image={article.heroImage}
-        alt={title}
-      />
+      <ArticleCover slug={slug} label={topicLabel} image={article.heroImage} alt={title} />
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+        <h3 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 font-serif text-xl font-semibold">
           {title}
           {isDraft ? (
-            <span className="ms-2 rounded bg-accent-100 px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wider text-accent-700">
+            <span className="bg-accent-100 text-accent-700 ms-2 rounded px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wider">
               {t('learn.drafts.badge')}
             </span>
           ) : null}
         </h3>
-        <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">{excerpt}</p>
+        <p className="text-ink/70 dark:text-paper/70 mt-2 flex-1 text-sm">{excerpt}</p>
         {tags && tags.length > 0 ? (
           <ul className="mt-4 flex flex-wrap gap-1.5">
             {tags.slice(0, 3).map((tg) => (
               <li
                 key={tg}
-                className="rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-medium text-primary-700 dark:bg-primary-700/60 dark:text-accent-200"
+                className="bg-primary-50 text-primary-700 dark:bg-primary-700/60 dark:text-accent-200 rounded-full px-2 py-0.5 text-[11px] font-medium"
               >
                 {tg}
               </li>
             ))}
           </ul>
         ) : null}
-        <div className="mt-5 flex items-center justify-between text-xs text-ink/50 dark:text-paper/60">
+        <div className="text-ink/50 dark:text-paper/60 mt-5 flex items-center justify-between text-xs">
           <span>{formatDate(publishedAt, dateLocale)}</span>
           <span>{t('learn.readingTime', { minutes: readingTimeMinutes(body) })}</span>
         </div>

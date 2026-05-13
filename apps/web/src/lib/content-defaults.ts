@@ -77,24 +77,45 @@ export const DEFAULT_SERIES: Id<SeriesDoc>[] = [
 
 export const DEFAULT_RESOURCES: Id<ResourceDoc>[] = [
   r('quranCom', 0, 'https://quran.com/', 'quran', {
-    en: { title: 'Quran.com', description: "The Noble Qur'an with translations in many languages." },
+    en: {
+      title: 'Quran.com',
+      description: "The Noble Qur'an with translations in many languages.",
+    },
     ar: { title: 'Quran.com', description: 'القرآن الكريم مع ترجماته بلغات متعددة.' },
   }),
   r('sunnahCom', 1, 'https://sunnah.com/', 'hadith', {
-    en: { title: 'Sunnah.com', description: 'Searchable, authenticated hadith collections with gradings.' },
+    en: {
+      title: 'Sunnah.com',
+      description: 'Searchable, authenticated hadith collections with gradings.',
+    },
     ar: { title: 'Sunnah.com', description: 'مجموعات الحديث الموثّقة قابلة للبحث، مع درجاتها.' },
   }),
   r('yaqeen', 2, 'https://yaqeeninstitute.org/', 'research', {
-    en: { title: 'Yaqeen Institute', description: 'Research-driven articles addressing contemporary questions about Islam.' },
+    en: {
+      title: 'Yaqeen Institute',
+      description: 'Research-driven articles addressing contemporary questions about Islam.',
+    },
     ar: { title: 'معهد يقين', description: 'مقالات بحثية تعالج الأسئلة المعاصرة عن الإسلام.' },
   }),
   r('bayyinah', 3, 'https://bayyinah.tv/', 'study', {
-    en: { title: 'Bayyinah TV', description: "Arabic and Qur'an studies taught by Nouman Ali Khan and the Bayyinah team." },
-    ar: { title: 'Bayyinah TV', description: 'دروس في العربية والقرآن يقدمها نعمان علي خان وفريق البينة.' },
+    en: {
+      title: 'Bayyinah TV',
+      description: "Arabic and Qur'an studies taught by Nouman Ali Khan and the Bayyinah team.",
+    },
+    ar: {
+      title: 'Bayyinah TV',
+      description: 'دروس في العربية والقرآن يقدمها نعمان علي خان وفريق البينة.',
+    },
   }),
   r('islamicAwareness', 4, 'https://www.islamic-awareness.org/', 'research', {
-    en: { title: 'Islamic Awareness', description: "Scholarly articles on the Qur'an, early Islam, and comparative religion." },
-    ar: { title: 'Islamic Awareness', description: 'مقالات أكاديمية عن القرآن وصدر الإسلام والأديان المقارنة.' },
+    en: {
+      title: 'Islamic Awareness',
+      description: "Scholarly articles on the Qur'an, early Islam, and comparative religion.",
+    },
+    ar: {
+      title: 'Islamic Awareness',
+      description: 'مقالات أكاديمية عن القرآن وصدر الإسلام والأديان المقارنة.',
+    },
   }),
 ];
 
@@ -155,7 +176,8 @@ export const DEFAULT_FAQS: Id<FaqDoc>[] = [
     },
     ar: {
       question: 'ما هي أركان الإسلام الخمسة؟',
-      answer: 'شهادة التوحيد، والصلاة، والزكاة، وصوم رمضان، وحجّ البيت لمن استطاع إليه سبيلاً مرة في العمر.',
+      answer:
+        'شهادة التوحيد، والصلاة، والزكاة، وصوم رمضان، وحجّ البيت لمن استطاع إليه سبيلاً مرة في العمر.',
     },
   }),
   f('f5', 4, {
@@ -195,11 +217,17 @@ function f(
 
 export const DEFAULT_CHANNELS: Id<ChannelDoc>[] = [
   c('efdawah', 0, 'https://www.youtube.com/@EFDawah', {
-    en: { name: 'EF Dawah', description: 'Long-form dialogues and Q&A with people of all backgrounds.' },
+    en: {
+      name: 'EF Dawah',
+      description: 'Long-form dialogues and Q&A with people of all backgrounds.',
+    },
     ar: { name: 'EF Dawah', description: 'حوارات مطوّلة وأسئلة وأجوبة مع أناس من خلفيات متنوعة.' },
   }),
   c('yaqeen', 1, 'https://www.youtube.com/@YaqeenInstituteOfficial', {
-    en: { name: 'Yaqeen Institute', description: 'Short, research-driven explainers on contemporary topics.' },
+    en: {
+      name: 'Yaqeen Institute',
+      description: 'Short, research-driven explainers on contemporary topics.',
+    },
     ar: { name: 'معهد يقين', description: 'شروحات قصيرة قائمة على البحث لمواضيع معاصرة.' },
   }),
   c('muftimenk', 2, 'https://www.youtube.com/@muftimenkofficial', {
@@ -249,10 +277,38 @@ export const DEFAULT_BRAND_SETTING: SiteSettingDefault<{
  */
 export const DEFAULT_NAV_ITEMS: NavItem[] = [
   { to: '/learn', key: 'learn', labelEn: 'Learn', labelAr: 'تعلّم', visible: true, order: 0 },
-  { to: '/quran', key: 'quran', labelEn: "Read the Qur'an", labelAr: 'اقرأ القرآن', visible: true, order: 1 },
-  { to: '/resources', key: 'resources', labelEn: 'Resources', labelAr: 'روابط مفيدة', visible: true, order: 2 },
-  { to: '/faq', key: 'faq', labelEn: 'Ask Questions', labelAr: 'اطرح سؤالاً', visible: true, order: 3 },
-  { to: '/social', key: 'social', labelEn: 'On Social Media', labelAr: 'على وسائل التواصل', visible: true, order: 4 },
+  {
+    to: '/quran',
+    key: 'quran',
+    labelEn: "Read the Qur'an",
+    labelAr: 'اقرأ القرآن',
+    visible: true,
+    order: 1,
+  },
+  {
+    to: '/resources',
+    key: 'resources',
+    labelEn: 'Resources',
+    labelAr: 'روابط مفيدة',
+    visible: true,
+    order: 2,
+  },
+  {
+    to: '/faq',
+    key: 'faq',
+    labelEn: 'Ask Questions',
+    labelAr: 'اطرح سؤالاً',
+    visible: true,
+    order: 3,
+  },
+  {
+    to: '/social',
+    key: 'social',
+    labelEn: 'On Social Media',
+    labelAr: 'على وسائل التواصل',
+    visible: true,
+    order: 4,
+  },
   { to: '/about', key: 'about', labelEn: 'About', labelAr: 'من نحن', visible: true, order: 5 },
 ];
 
@@ -404,15 +460,13 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       en: {
         eyebrow: 'About Us',
         headline: 'An invitation, not an argument.',
-        body:
-          'The Straight Path is a small, independent effort to share Islam in a calm, reader-first voice — pastoral rather than polemical, for seekers of every background.',
+        body: 'The Straight Path is a small, independent effort to share Islam in a calm, reader-first voice — pastoral rather than polemical, for seekers of every background.',
         cta: 'Read more about our mission',
       },
       ar: {
         eyebrow: 'من نحن',
         headline: 'دعوةٌ، لا مجادلة.',
-        body:
-          'الطريق المستقيم جهد صغير مستقل لمشاركة الإسلام بصوتٍ هادئ يراعي القارئ — رعوي لا جدلي، لكل باحث من أيّ خلفية.',
+        body: 'الطريق المستقيم جهد صغير مستقل لمشاركة الإسلام بصوتٍ هادئ يراعي القارئ — رعوي لا جدلي، لكل باحث من أيّ خلفية.',
         cta: 'اقرأ المزيد عن رسالتنا',
       },
     },
@@ -423,8 +477,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       en: {
         eyebrow: 'Start Here',
         title: 'New to Islam? Start here.',
-        body:
-          'Three short articles, in order. Read them in one sitting, or one a day — whichever feels right.',
+        body: 'Three short articles, in order. Read them in one sitting, or one a day — whichever feels right.',
       },
       ar: {
         eyebrow: 'ابدأ من هنا',
@@ -446,7 +499,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       },
       ar: {
         title: 'تعلّم عن الإسلام',
-        description: 'مجموعة مختارة من المقالات تُعرِّف بأفكار الإسلام الجوهرية وأخلاقه وعباداته — مكتوبة لقرّاء من أيّ خلفية.',
+        description:
+          'مجموعة مختارة من المقالات تُعرِّف بأفكار الإسلام الجوهرية وأخلاقه وعباداته — مكتوبة لقرّاء من أيّ خلفية.',
       },
     },
   },
@@ -455,7 +509,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     translations: {
       en: {
         title: 'Articles',
-        description: "Essays on the foundations of Islam — the creed, the Prophet, the Qur'an, and the path.",
+        description:
+          "Essays on the foundations of Islam — the creed, the Prophet, the Qur'an, and the path.",
       },
       ar: {
         title: 'المقالات',
@@ -468,13 +523,11 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     translations: {
       en: {
         title: "About the Qur'ān",
-        body:
-          "The Qur'ān is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.\n\nIt is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good.",
+        body: "The Qur'ān is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.\n\nIt is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good.",
       },
       ar: {
         title: 'عن القرآن الكريم',
-        body:
-          'القرآن هو الوحي الخاتم من الله، أنزله جبريل عليه السلام على النبي محمد ﷺ على مدى ثلاث وعشرين سنة. وقد حُفِظ — حرفاً حرفاً، بلغته العربية الأصلية — نقلاً مكتوباً وحفظاً متواصلاً جيلاً بعد جيل.\n\nوهو الكتاب المركزي في الإسلام — كتاب هداية ورحمة وحكمة. ويؤمن المسلمون أن حفظه مكفول بعناية الله، وأن رسالته امتداد لما بُعث به الأنبياء السابقون: اعبدوا الله وحده، واعملوا الخير.',
+        body: 'القرآن هو الوحي الخاتم من الله، أنزله جبريل عليه السلام على النبي محمد ﷺ على مدى ثلاث وعشرين سنة. وقد حُفِظ — حرفاً حرفاً، بلغته العربية الأصلية — نقلاً مكتوباً وحفظاً متواصلاً جيلاً بعد جيل.\n\nوهو الكتاب المركزي في الإسلام — كتاب هداية ورحمة وحكمة. ويؤمن المسلمون أن حفظه مكفول بعناية الله، وأن رسالته امتداد لما بُعث به الأنبياء السابقون: اعبدوا الله وحده، واعملوا الخير.',
       },
     },
   },
@@ -549,8 +602,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       en: {
         eyebrow: '',
         title: 'Contact',
-        body:
-          'Have a question about Islam? A correction? A thought? We read every message.',
+        body: 'Have a question about Islam? A correction? A thought? We read every message.',
       },
       ar: {
         eyebrow: '',
@@ -589,14 +641,12 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       en: {
         eyebrow: 'Error 404',
         title: "We couldn't find that page.",
-        body:
-          "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
+        body: "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
       },
       ar: {
         eyebrow: 'خطأ 404',
         title: 'لم نجد هذه الصفحة.',
-        body:
-          'قد يكون الرابط معطوباً، أو نُقِلت الصفحة. إن ضِلّ بك الطريق فلا بأس — لنعد بك إلى المسار.',
+        body: 'قد يكون الرابط معطوباً، أو نُقِلت الصفحة. إن ضِلّ بك الطريق فلا بأس — لنعد بك إلى المسار.',
       },
     },
     data: {

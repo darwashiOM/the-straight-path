@@ -91,16 +91,16 @@ export default function ArticleIndexPage() {
           }))}
         />
         <header>
-          <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
+          <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
             {headerTitle}
           </h1>
-          <p className="mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
+          <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
             {headerDescription}
           </p>
         </header>
 
         {showDrafts ? (
-          <p className="mt-6 max-w-2xl rounded-xl border border-accent-400/40 bg-accent-50 px-4 py-3 text-sm text-primary-800 dark:border-accent-400/30 dark:bg-primary-800 dark:text-accent-200">
+          <p className="border-accent-400/40 bg-accent-50 text-primary-800 dark:border-accent-400/30 dark:bg-primary-800 dark:text-accent-200 mt-6 max-w-2xl rounded-xl border px-4 py-3 text-sm">
             {t('learn.drafts.notice')}
           </p>
         ) : null}
@@ -118,7 +118,7 @@ export default function ArticleIndexPage() {
             ))}
           </ul>
         ) : filteredArticles.length === 0 ? (
-          <p className="mt-12 rounded-2xl border border-dashed border-primary-500/30 p-8 text-center text-ink/60 dark:border-primary-700/60 dark:text-paper/60">
+          <p className="border-primary-500/30 text-ink/60 dark:border-primary-700/60 dark:text-paper/60 mt-12 rounded-2xl border border-dashed p-8 text-center">
             {t('learn.articles.empty')}
           </p>
         ) : (
@@ -152,35 +152,30 @@ function IndexCard({ article, dateLocale }: IndexCardProps) {
       to={localizePath(`/learn/articles/${slug}`)}
       className="card group flex flex-col overflow-hidden transition-transform hover:-translate-y-0.5"
     >
-      <ArticleCover
-        slug={slug}
-        label={topicLabel}
-        image={article.heroImage}
-        alt={title}
-      />
+      <ArticleCover slug={slug} label={topicLabel} image={article.heroImage} alt={title} />
       <div className="flex flex-1 flex-col p-6">
-        <h2 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+        <h2 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 font-serif text-xl font-semibold">
           {title}
           {isDraft ? (
-            <span className="ms-2 rounded bg-accent-100 px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wider text-accent-700">
+            <span className="bg-accent-100 text-accent-700 ms-2 rounded px-2 py-0.5 align-middle text-[10px] font-semibold uppercase tracking-wider">
               {t('articlesPage.draft')}
             </span>
           ) : null}
         </h2>
-        <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">{excerpt}</p>
+        <p className="text-ink/70 dark:text-paper/70 mt-2 flex-1 text-sm">{excerpt}</p>
         {tags && tags.length > 0 ? (
           <ul className="mt-4 flex flex-wrap gap-1.5">
             {tags.slice(0, 3).map((tg) => (
               <li
                 key={tg}
-                className="rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-medium text-primary-700 dark:bg-primary-700/60 dark:text-accent-200"
+                className="bg-primary-50 text-primary-700 dark:bg-primary-700/60 dark:text-accent-200 rounded-full px-2 py-0.5 text-[11px] font-medium"
               >
                 {tg}
               </li>
             ))}
           </ul>
         ) : null}
-        <div className="mt-5 flex items-center justify-between text-xs text-ink/50 dark:text-paper/60">
+        <div className="text-ink/50 dark:text-paper/60 mt-5 flex items-center justify-between text-xs">
           <span>{formatDate(publishedAt, dateLocale)}</span>
           <span>{t('learn.readingTime', { minutes: readingTimeMinutes(body) })}</span>
         </div>

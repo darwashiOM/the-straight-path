@@ -15,11 +15,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 
 import { getDb } from './firebase';
 import { pickLocale, type ArticleDoc, type Locale } from './content-schema';
-import {
-  DEFAULT_CHANNELS,
-  DEFAULT_FAQS,
-  DEFAULT_RESOURCES,
-} from './content-defaults';
+import { DEFAULT_CHANNELS, DEFAULT_FAQS, DEFAULT_RESOURCES } from './content-defaults';
 
 export type SearchItemType = 'article' | 'faq' | 'resource' | 'social';
 
@@ -77,7 +73,10 @@ async function fetchFaqs(locale: Locale) {
     }
     return snap.docs.map((d) => {
       const data = d.data() as {
-        translations: { en: { question: string; answer: string }; ar?: { question: string; answer: string } };
+        translations: {
+          en: { question: string; answer: string };
+          ar?: { question: string; answer: string };
+        };
       };
       const tr = pickLocale(data.translations, locale);
       return { id: d.id, question: tr.question, answer: tr.answer };
@@ -102,7 +101,10 @@ async function fetchResources(locale: Locale) {
     return snap.docs.map((d) => {
       const data = d.data() as {
         url: string;
-        translations: { en: { title: string; description: string }; ar?: { title: string; description: string } };
+        translations: {
+          en: { title: string; description: string };
+          ar?: { title: string; description: string };
+        };
       };
       const tr = pickLocale(data.translations, locale);
       return { id: d.id, title: tr.title, description: tr.description, url: data.url };
@@ -127,7 +129,10 @@ async function fetchChannels(locale: Locale) {
     return snap.docs.map((d) => {
       const data = d.data() as {
         url: string;
-        translations: { en: { name: string; description: string }; ar?: { name: string; description: string } };
+        translations: {
+          en: { name: string; description: string };
+          ar?: { name: string; description: string };
+        };
       };
       const tr = pickLocale(data.translations, locale);
       return { id: d.id, name: tr.name, description: tr.description, url: data.url };

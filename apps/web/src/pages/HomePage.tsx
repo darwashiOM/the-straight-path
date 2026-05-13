@@ -68,15 +68,14 @@ export default function HomePage() {
   const featuredSetting = useSiteSetting('featured', locale);
   const articlesQuery = usePublishedArticles(locale);
 
-  const sections =
-    ((sectionsSetting.data?.data as HomepageSectionsData | undefined)?.sections ?? [
-      { id: 'hero', visible: true, order: 0 },
-      { id: 'featured', visible: true, order: 1 },
-      { id: 'learnRow', visible: true, order: 2 },
-      { id: 'quranBanner', visible: true, order: 3 },
-      { id: 'quickLinks', visible: true, order: 4 },
-      { id: 'aboutPreview', visible: true, order: 5 },
-    ]) as HomepageSection[];
+  const sections = ((sectionsSetting.data?.data as HomepageSectionsData | undefined)?.sections ?? [
+    { id: 'hero', visible: true, order: 0 },
+    { id: 'featured', visible: true, order: 1 },
+    { id: 'learnRow', visible: true, order: 2 },
+    { id: 'quranBanner', visible: true, order: 3 },
+    { id: 'quickLinks', visible: true, order: 4 },
+    { id: 'aboutPreview', visible: true, order: 5 },
+  ]) as HomepageSection[];
 
   const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
     mode: 'newest' as const,
@@ -86,9 +85,7 @@ export default function HomePage() {
     locale,
   );
 
-  const quickLinkItems = (
-    (quickLinks.data?.data?.items as QuickLinkItem[] | undefined) ?? []
-  )
+  const quickLinkItems = ((quickLinks.data?.data?.items as QuickLinkItem[] | undefined) ?? [])
     .filter((i) => i && i.visible !== false)
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
@@ -124,19 +121,19 @@ export default function HomePage() {
     return (
       <section
         key="hero"
-        className="relative overflow-hidden bg-gradient-to-b from-primary-50 to-paper py-24 md:py-32 dark:from-primary-800 dark:to-primary-900"
+        className="from-primary-50 to-paper dark:from-primary-800 dark:to-primary-900 relative overflow-hidden bg-gradient-to-b py-24 md:py-32"
       >
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {heroCopy ? (
               <>
-                <p className="mb-4 font-serif text-sm uppercase tracking-widest text-accent-500">
+                <p className="text-accent-500 mb-4 font-serif text-sm uppercase tracking-widest">
                   {heroCopy.eyebrow}
                 </p>
-                <h1 className="text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-7xl">
+                <h1 className="text-primary-700 dark:text-accent-300 text-balance font-serif text-5xl font-semibold md:text-7xl">
                   {heroCopy.title}
                 </h1>
-                <p className="text-pretty mt-6 text-lg text-ink/70 dark:text-paper/80 md:text-xl">
+                <p className="text-ink/70 dark:text-paper/80 mt-6 text-pretty text-lg md:text-xl">
                   {heroCopy.subtitle}
                 </p>
                 <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -181,14 +178,14 @@ export default function HomePage() {
                 />
               </div>
               <div className="col-span-3 p-8 md:p-12">
-                <span className="text-xs font-semibold uppercase tracking-wider text-accent-500">
+                <span className="text-accent-500 text-xs font-semibold uppercase tracking-wider">
                   {t('home.featured.eyebrow')}
                 </span>
-                <h2 className="mt-3 font-serif text-3xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300 md:text-4xl">
+                <h2 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 mt-3 font-serif text-3xl font-semibold md:text-4xl">
                   {featured.title}
                 </h2>
-                <p className="mt-4 text-ink/70 dark:text-paper/70">{featured.excerpt}</p>
-                <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-accent-400">
+                <p className="text-ink/70 dark:text-paper/70 mt-4">{featured.excerpt}</p>
+                <span className="text-primary-600 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold">
                   {t('home.featured.readArticle')}{' '}
                   <ArrowRight size={14} className={arrowIconClass} />
                 </span>
@@ -212,23 +209,23 @@ export default function HomePage() {
 
   function renderLearnRow() {
     return (
-      <section key="learnRow" className="bg-white py-20 dark:bg-primary-800/40">
+      <section key="learnRow" className="dark:bg-primary-800/40 bg-white py-20">
         <Container>
           <div className="mb-10 flex items-end justify-between gap-4">
             <div>
-              <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+              <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
                 <BookOpen size={14} className="mb-0.5 inline" /> {t('home.learnEyebrow')}
               </p>
-              <h2 className="mt-2 font-serif text-3xl font-semibold text-primary-700 dark:text-accent-300 md:text-4xl">
+              <h2 className="text-primary-700 dark:text-accent-300 mt-2 font-serif text-3xl font-semibold md:text-4xl">
                 {t('home.sections.learn')}
               </h2>
-              <p className="mt-3 max-w-xl text-sm text-ink/60 dark:text-paper/70">
+              <p className="text-ink/60 dark:text-paper/70 mt-3 max-w-xl text-sm">
                 {t('learn.description')}
               </p>
             </div>
             <Link
               to={localizePath('/learn')}
-              className="text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-accent-400"
+              className="text-primary-600 hover:text-primary-700 dark:text-accent-400 text-sm font-semibold"
             >
               {t('home.sections.viewAll')} {arrow}
             </Link>
@@ -257,13 +254,13 @@ export default function HomePage() {
                       alt={a.title}
                     />
                     <div className="flex flex-1 flex-col p-6">
-                      <h3 className="font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+                      <h3 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 font-serif text-xl font-semibold">
                         {a.title}
                       </h3>
-                      <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">
+                      <p className="text-ink/70 dark:text-paper/70 mt-2 flex-1 text-sm">
                         {a.excerpt}
                       </p>
-                      <div className="mt-5 flex items-center justify-between text-xs text-ink/50 dark:text-paper/60">
+                      <div className="text-ink/50 dark:text-paper/60 mt-5 flex items-center justify-between text-xs">
                         <span>{formatDate(a.publishedAt, dateLocale)}</span>
                         <span>
                           {t('learn.readingTime', { minutes: readingTimeMinutes(a.body) })}
@@ -282,18 +279,18 @@ export default function HomePage() {
 
   function renderQuranBanner() {
     return (
-      <section key="quranBanner" className="bg-primary-700 py-20 text-paper dark:bg-primary-900">
+      <section key="quranBanner" className="bg-primary-700 text-paper dark:bg-primary-900 py-20">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {quranCopy ? (
               <>
-                <p className="font-serif text-sm uppercase tracking-widest text-accent-300">
+                <p className="text-accent-300 font-serif text-sm uppercase tracking-widest">
                   {quranCopy.eyebrow ?? t('home.sections.quran')}
                 </p>
                 <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
                   {quranCopy.headline}
                 </h2>
-                <p className="mt-6 text-lg text-paper/80">{quranCopy.body}</p>
+                <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
                 <a
                   href={quranCtaUrl}
                   target="_blank"
@@ -341,18 +338,18 @@ export default function HomePage() {
 
   function renderAboutPreview() {
     return (
-      <section key="aboutPreview" className="bg-paper py-20 dark:bg-primary-900">
+      <section key="aboutPreview" className="bg-paper dark:bg-primary-900 py-20">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {aboutCopy ? (
               <>
-                <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+                <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
                   {aboutCopy.eyebrow}
                 </p>
-                <h2 className="mt-3 font-serif text-4xl font-semibold text-primary-700 dark:text-accent-300">
+                <h2 className="text-primary-700 dark:text-accent-300 mt-3 font-serif text-4xl font-semibold">
                   {aboutCopy.headline}
                 </h2>
-                <p className="mt-6 text-lg text-ink/70 dark:text-paper/80">{aboutCopy.body}</p>
+                <p className="text-ink/70 dark:text-paper/80 mt-6 text-lg">{aboutCopy.body}</p>
                 <Link to={localizePath('/about')} className="btn-ghost mt-8">
                   {aboutCopy.cta}
                 </Link>
@@ -404,14 +401,14 @@ function FeatureLink({
 }) {
   return (
     <Link to={to} className="card group flex flex-col p-6 transition-all hover:-translate-y-0.5">
-      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-700 dark:bg-primary-800 dark:text-accent-300">
+      <div className="bg-primary-50 text-primary-700 dark:bg-primary-800 dark:text-accent-300 mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full">
         {icon}
       </div>
-      <h3 className="font-serif text-lg font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+      <h3 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 font-serif text-lg font-semibold">
         {title}
       </h3>
-      <p className="mt-2 text-sm text-ink/70 dark:text-paper/70">{desc}</p>
-      <span className="mt-4 text-xs font-semibold text-primary-600 dark:text-accent-400">
+      <p className="text-ink/70 dark:text-paper/70 mt-2 text-sm">{desc}</p>
+      <span className="text-primary-600 dark:text-accent-400 mt-4 text-xs font-semibold">
         {exploreLabel} {arrow}
       </span>
     </Link>

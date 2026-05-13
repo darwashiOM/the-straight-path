@@ -81,12 +81,15 @@ const RESOURCES = 'resources';
 const FAQS = 'faqs';
 const CHANNELS = 'channels';
 
-async function listOrdered<T>(col: string): Promise<Array<T & { id: string; createdAt?: Timestamp; updatedAt?: Timestamp }>> {
+async function listOrdered<T>(
+  col: string,
+): Promise<Array<T & { id: string; createdAt?: Timestamp; updatedAt?: Timestamp }>> {
   const ref = collection(getDb(), col);
-  const snap = await getDocs(query(ref, orderBy('order', 'asc'))).catch(async () =>
-    getDocs(ref),
-  );
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as T & { createdAt?: Timestamp; updatedAt?: Timestamp }) }));
+  const snap = await getDocs(query(ref, orderBy('order', 'asc'))).catch(async () => getDocs(ref));
+  return snap.docs.map((d) => ({
+    id: d.id,
+    ...(d.data() as T & { createdAt?: Timestamp; updatedAt?: Timestamp }),
+  }));
 }
 
 async function saveDoc<T>(col: string, id: string | null, data: T): Promise<string> {
@@ -118,7 +121,11 @@ async function removeDoc(col: string, id: string): Promise<void> {
 
 // ---------- Resources ----------
 
-export type ResourceRecord = ResourceDoc & { id: string; createdAt?: Timestamp; updatedAt?: Timestamp };
+export type ResourceRecord = ResourceDoc & {
+  id: string;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+};
 
 export async function listResourcesV2(): Promise<ResourceRecord[]> {
   return listOrdered<ResourceDoc>(RESOURCES);
@@ -150,7 +157,11 @@ export async function deleteFaqV2(id: string): Promise<void> {
 
 // ---------- Channels ----------
 
-export type ChannelRecord = ChannelDoc & { id: string; createdAt?: Timestamp; updatedAt?: Timestamp };
+export type ChannelRecord = ChannelDoc & {
+  id: string;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+};
 
 export async function listChannelsV2(): Promise<ChannelRecord[]> {
   return listOrdered<ChannelDoc>(CHANNELS);

@@ -8,7 +8,15 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, ExternalLink, HelpCircle, Link as LinkIcon, Search, Users, X } from 'lucide-react';
+import {
+  BookOpen,
+  ExternalLink,
+  HelpCircle,
+  Link as LinkIcon,
+  Search,
+  Users,
+  X,
+} from 'lucide-react';
 import type Fuse from 'fuse.js';
 
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
@@ -29,7 +37,10 @@ interface SearchDialogProps {
 const RECENT_KEY = 'tsp:recent-searches';
 const MAX_RECENT = 5;
 
-const TYPE_META: Record<SearchItemType, { labelKey: string; defaultLabel: string; Icon: typeof BookOpen }> = {
+const TYPE_META: Record<
+  SearchItemType,
+  { labelKey: string; defaultLabel: string; Icon: typeof BookOpen }
+> = {
   article: { labelKey: 'search.groups.articles', defaultLabel: 'Articles', Icon: BookOpen },
   faq: { labelKey: 'search.groups.faq', defaultLabel: 'FAQ', Icon: HelpCircle },
   resource: { labelKey: 'search.groups.resources', defaultLabel: 'Resources', Icon: LinkIcon },
@@ -75,7 +86,7 @@ function highlight(text: string, indices: readonly [number, number][] | undefine
         p.match ? (
           <mark
             key={i}
-            className="rounded bg-accent-100 px-0.5 text-primary-900 dark:bg-accent-500/30 dark:text-accent-100"
+            className="bg-accent-100 text-primary-900 dark:bg-accent-500/30 dark:text-accent-100 rounded px-0.5"
           >
             {p.text}
           </mark>
@@ -223,14 +234,14 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
       role="dialog"
       aria-modal="true"
       aria-label={t('search.dialogLabel', { defaultValue: 'Search the site' }) as string}
-      className="fixed inset-0 z-50 flex items-start justify-center bg-primary-900/60 p-4 pt-[10vh] backdrop-blur-sm animate-fade-in"
+      className="bg-primary-900/60 animate-fade-in fixed inset-0 z-50 flex items-start justify-center p-4 pt-[10vh] backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-lg ring-1 ring-primary-500/10 dark:bg-primary-800 dark:ring-primary-700/40"
+        className="ring-primary-500/10 dark:bg-primary-800 dark:ring-primary-700/40 w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-lg ring-1"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-3 border-b border-primary-500/10 px-4 py-3 dark:border-primary-700/40">
+        <div className="border-primary-500/10 dark:border-primary-700/40 flex items-center gap-3 border-b px-4 py-3">
           <Search size={18} aria-hidden="true" className="text-primary-500 dark:text-accent-300" />
           <input
             ref={inputRef}
@@ -238,9 +249,13 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={t('search.placeholder', { defaultValue: 'Search articles, FAQ, resources…' }) as string}
+            placeholder={
+              t('search.placeholder', {
+                defaultValue: 'Search articles, FAQ, resources…',
+              }) as string
+            }
             aria-label={t('search.placeholder', { defaultValue: 'Search' }) as string}
-            className="flex-1 bg-transparent text-base text-ink placeholder:text-ink/40 focus:outline-none dark:text-paper dark:placeholder:text-paper/40"
+            className="text-ink placeholder:text-ink/40 dark:text-paper dark:placeholder:text-paper/40 flex-1 bg-transparent text-base focus:outline-none"
             autoComplete="off"
             spellCheck={false}
           />
@@ -248,7 +263,7 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
             type="button"
             onClick={onClose}
             aria-label={t('search.close', { defaultValue: 'Close' }) as string}
-            className="rounded-md p-1 text-ink/60 hover:bg-primary-50 hover:text-ink dark:text-paper/60 dark:hover:bg-primary-700 dark:hover:text-paper"
+            className="text-ink/60 hover:bg-primary-50 hover:text-ink dark:text-paper/60 dark:hover:bg-primary-700 dark:hover:text-paper rounded-md p-1"
           >
             <X size={16} aria-hidden="true" />
           </button>
@@ -259,7 +274,7 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
             <div className="p-4">
               {recent.length ? (
                 <>
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-paper/50">
+                  <h3 className="text-ink/50 dark:text-paper/50 mb-2 text-xs font-semibold uppercase tracking-wider">
                     {t('search.recent', { defaultValue: 'Recent searches' }) as string}
                   </h3>
                   <ul className="flex flex-wrap gap-2">
@@ -268,7 +283,7 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
                         <button
                           type="button"
                           onClick={() => setQuery(r)}
-                          className="rounded-full border border-primary-500/20 px-3 py-1 text-xs text-ink/70 transition-colors hover:border-primary-500/40 hover:bg-primary-50 dark:border-primary-700/60 dark:text-paper/70 dark:hover:bg-primary-700"
+                          className="border-primary-500/20 text-ink/70 hover:border-primary-500/40 hover:bg-primary-50 dark:border-primary-700/60 dark:text-paper/70 dark:hover:bg-primary-700 rounded-full border px-3 py-1 text-xs transition-colors"
                         >
                           {r}
                         </button>
@@ -277,13 +292,13 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
                   </ul>
                 </>
               ) : (
-                <p className="text-center text-sm text-ink/50 dark:text-paper/50">
+                <p className="text-ink/50 dark:text-paper/50 text-center text-sm">
                   {t('search.empty', { defaultValue: 'Start typing to search.' }) as string}
                 </p>
               )}
             </div>
           ) : grouped.length === 0 ? (
-            <p className="p-6 text-center text-sm text-ink/50 dark:text-paper/50">
+            <p className="text-ink/50 dark:text-paper/50 p-6 text-center text-sm">
               {t('search.noResults', { defaultValue: 'No results found.' }) as string}
             </p>
           ) : (
@@ -293,7 +308,7 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
                 const GroupIcon = meta.Icon;
                 return (
                   <li key={group.type}>
-                    <h3 className="mb-1 flex items-center gap-2 px-2 text-xs font-semibold uppercase tracking-wider text-ink/50 dark:text-paper/50">
+                    <h3 className="text-ink/50 dark:text-paper/50 mb-1 flex items-center gap-2 px-2 text-xs font-semibold uppercase tracking-wider">
                       <GroupIcon size={12} aria-hidden="true" />
                       {t(meta.labelKey, { defaultValue: meta.defaultLabel }) as string}
                     </h3>
@@ -317,11 +332,11 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
                                   : 'hover:bg-primary-50/50 dark:hover:bg-primary-700/50',
                               )}
                             >
-                              <span className="mt-1 text-primary-500 dark:text-accent-300">
+                              <span className="text-primary-500 dark:text-accent-300 mt-1">
                                 <GroupIcon size={14} aria-hidden="true" />
                               </span>
-                              <span className="flex-1 min-w-0">
-                                <span className="flex items-center gap-1 font-medium text-primary-700 dark:text-accent-300">
+                              <span className="min-w-0 flex-1">
+                                <span className="text-primary-700 dark:text-accent-300 flex items-center gap-1 font-medium">
                                   <span className="truncate">
                                     {highlight(r.item.title, titleMatch?.indices)}
                                   </span>
@@ -329,11 +344,11 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
                                     <ExternalLink
                                       size={12}
                                       aria-hidden="true"
-                                      className="shrink-0 text-ink/40 dark:text-paper/40"
+                                      className="text-ink/40 dark:text-paper/40 shrink-0"
                                     />
                                   ) : null}
                                 </span>
-                                <span className="mt-0.5 line-clamp-1 block text-xs text-ink/60 dark:text-paper/60">
+                                <span className="text-ink/60 dark:text-paper/60 mt-0.5 line-clamp-1 block text-xs">
                                   {highlight(r.item.body, bodyMatch?.indices)}
                                 </span>
                               </span>
@@ -349,15 +364,21 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-primary-500/10 px-4 py-2 text-2xs text-ink/50 dark:border-primary-700/40 dark:text-paper/50">
+        <div className="border-primary-500/10 text-2xs text-ink/50 dark:border-primary-700/40 dark:text-paper/50 flex items-center justify-between border-t px-4 py-2">
           <span className="flex items-center gap-2">
-            <kbd className="rounded border border-primary-500/20 bg-paper px-1.5 py-0.5 font-mono dark:border-primary-700/60 dark:bg-primary-900">↑↓</kbd>
+            <kbd className="border-primary-500/20 bg-paper dark:border-primary-700/60 dark:bg-primary-900 rounded border px-1.5 py-0.5 font-mono">
+              ↑↓
+            </kbd>
             {t('search.hints.navigate', { defaultValue: 'navigate' }) as string}
-            <kbd className="rounded border border-primary-500/20 bg-paper px-1.5 py-0.5 font-mono dark:border-primary-700/60 dark:bg-primary-900">↵</kbd>
+            <kbd className="border-primary-500/20 bg-paper dark:border-primary-700/60 dark:bg-primary-900 rounded border px-1.5 py-0.5 font-mono">
+              ↵
+            </kbd>
             {t('search.hints.select', { defaultValue: 'select' }) as string}
           </span>
           <span className="flex items-center gap-2">
-            <kbd className="rounded border border-primary-500/20 bg-paper px-1.5 py-0.5 font-mono dark:border-primary-700/60 dark:bg-primary-900">Esc</kbd>
+            <kbd className="border-primary-500/20 bg-paper dark:border-primary-700/60 dark:bg-primary-900 rounded border px-1.5 py-0.5 font-mono">
+              Esc
+            </kbd>
             {t('search.hints.close', { defaultValue: 'close' }) as string}
           </span>
         </div>

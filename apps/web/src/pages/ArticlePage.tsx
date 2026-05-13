@@ -59,16 +59,7 @@ export default function ArticlePage() {
     );
   }
 
-  const {
-    slug: articleSlug,
-    title,
-    excerpt,
-    body,
-    publishedAt,
-    author,
-    tags,
-    heroImage,
-  } = article;
+  const { slug: articleSlug, title, excerpt, body, publishedAt, author, tags, heroImage } = article;
 
   // The back-arrow points "backwards" in the reading direction: left in LTR,
   // right in RTL. Using two icons keeps the chevron semantically correct.
@@ -117,7 +108,7 @@ export default function ArticlePage() {
               Articles / <title>. */}
           <nav
             aria-label={t('nav.breadcrumbs', 'Breadcrumb') as string}
-            className="text-sm text-ink/60 dark:text-paper/60"
+            className="text-ink/60 dark:text-paper/60 text-sm"
           >
             <ol className="flex flex-wrap items-center gap-1">
               <li>
@@ -155,7 +146,7 @@ export default function ArticlePage() {
               </li>
               <li
                 aria-current="page"
-                className="max-w-[18rem] truncate text-primary-700 dark:text-accent-300"
+                className="text-primary-700 dark:text-accent-300 max-w-[18rem] truncate"
               >
                 {title}
               </li>
@@ -164,19 +155,19 @@ export default function ArticlePage() {
 
           <Link
             to={localizePath('/learn/articles')}
-            className="mt-6 inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 dark:text-accent-400"
+            className="text-primary-600 hover:text-primary-700 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm"
           >
             <BackIcon size={14} /> {t('articlesPage.backToArticles')}
           </Link>
 
-          <header className="mt-8 border-b border-primary-500/10 pb-8 dark:border-primary-700/40">
-            <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+          <header className="border-primary-500/10 dark:border-primary-700/40 mt-8 border-b pb-8">
+            <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
               {formatDate(publishedAt, dateLocale)} · {author}
             </p>
-            <h1 className="mt-3 text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
+            <h1 className="text-primary-700 dark:text-accent-300 mt-3 text-balance font-serif text-5xl font-semibold md:text-6xl">
               {title}
             </h1>
-            <p className="text-pretty mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
+            <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-pretty text-lg">
               {excerpt}
             </p>
           </header>
@@ -202,7 +193,7 @@ export default function ArticlePage() {
           {/* Arabic UX note for English-only bodies. */}
           {locale === 'ar' ? (
             <div
-              className="mx-auto mt-8 max-w-prose rounded-xl border border-accent-300/50 bg-accent-50/60 p-4 text-sm text-primary-700 dark:border-accent-500/30 dark:bg-primary-800/60 dark:text-accent-200"
+              className="border-accent-300/50 bg-accent-50/60 text-primary-700 dark:border-accent-500/30 dark:bg-primary-800/60 dark:text-accent-200 mx-auto mt-8 max-w-prose rounded-xl border p-4 text-sm"
               role="note"
             >
               {t('articlesPage.arabicComingSoon')}
@@ -215,7 +206,7 @@ export default function ArticlePage() {
             <div className="min-w-0 flex-1">
               <div
                 ref={bodyRef}
-                className="prose prose-lg mx-auto dark:prose-invert prose-p:leading-[1.8] prose-blockquote:border-l-4 prose-blockquote:border-accent-400 prose-blockquote:bg-accent-50/40 dark:prose-blockquote:bg-primary-800/40 prose-blockquote:px-6 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:rounded-r-lg first-of-type:prose-p:first-letter:float-left first-of-type:prose-p:first-letter:mr-2 first-of-type:prose-p:first-letter:font-serif first-of-type:prose-p:first-letter:text-6xl first-of-type:prose-p:first-letter:leading-[0.9] first-of-type:prose-p:first-letter:text-accent-500"
+                className="prose prose-lg dark:prose-invert prose-p:leading-[1.8] prose-blockquote:border-l-4 prose-blockquote:border-accent-400 prose-blockquote:bg-accent-50/40 dark:prose-blockquote:bg-primary-800/40 prose-blockquote:px-6 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:rounded-r-lg first-of-type:prose-p:first-letter:float-left first-of-type:prose-p:first-letter:mr-2 first-of-type:prose-p:first-letter:font-serif first-of-type:prose-p:first-letter:text-6xl first-of-type:prose-p:first-letter:leading-[0.9] first-of-type:prose-p:first-letter:text-accent-500 mx-auto"
                 lang={locale === 'ar' ? 'en' : undefined}
                 dir={locale === 'ar' ? 'ltr' : undefined}
               >
@@ -225,11 +216,7 @@ export default function ArticlePage() {
               <div className="mx-auto max-w-prose">
                 <ShareButtons url={canonicalUrl} title={title} description={excerpt} />
 
-                <RelatedArticles
-                  currentSlug={articleSlug}
-                  tags={tags}
-                  pool={publishedArticles}
-                />
+                <RelatedArticles currentSlug={articleSlug} tags={tags} pool={publishedArticles} />
 
                 <PrevNextArticle currentSlug={articleSlug} pool={publishedArticles} />
               </div>

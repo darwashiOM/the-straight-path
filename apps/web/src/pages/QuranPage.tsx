@@ -51,17 +51,17 @@ export default function QuranPage() {
           { name: t('nav.quran'), url: canonicalFor('/quran', locale) },
         ])}
       />
-      <section className="bg-gradient-to-b from-primary-50 to-paper py-24 dark:from-primary-800 dark:to-primary-900">
+      <section className="from-primary-50 to-paper dark:from-primary-800 dark:to-primary-900 bg-gradient-to-b py-24">
         <Container className="text-center">
           {bannerCopy ? (
             <>
-              <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+              <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
                 {bannerCopy.eyebrow}
               </p>
-              <h1 className="mx-auto mt-3 max-w-3xl text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
+              <h1 className="text-primary-700 dark:text-accent-300 mx-auto mt-3 max-w-3xl text-balance font-serif text-5xl font-semibold md:text-6xl">
                 {bannerCopy.headline}
               </h1>
-              <p className="mx-auto mt-6 max-w-2xl text-lg text-ink/70 dark:text-paper/80">
+              <p className="text-ink/70 dark:text-paper/80 mx-auto mt-6 max-w-2xl text-lg">
                 {bannerCopy.body}
               </p>
               <a
@@ -84,10 +84,10 @@ export default function QuranPage() {
           <div className="mx-auto max-w-3xl">
             {aboutCopy ? (
               <>
-                <h2 className="font-serif text-3xl font-semibold text-primary-700 dark:text-accent-300">
+                <h2 className="text-primary-700 dark:text-accent-300 font-serif text-3xl font-semibold">
                   {aboutCopy.title}
                 </h2>
-                <div className="prose prose-lg mt-6 dark:prose-invert">
+                <div className="prose prose-lg dark:prose-invert mt-6">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{aboutCopy.body}</ReactMarkdown>
                 </div>
               </>

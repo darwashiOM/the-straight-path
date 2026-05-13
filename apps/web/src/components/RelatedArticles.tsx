@@ -45,19 +45,13 @@ export default function RelatedArticles({
     const candidates = articles.filter((a) => a.slug !== currentSlug);
 
     const scored = candidates.map((a) => {
-      const overlap = (a.tags ?? []).reduce(
-        (acc, tag) => acc + (tagSet.has(tag) ? 1 : 0),
-        0,
-      );
+      const overlap = (a.tags ?? []).reduce((acc, tag) => acc + (tagSet.has(tag) ? 1 : 0), 0);
       return { article: a, score: overlap };
     });
 
     scored.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
-      return (
-        new Date(b.article.publishedAt).getTime() -
-        new Date(a.article.publishedAt).getTime()
-      );
+      return new Date(b.article.publishedAt).getTime() - new Date(a.article.publishedAt).getTime();
     });
 
     return scored.slice(0, limit).map((s) => s.article);
@@ -71,7 +65,7 @@ export default function RelatedArticles({
     <section className="mt-16" aria-labelledby="related-articles-heading">
       <h2
         id="related-articles-heading"
-        className="font-serif text-2xl text-primary-700 dark:text-accent-300"
+        className="text-primary-700 dark:text-accent-300 font-serif text-2xl"
       >
         {heading}
       </h2>
@@ -80,15 +74,15 @@ export default function RelatedArticles({
           <li key={a.slug}>
             <Link
               to={localizePath(`/learn/articles/${a.slug}`)}
-              className="group block h-full rounded-xl border border-primary-500/10 bg-paper/50 p-5 transition hover:border-accent-400 hover:shadow-md dark:border-primary-700/40 dark:bg-primary-800/40"
+              className="border-primary-500/10 bg-paper/50 hover:border-accent-400 dark:border-primary-700/40 dark:bg-primary-800/40 group block h-full rounded-xl border p-5 transition hover:shadow-md"
             >
-              <p className="font-serif text-xs uppercase tracking-widest text-accent-500">
+              <p className="text-accent-500 font-serif text-xs uppercase tracking-widest">
                 {formatDate(a.publishedAt, dateLocale)}
               </p>
-              <h3 className="mt-2 font-serif text-lg text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200">
+              <h3 className="text-primary-700 group-hover:text-primary-800 dark:text-accent-300 dark:group-hover:text-accent-200 mt-2 font-serif text-lg">
                 {a.title}
               </h3>
-              <p className="mt-2 line-clamp-3 text-sm text-ink/70 dark:text-paper/70">
+              <p className="text-ink/70 dark:text-paper/70 mt-2 line-clamp-3 text-sm">
                 {a.excerpt}
               </p>
             </Link>

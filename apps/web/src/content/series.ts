@@ -32,7 +32,7 @@ export const series: Series[] = [
     slug: 'foundations-of-islam',
     title: 'Foundations of Islam',
     description:
-      "Start at the beginning. A short reading order covering what Islam is, why we were created, the core practices, and a ten-point overview for the curious.",
+      'Start at the beginning. A short reading order covering what Islam is, why we were created, the core practices, and a ten-point overview for the curious.',
     articleSlugs: [
       'what-is-islam',
       'why-did-god-create-you',

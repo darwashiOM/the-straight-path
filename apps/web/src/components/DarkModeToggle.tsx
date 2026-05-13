@@ -25,8 +25,7 @@ export default function DarkModeToggle({ className }: DarkModeToggleProps) {
   const nextMode: ThemeMode = mode === 'light' ? 'dark' : mode === 'dark' ? 'system' : 'light';
 
   const label = t(`theme.current.${mode}`, {
-    defaultValue:
-      mode === 'light' ? 'Light mode' : mode === 'dark' ? 'Dark mode' : 'System theme',
+    defaultValue: mode === 'light' ? 'Light mode' : mode === 'dark' ? 'Dark mode' : 'System theme',
   }) as string;
   const nextLabel = t(`theme.switchTo.${nextMode}`, {
     defaultValue:

@@ -172,9 +172,7 @@ export async function deleteTopic(slug: string): Promise<void> {
 const PAGES = 'pages';
 export type PageSlug = 'about' | 'privacy' | 'terms';
 
-export async function getPageAdmin(
-  slug: PageSlug,
-): Promise<(PageDoc & { id: string }) | null> {
+export async function getPageAdmin(slug: PageSlug): Promise<(PageDoc & { id: string }) | null> {
   const snap = await getDoc(doc(getDb(), PAGES, slug));
   if (!snap.exists()) return null;
   const data = snap.data() as Partial<PageDoc>;

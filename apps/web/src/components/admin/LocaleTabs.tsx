@@ -30,7 +30,7 @@ export default function LocaleTabs({ locale, onChange, enBadge, arBadge, classNa
       role="tablist"
       aria-label="Translation locale"
       className={
-        'inline-flex items-center gap-1 rounded-lg border border-primary-100 bg-white p-1 ' +
+        'border-primary-100 inline-flex items-center gap-1 rounded-lg border bg-white p-1 ' +
         (className ?? '')
       }
     >
