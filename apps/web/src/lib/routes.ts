@@ -2,8 +2,7 @@
  * Route manifest — single source of truth for every indexable page on The Straight Path.
  *
  * Page components import their SEO metadata from here via `getRouteMeta(path)`.
- * The sitemap generator (`scripts/generate-sitemap.mjs`) reads this file to produce
- * English + Arabic entries with hreflang alternates.
+ * The sitemap generator (`scripts/generate-sitemap.mjs`) reads this file.
  *
  * Keep descriptions 140–160 characters, action-oriented, no keyword stuffing.
  */
@@ -11,7 +10,7 @@
 export type ChangeFreq = 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
 
 export interface RouteMeta {
-  /** Path, without locale prefix, always starting with "/". */
+  /** Path, always starting with "/". */
   path: string;
   /** Page title fragment (will be suffixed with the site name). */
   title: string;
@@ -23,19 +22,14 @@ export interface RouteMeta {
   changefreq: ChangeFreq;
   /** If true, omit from sitemap and set robots to noindex. */
   noindex?: boolean;
-  /** If true, the route has an Arabic equivalent at `/ar${path}`. */
-  hasArabic?: boolean;
 }
 
 export const SITE_ORIGIN = 'https://thestraightpath.app';
 
-/**
- * Canonical URL for a given route + locale.
- * English uses the bare path; Arabic is prefixed with `/ar`.
- */
-export function canonicalFor(path: string, locale: 'en' | 'ar' = 'en'): string {
+/** Canonical URL for a given route. The optional second arg is ignored
+ *  (kept for back-compat with callers that used to pass a locale). */
+export function canonicalFor(path: string, _legacyLocale?: string): string {
   const clean = path === '/' ? '' : path.replace(/\/$/, '');
-  if (locale === 'ar') return `${SITE_ORIGIN}/ar${clean || ''}` + (path === '/' ? '/' : '');
   return `${SITE_ORIGIN}${clean || ''}` + (path === '/' ? '/' : '');
 }
 
@@ -47,7 +41,6 @@ export const routes: RouteMeta[] = [
       'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God — written for seekers of any background.',
     priority: 1.0,
     changefreq: 'weekly',
-    hasArabic: true,
   },
   {
     path: '/learn',
@@ -56,7 +49,6 @@ export const routes: RouteMeta[] = [
       'A curated set of essays introducing the core beliefs, character, and practices of Islam — written in plain, reader-first language for seekers of any background.',
     priority: 0.9,
     changefreq: 'weekly',
-    hasArabic: true,
   },
   {
     path: '/learn/articles',
@@ -65,7 +57,6 @@ export const routes: RouteMeta[] = [
       'Browse every essay on The Straight Path — reflections on the creed, the Prophet Muḥammad ﷺ, the Qur’an, character, and the path of sincere submission to God.',
     priority: 0.9,
     changefreq: 'weekly',
-    hasArabic: true,
   },
   {
     path: '/quran',
@@ -74,7 +65,6 @@ export const routes: RouteMeta[] = [
       'Read the Qur’an — the word of God, preserved word-for-word for over 1,400 years. We point to Quran.com for a trusted, free, multilingual reading experience.',
     priority: 0.8,
     changefreq: 'monthly',
-    hasArabic: true,
   },
   {
     path: '/faq',
@@ -83,7 +73,6 @@ export const routes: RouteMeta[] = [
       'Plain, honest answers to common questions about Islam — what Muslims believe, how to become Muslim, the five pillars, and where to ask anything else.',
     priority: 0.8,
     changefreq: 'monthly',
-    hasArabic: true,
   },
   {
     path: '/resources',
@@ -92,7 +81,6 @@ export const routes: RouteMeta[] = [
       'Trusted external sites for further study of the Qur’an, hadith, and Islamic thought — hand-picked for accuracy, accessibility, and a reader-first tone.',
     priority: 0.6,
     changefreq: 'monthly',
-    hasArabic: true,
   },
   {
     path: '/social',
@@ -101,7 +89,6 @@ export const routes: RouteMeta[] = [
       'A small, curated list of video channels that explain Islam with clarity and good character — short reminders, long dialogues, and research-driven explainers.',
     priority: 0.6,
     changefreq: 'monthly',
-    hasArabic: true,
   },
   {
     path: '/about',
@@ -110,7 +97,6 @@ export const routes: RouteMeta[] = [
       'About The Straight Path — an independent, volunteer effort to share Islam in a calm, pastoral voice. Read our principles, our method, and how we are funded.',
     priority: 0.5,
     changefreq: 'yearly',
-    hasArabic: true,
   },
   {
     path: '/contact',
@@ -119,7 +105,6 @@ export const routes: RouteMeta[] = [
       'Have a question about Islam, a correction, or a thought? Send us a message — we read every one and reply with care. No pressure, just conversation.',
     priority: 0.5,
     changefreq: 'yearly',
-    hasArabic: true,
   },
   {
     path: '/privacy',
@@ -128,7 +113,6 @@ export const routes: RouteMeta[] = [
       'How The Straight Path handles personal data — what we collect, what we do not, how long we retain messages, and how to request deletion.',
     priority: 0.2,
     changefreq: 'yearly',
-    hasArabic: false,
   },
   {
     path: '/terms',
@@ -137,7 +121,6 @@ export const routes: RouteMeta[] = [
       'The terms governing use of The Straight Path — good-faith content, MIT-licensed code, CC BY 4.0 original text, and basic expectations of respectful use.',
     priority: 0.2,
     changefreq: 'yearly',
-    hasArabic: false,
   },
 ];
 

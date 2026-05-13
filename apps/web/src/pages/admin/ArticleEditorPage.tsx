@@ -1,18 +1,17 @@
 /**
- * ArticleEditorPage (V2) — side-by-side English + Arabic editor for the new
- * nested-translations article schema.
+ * ArticleEditorPage (V2) — English-only editor for the nested-translations
+ * article schema.
  *
  * Layout:
  *   - Left column (sticky): structured, non-translated fields — slug, status,
  *     dates, author, topic, series, tags, hero image, delete.
- *   - Right column: locale tabs (EN / AR). Each tab has title + excerpt +
- *     markdown body + live preview.
+ *   - Right column: title + excerpt + markdown body + live preview.
  *   - Bottom: sticky save bar (Save draft / Publish).
  */
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Copy, Eye, ImageIcon, Save, Send, Trash2 } from 'lucide-react';
+import { ArrowLeft, Eye, ImageIcon, Save, Send, Trash2 } from 'lucide-react';
 
 import MediaPicker from '@/components/admin/MediaPicker';
 
@@ -23,10 +22,9 @@ import {
   listTopics,
   saveArticleV2,
 } from '@/lib/admin-firestore';
-import type { ArticleDoc, ArticleStatus, Locale } from '@/lib/content-schema';
+import type { ArticleDoc, ArticleStatus } from '@/lib/content-schema';
 import { stagePreview } from '@/lib/preview';
 import { articles as mdxArticles } from '@/content/articles';
-import LocaleTabs from '@/components/admin/LocaleTabs';
 import MarkdownPreview from '@/components/admin/MarkdownPreview';
 import TagInput from '@/components/admin/TagInput';
 
@@ -43,8 +41,6 @@ interface FormState {
   series: string;
   heroImage: string;
   en: LocaleFields;
-  ar: LocaleFields;
-  arEnabled: boolean;
 }
 
 const EMPTY_LOCALE: LocaleFields = { title: '', excerpt: '', body: '' };
@@ -60,8 +56,6 @@ const EMPTY: FormState = {
   series: '',
   heroImage: '',
   en: { ...EMPTY_LOCALE },
-  ar: { ...EMPTY_LOCALE },
-  arEnabled: false,
 };
 
 function slugify(raw: string): string {
@@ -92,7 +86,6 @@ export default function ArticleEditorPage() {
 
   const [form, setForm] = useState<FormState>(EMPTY);
   const [slugDirty, setSlugDirty] = useState(false);
-  const [locale, setLocale] = useState<Locale>('en');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -120,14 +113,6 @@ export default function ArticleEditorPage() {
           excerpt: d.translations.en?.excerpt ?? '',
           body: d.translations.en?.body ?? '',
         },
-        ar: d.translations.ar
-          ? {
-              title: d.translations.ar.title ?? '',
-              excerpt: d.translations.ar.excerpt ?? '',
-              body: d.translations.ar.body ?? '',
-            }
-          : { ...EMPTY_LOCALE },
-        arEnabled: Boolean(d.translations.ar),
       });
       setSlugDirty(true);
     }
@@ -144,16 +129,8 @@ export default function ArticleEditorPage() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function patchLocale(which: Locale, fields: Partial<LocaleFields>) {
-    setForm((f) => ({ ...f, [which]: { ...f[which], ...fields } }));
-  }
-
-  function copyEnToAr(fields: Array<keyof LocaleFields>) {
-    setForm((f) => {
-      const next = { ...f.ar };
-      for (const field of fields) next[field] = f.en[field];
-      return { ...f, ar: next, arEnabled: true };
-    });
+  function patchEn(fields: Partial<LocaleFields>) {
+    setForm((f) => ({ ...f, en: { ...f.en, ...fields } }));
   }
 
   function buildPayload(status: ArticleStatus): ArticleDoc {
@@ -169,9 +146,6 @@ export default function ArticleEditorPage() {
       ...(form.heroImage ? { heroImage: form.heroImage } : {}),
       translations: {
         en: { ...form.en },
-        ...(form.arEnabled && (form.ar.title || form.ar.body || form.ar.excerpt)
-          ? { ar: { ...form.ar } }
-          : {}),
       },
       schemaVersion: 1,
     };
@@ -234,8 +208,7 @@ export default function ArticleEditorPage() {
     return <div className="text-ink/60 text-sm">Loading…</div>;
   }
 
-  const active = form[locale];
-  const arMissing = !form.arEnabled || !(form.ar.title || form.ar.body);
+  const active = form.en;
 
   return (
     <form onSubmit={(e) => void submit(e)} className="space-y-4 pb-20">
@@ -413,80 +386,39 @@ export default function ArticleEditorPage() {
           </div>
         </aside>
 
-        {/* ---------- Right: locale tabs + editor ---------- */}
+        {/* ---------- Right: editor ---------- */}
         <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <LocaleTabs
-              locale={locale}
-              onChange={setLocale}
-              arBadge={arMissing ? <span className="text-accent-700">missing</span> : null}
-            />
-            {locale === 'ar' && (
-              <div className="flex items-center gap-2">
-                {!form.arEnabled && (
-                  <button
-                    type="button"
-                    onClick={() => patch('arEnabled', true)}
-                    className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
-                  >
-                    Enable Arabic
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => copyEnToAr(['title', 'excerpt'])}
-                  className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
-                  title="Copy English title + excerpt into Arabic"
-                >
-                  <Copy className="h-3 w-3" />
-                  Copy EN → AR (title+excerpt)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => copyEnToAr(['title', 'excerpt', 'body'])}
-                  className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
-                >
-                  <Copy className="h-3 w-3" />
-                  Copy all
-                </button>
-              </div>
-            )}
-          </div>
-
           <div className="grid gap-4 xl:grid-cols-2">
             <div className="border-primary-100 space-y-4 rounded-xl border bg-white p-5 shadow-sm">
-              <Field label={`Title (${locale.toUpperCase()})`}>
+              <Field label="Title">
                 <input
                   type="text"
-                  required={locale === 'en'}
+                  required
                   value={active.title}
-                  onChange={(e) => patchLocale(locale, { title: e.target.value })}
+                  onChange={(e) => patchEn({ title: e.target.value })}
                   className={inputCls}
-                  dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                  lang={locale}
+                  lang="en"
                 />
               </Field>
 
               <Field label="Excerpt" hint="1–2 sentence summary used in listings and SEO.">
                 <textarea
                   value={active.excerpt}
-                  onChange={(e) => patchLocale(locale, { excerpt: e.target.value })}
+                  onChange={(e) => patchEn({ excerpt: e.target.value })}
                   rows={3}
                   className={inputCls}
-                  dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                  lang={locale}
+                  lang="en"
                 />
               </Field>
 
               <Field label="Body (Markdown)">
                 <textarea
                   value={active.body}
-                  onChange={(e) => patchLocale(locale, { body: e.target.value })}
+                  onChange={(e) => patchEn({ body: e.target.value })}
                   rows={24}
                   className={`${inputCls} font-mono text-xs leading-relaxed`}
                   placeholder="# Heading&#10;&#10;Your essay…"
-                  dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                  lang={locale}
+                  lang="en"
                 />
               </Field>
             </div>
@@ -494,9 +426,9 @@ export default function ArticleEditorPage() {
             <div className="border-primary-100 rounded-xl border bg-white p-5 shadow-sm">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-primary-700 font-serif text-lg">Preview</h3>
-                <span className="text-ink/50 text-xs">Live · {locale.toUpperCase()}</span>
+                <span className="text-ink/50 text-xs">Live</span>
               </div>
-              <div dir={locale === 'ar' ? 'rtl' : 'ltr'} lang={locale}>
+              <div lang="en">
                 {active.title && (
                   <h1 className="text-primary-700 mb-1 font-serif text-2xl">{active.title}</h1>
                 )}

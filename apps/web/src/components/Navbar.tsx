@@ -33,8 +33,7 @@ export default function Navbar() {
       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }, [navSetting.data]);
 
-  const labelFor = (item: NavItem) =>
-    locale === 'ar' ? item.labelAr || item.labelEn : item.labelEn;
+  const labelFor = (item: NavItem) => item.labelEn;
 
   return (
     <header className="border-primary-500/10 bg-paper/80 dark:border-primary-700/30 dark:bg-primary-900/80 sticky top-0 z-40 border-b backdrop-blur-md">

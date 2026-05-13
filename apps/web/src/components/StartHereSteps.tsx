@@ -31,8 +31,7 @@ export default function StartHereSteps({
   description,
 }: StartHereStepsProps) {
   const { t } = useTranslation();
-  const { localizePath, locale } = useLocalizedPath();
-  const arrowIconClass = locale === 'ar' ? 'rotate-180' : undefined;
+  const { localizePath } = useLocalizedPath();
 
   if (articles.length === 0) return null;
 
@@ -80,7 +79,7 @@ export default function StartHereSteps({
                 </h3>
                 <span className="text-primary-600 dark:text-accent-400 mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold">
                   {t('learn.startHere.step', { n: i + 1 })}
-                  <ArrowRight size={14} className={arrowIconClass} aria-hidden="true" />
+                  <ArrowRight size={14} aria-hidden="true" />
                 </span>
               </Link>
             </li>

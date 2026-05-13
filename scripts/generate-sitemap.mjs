@@ -6,8 +6,7 @@
  *   - apps/web/src/lib/routes.ts  (static routes with metadata)
  *   - apps/web/src/content/articles/*.mdx  (per-article URLs from frontmatter)
  *
- * Produces English + Arabic (/ar/...) entries with paired
- * <xhtml:link rel="alternate" hreflang="..." /> tags. Pure Node ESM, no deps.
+ * Pure Node ESM, no deps. English-only.
  */
 
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
@@ -22,9 +21,6 @@ const OUT_PATH = join(REPO_ROOT, 'apps', 'web', 'public', 'sitemap.xml');
 
 const SITE_ORIGIN = 'https://thestraightpath.app';
 
-// -- Parse routes.ts without a TS transpiler ---------------------------------
-// The file is a typed literal; we only need path / priority / changefreq /
-// hasArabic / noindex. A tolerant regex pass is enough — this file is ours.
 function parseRoutes() {
   const src = readFileSync(ROUTES_TS, 'utf8');
   const routesBlock = src.match(/export const routes:[^=]*=\s*\[([\s\S]*?)\n\];/);
@@ -32,7 +28,6 @@ function parseRoutes() {
   const body = routesBlock[1];
 
   const entries = [];
-  // Split on top-level braces; each entry is `{ ... },`
   const rx = /\{([\s\S]*?)\},?/g;
   let m;
   while ((m = rx.exec(body)) !== null) {
@@ -53,13 +48,11 @@ function parseRoutes() {
       priority: get('priority') ?? 0.5,
       changefreq: get('changefreq') ?? 'monthly',
       noindex: get('noindex') === true,
-      hasArabic: get('hasArabic') === true,
     });
   }
   return entries;
 }
 
-// -- Parse MDX frontmatter ---------------------------------------------------
 function parseFrontmatter(raw) {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?/);
   if (!match) return null;
@@ -94,7 +87,6 @@ function readArticles() {
   return out;
 }
 
-// -- Build the sitemap -------------------------------------------------------
 function xmlEscape(str) {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -104,37 +96,14 @@ function xmlEscape(str) {
     .replace(/'/g, '&apos;');
 }
 
-function urlEntry({ path, priority, changefreq, lastmod, hasArabic }) {
-  const enHref = `${SITE_ORIGIN}${path === '/' ? '/' : path}`;
-  const arHref = `${SITE_ORIGIN}/ar${path === '/' ? '/' : path}`;
-  const lines = [];
-  lines.push('  <url>');
-  lines.push(`    <loc>${xmlEscape(enHref)}</loc>`);
+function urlEntry({ path, priority, changefreq, lastmod }) {
+  const href = `${SITE_ORIGIN}${path === '/' ? '/' : path}`;
+  const lines = ['  <url>'];
+  lines.push(`    <loc>${xmlEscape(href)}</loc>`);
   if (lastmod) lines.push(`    <lastmod>${xmlEscape(lastmod)}</lastmod>`);
   lines.push(`    <changefreq>${xmlEscape(changefreq)}</changefreq>`);
   lines.push(`    <priority>${priority.toFixed(1)}</priority>`);
-  lines.push(`    <xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(enHref)}" />`);
-  if (hasArabic) {
-    lines.push(`    <xhtml:link rel="alternate" hreflang="ar" href="${xmlEscape(arHref)}" />`);
-  }
-  lines.push(
-    `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(enHref)}" />`,
-  );
   lines.push('  </url>');
-
-  if (hasArabic) {
-    lines.push('  <url>');
-    lines.push(`    <loc>${xmlEscape(arHref)}</loc>`);
-    if (lastmod) lines.push(`    <lastmod>${xmlEscape(lastmod)}</lastmod>`);
-    lines.push(`    <changefreq>${xmlEscape(changefreq)}</changefreq>`);
-    lines.push(`    <priority>${priority.toFixed(1)}</priority>`);
-    lines.push(`    <xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(enHref)}" />`);
-    lines.push(`    <xhtml:link rel="alternate" hreflang="ar" href="${xmlEscape(arHref)}" />`);
-    lines.push(
-      `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(enHref)}" />`,
-    );
-    lines.push('  </url>');
-  }
   return lines.join('\n');
 }
 
@@ -151,7 +120,6 @@ function build() {
         priority: r.priority,
         changefreq: r.changefreq,
         lastmod: today,
-        hasArabic: !!r.hasArabic,
       }),
     );
   }
@@ -162,21 +130,21 @@ function build() {
         priority: 0.8,
         changefreq: 'monthly',
         lastmod: a.publishedAt,
-        hasArabic: true,
       }),
     );
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.join('\n')}
 </urlset>
 `;
 
   writeFileSync(OUT_PATH, xml);
   const urlCount = (xml.match(/<url>/g) || []).length;
-  console.log(`Wrote ${OUT_PATH} (${urlCount} URLs across ${routes.length} static routes + ${articles.length} articles)`);
+  console.log(
+    `Wrote ${OUT_PATH} (${urlCount} URLs across ${routes.length} static routes + ${articles.length} articles)`,
+  );
 }
 
 build();

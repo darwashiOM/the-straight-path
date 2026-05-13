@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -27,7 +27,7 @@ export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: article, isLoading } = useArticle(slug, locale);
   const { data: publishedArticles } = usePublishedArticles(locale);
-  const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
+  const dateLocale = 'en-US';
 
   // Refs for progress bar (article scroll target) and TOC (body heading scan).
   const articleRef = useRef<HTMLElement>(null);
@@ -61,10 +61,9 @@ export default function ArticlePage() {
 
   const { slug: articleSlug, title, excerpt, body, publishedAt, author, tags, heroImage } = article;
 
-  // The back-arrow points "backwards" in the reading direction: left in LTR,
-  // right in RTL. Using two icons keeps the chevron semantically correct.
-  const BackIcon = locale === 'ar' ? ArrowRight : ArrowLeft;
-  const CrumbIcon = ChevronRight; // Visual direction handled by rtl text flow.
+  // The back-arrow points "backwards" in the reading direction (LTR-only now).
+  const BackIcon = ArrowLeft;
+  const CrumbIcon = ChevronRight;
 
   const canonicalUrl = canonicalFor(`/learn/articles/${articleSlug}`, locale);
 
@@ -190,16 +189,6 @@ export default function ArticlePage() {
             )}
           </div>
 
-          {/* Arabic UX note for English-only bodies. */}
-          {locale === 'ar' ? (
-            <div
-              className="border-accent-300/50 bg-accent-50/60 text-primary-700 dark:border-accent-500/30 dark:bg-primary-800/60 dark:text-accent-200 mx-auto mt-8 max-w-prose rounded-xl border p-4 text-sm"
-              role="note"
-            >
-              {t('articlesPage.arabicComingSoon')}
-            </div>
-          ) : null}
-
           {/* Two-column layout on lg+: article body + sticky TOC. On smaller
               screens the TOC is hidden and the body takes the full column. */}
           <div className="mt-12 lg:flex lg:items-start lg:gap-12">
@@ -207,8 +196,6 @@ export default function ArticlePage() {
               <div
                 ref={bodyRef}
                 className="prose prose-lg dark:prose-invert prose-p:leading-[1.8] prose-blockquote:border-l-4 prose-blockquote:border-accent-400 prose-blockquote:bg-accent-50/40 dark:prose-blockquote:bg-primary-800/40 prose-blockquote:px-6 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:rounded-r-lg first-of-type:prose-p:first-letter:float-left first-of-type:prose-p:first-letter:mr-2 first-of-type:prose-p:first-letter:font-serif first-of-type:prose-p:first-letter:text-6xl first-of-type:prose-p:first-letter:leading-[0.9] first-of-type:prose-p:first-letter:text-accent-500 mx-auto"
-                lang={locale === 'ar' ? 'en' : undefined}
-                dir={locale === 'ar' ? 'ltr' : undefined}
               >
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
               </div>

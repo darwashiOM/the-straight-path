@@ -28,7 +28,6 @@ export default function QuranPage() {
   const { t } = useTranslation();
   const { locale } = useLocalizedPath();
   const meta = getRouteMeta('/quran')!;
-  const arrowIconClass = locale === 'ar' ? 'rotate-180' : undefined;
 
   const banner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
   const about = useSiteSetting<QuranAboutCopy>('quranAbout', locale);
@@ -70,7 +69,7 @@ export default function QuranPage() {
                 rel="noopener noreferrer"
                 className="btn-primary mt-8"
               >
-                {bannerCopy.cta} <ArrowRight size={16} className={arrowIconClass} />
+                {bannerCopy.cta} <ArrowRight size={16} />
               </a>
             </>
           ) : (

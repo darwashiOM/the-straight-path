@@ -13,7 +13,7 @@ export default function SocialPage() {
   const { t } = useTranslation();
   const { locale, localizePath } = useLocalizedPath();
   const meta = getRouteMeta('/social')!;
-  const arrow = locale === 'ar' ? '←' : '→';
+  const arrow = '→';
 
   const { data: channels = [], isLoading } = useChannels(locale);
   const header = useSiteSetting<{ title: string; description: string }>('socialHeader', locale);

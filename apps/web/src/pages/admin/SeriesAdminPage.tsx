@@ -1,10 +1,10 @@
 /**
  * SeriesAdminPage — list + dialog editor for /series/{slug} docs.
  *
- * Each series is a curated, ordered sequence of article slugs plus
- * EN/AR translations of title + description. Articles are picked from
- * the V2 articles collection (listArticlesV2). The dialog also allows
- * manual slug entry as a fallback.
+ * Each series is a curated, ordered sequence of article slugs plus an
+ * English title + description. Articles are picked from the V2 articles
+ * collection (listArticlesV2). The dialog also allows manual slug entry
+ * as a fallback.
  */
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -23,7 +23,6 @@ function emptySeries(): SeriesDoc {
     articleSlugs: [],
     translations: {
       en: { title: '', description: '' },
-      ar: { title: '', description: '' },
     },
     schemaVersion: 1,
   };
@@ -68,7 +67,7 @@ export default function SeriesAdminPage() {
           <thead className="bg-primary-50 text-primary-700 text-left text-xs uppercase tracking-wide">
             <tr>
               <th className="px-4 py-3">Slug</th>
-              <th className="px-4 py-3">Title (EN)</th>
+              <th className="px-4 py-3">Title</th>
               <th className="px-4 py-3">Articles</th>
               <th className="px-4 py-3">Order</th>
               <th className="px-4 py-3"></th>
@@ -173,15 +172,6 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
       translations: { ...f.translations, en: { ...f.translations.en, [key]: value } },
     }));
   }
-  function setAr<K extends 'title' | 'description'>(key: K, value: string) {
-    setForm((f) => ({
-      ...f,
-      translations: {
-        ...f.translations,
-        ar: { ...(f.translations.ar ?? { title: '', description: '' }), [key]: value },
-      },
-    }));
-  }
 
   function moveArticle(idx: number, dir: -1 | 1) {
     setForm((f) => {
@@ -215,20 +205,15 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
       return;
     }
     if (!form.translations.en.title.trim()) {
-      setError('English title is required.');
+      setError('Title is required.');
       return;
     }
     setSaving(true);
     try {
-      // Drop empty AR block to avoid persisting "".
       const payload: SeriesDoc = {
         ...form,
         translations: {
           en: form.translations.en,
-          ...(form.translations.ar &&
-          (form.translations.ar.title.trim() || form.translations.ar.description.trim())
-            ? { ar: form.translations.ar }
-            : {}),
         },
       };
       await saveSeries(form.slug, payload);
@@ -300,52 +285,24 @@ function SeriesDialog({ initial, onClose, onSaved }: DialogProps) {
             </Field>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="border-primary-100 space-y-3 rounded-lg border p-3">
-              <div className="text-primary-700 text-xs font-semibold uppercase tracking-wide">
-                English
-              </div>
-              <Field label="Title">
-                <input
-                  type="text"
-                  required
-                  value={form.translations.en.title}
-                  onChange={(e) => setEn('title', e.target.value)}
-                  className={inputCls}
-                />
-              </Field>
-              <Field label="Description">
-                <textarea
-                  value={form.translations.en.description}
-                  onChange={(e) => setEn('description', e.target.value)}
-                  rows={3}
-                  className={inputCls}
-                />
-              </Field>
-            </div>
-            <div className="border-primary-100 space-y-3 rounded-lg border p-3">
-              <div className="text-primary-700 text-xs font-semibold uppercase tracking-wide">
-                Arabic (optional)
-              </div>
-              <Field label="Title">
-                <input
-                  type="text"
-                  dir="rtl"
-                  value={form.translations.ar?.title ?? ''}
-                  onChange={(e) => setAr('title', e.target.value)}
-                  className={inputCls}
-                />
-              </Field>
-              <Field label="Description">
-                <textarea
-                  dir="rtl"
-                  value={form.translations.ar?.description ?? ''}
-                  onChange={(e) => setAr('description', e.target.value)}
-                  rows={3}
-                  className={inputCls}
-                />
-              </Field>
-            </div>
+          <div className="border-primary-100 space-y-3 rounded-lg border p-3">
+            <Field label="Title">
+              <input
+                type="text"
+                required
+                value={form.translations.en.title}
+                onChange={(e) => setEn('title', e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+            <Field label="Description">
+              <textarea
+                value={form.translations.en.description}
+                onChange={(e) => setEn('description', e.target.value)}
+                rows={3}
+                className={inputCls}
+              />
+            </Field>
           </div>
 
           <div className="border-primary-100 rounded-lg border p-3">

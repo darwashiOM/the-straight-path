@@ -8,17 +8,20 @@
  */
 import type { Timestamp } from 'firebase/firestore';
 
-export type Locale = 'en' | 'ar';
+export type Locale = 'en';
 
+/**
+ * Wrapper retained so existing Firestore docs (which may carry an ignored
+ * `ar` field) still parse. Only `en` is read.
+ */
 export interface Translatable<T> {
   en: T;
+  /** Historical Arabic translation. No longer read. */
   ar?: T;
 }
 
-/** Unwrap a translation for a given locale; falls back to `en` when the
- *  requested locale is missing a value. */
-export function pickLocale<T>(tr: Translatable<T>, locale: Locale): T {
-  if (locale === 'ar' && tr.ar !== undefined) return tr.ar;
+/** Always returns the English value. */
+export function pickLocale<T>(tr: Translatable<T>, _locale?: Locale): T {
   return tr.en;
 }
 
@@ -180,15 +183,12 @@ export interface FeaturedData {
 export interface SeoDefaults {
   titleSuffix: string;
   defaultDescriptionEn: string;
-  defaultDescriptionAr: string;
   defaultOgImageUrl: string;
 }
 
 export interface SeoRouteOverride {
   titleEn?: string;
-  titleAr?: string;
   descriptionEn?: string;
-  descriptionAr?: string;
 }
 
 export interface SeoData {
@@ -201,9 +201,7 @@ export interface SeoData {
 export interface NotFoundPopularLink {
   to: string;
   labelEn: string;
-  labelAr: string;
   hintEn: string;
-  hintAr: string;
 }
 
 export interface NotFoundData {
@@ -249,7 +247,6 @@ export interface NavItem {
   to: string;
   key: string;
   labelEn: string;
-  labelAr: string;
   visible: boolean;
   order: number;
 }
@@ -271,9 +268,7 @@ export interface QuickLinkItem {
   visible: boolean;
   order: number;
   labelEn: string;
-  labelAr: string;
   descEn: string;
-  descAr: string;
 }
 
 export interface QuickLinksData {
@@ -289,13 +284,11 @@ export interface FooterNavLink {
   to: string;
   external?: boolean;
   labelEn: string;
-  labelAr: string;
 }
 
 export interface FooterNavColumn {
   id: string;
   titleEn: string;
-  titleAr: string;
   order: number;
   links: FooterNavLink[];
 }

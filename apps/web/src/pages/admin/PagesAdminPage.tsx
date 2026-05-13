@@ -1,7 +1,7 @@
 /**
  * PagesAdminPage — a tiny surface for the three fixed editorial pages:
- * About, Privacy, Terms. Each has an EN + optional AR translation with
- * a markdown body and live preview.
+ * About, Privacy, Terms. Each has an English markdown body with a live
+ * preview.
  */
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -85,7 +85,7 @@ function PageEditor({ slug, onClose }: { slug: PageSlug; onClose: () => void }) 
         <div className="border-primary-100 flex items-center justify-between border-b px-6 py-4">
           <div>
             <h3 className="text-primary-700 font-serif text-lg">{card.title}</h3>
-            <p className="text-ink/60 text-xs">/{slug} — edit EN and (optional) AR side-by-side.</p>
+            <p className="text-ink/60 text-xs">/{slug} — edit the English body.</p>
           </div>
           <button
             type="button"
@@ -124,9 +124,6 @@ interface FormProps {
 function PageForm({ slug, initial, onSaved }: FormProps) {
   const [enTitle, setEnTitle] = useState(initial?.translations.en.title ?? '');
   const [enBody, setEnBody] = useState(initial?.translations.en.body ?? '');
-  const [arEnabled, setArEnabled] = useState(Boolean(initial?.translations.ar));
-  const [arTitle, setArTitle] = useState(initial?.translations.ar?.title ?? '');
-  const [arBody, setArBody] = useState(initial?.translations.ar?.body ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -135,7 +132,7 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
     setError(null);
     setSaved(false);
     if (!enTitle.trim()) {
-      setError('English title is required.');
+      setError('Title is required.');
       return;
     }
     setSaving(true);
@@ -144,9 +141,6 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
         slug,
         translations: {
           en: { title: enTitle, body: enBody },
-          ...(arEnabled && (arTitle.trim() || arBody.trim())
-            ? { ar: { title: arTitle, body: arBody } }
-            : {}),
         },
         schemaVersion: 1,
       };
@@ -162,89 +156,35 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* EN pane */}
-        <section className="border-primary-100 rounded-xl border p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="text-primary-700 text-xs font-semibold uppercase tracking-wide">
-              English
-            </div>
+      <section className="border-primary-100 rounded-xl border p-4">
+        <label className="block">
+          <span className="text-ink/80 block text-sm font-medium">Title</span>
+          <input
+            type="text"
+            value={enTitle}
+            onChange={(e) => setEnTitle(e.target.value)}
+            required
+            className={inputCls}
+          />
+        </label>
+        <label className="mt-3 block">
+          <span className="text-ink/80 block text-sm font-medium">Body (Markdown)</span>
+          <textarea
+            value={enBody}
+            onChange={(e) => setEnBody(e.target.value)}
+            rows={18}
+            className={`${inputCls} font-mono text-xs leading-relaxed`}
+            placeholder="# Heading\n\nYour content…"
+          />
+        </label>
+        <div className="border-primary-100 bg-primary-50/30 mt-4 rounded-lg border p-3">
+          <div className="text-primary-700 mb-2 text-xs font-semibold uppercase tracking-wide">
+            Live preview
           </div>
-          <label className="block">
-            <span className="text-ink/80 block text-sm font-medium">Title</span>
-            <input
-              type="text"
-              value={enTitle}
-              onChange={(e) => setEnTitle(e.target.value)}
-              required
-              className={inputCls}
-            />
-          </label>
-          <label className="mt-3 block">
-            <span className="text-ink/80 block text-sm font-medium">Body (Markdown)</span>
-            <textarea
-              value={enBody}
-              onChange={(e) => setEnBody(e.target.value)}
-              rows={18}
-              className={`${inputCls} font-mono text-xs leading-relaxed`}
-              placeholder="# Heading\n\nYour content…"
-            />
-          </label>
-          <div className="border-primary-100 bg-primary-50/30 mt-4 rounded-lg border p-3">
-            <div className="text-primary-700 mb-2 text-xs font-semibold uppercase tracking-wide">
-              Live preview
-            </div>
-            {enTitle && <h1 className="text-primary-700 mb-1 font-serif text-xl">{enTitle}</h1>}
-            <MarkdownPreview source={enBody} />
-          </div>
-        </section>
-
-        {/* AR pane */}
-        <section className="border-primary-100 rounded-xl border p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="text-primary-700 text-xs font-semibold uppercase tracking-wide">
-              Arabic
-            </div>
-            <label className="text-ink/70 inline-flex items-center gap-2 text-xs">
-              <input
-                type="checkbox"
-                checked={arEnabled}
-                onChange={(e) => setArEnabled(e.target.checked)}
-              />
-              Include Arabic translation
-            </label>
-          </div>
-          <label className="block">
-            <span className="text-ink/80 block text-sm font-medium">Title</span>
-            <input
-              type="text"
-              dir="rtl"
-              value={arTitle}
-              onChange={(e) => setArTitle(e.target.value)}
-              disabled={!arEnabled}
-              className={inputCls}
-            />
-          </label>
-          <label className="mt-3 block">
-            <span className="text-ink/80 block text-sm font-medium">Body (Markdown)</span>
-            <textarea
-              dir="rtl"
-              value={arBody}
-              onChange={(e) => setArBody(e.target.value)}
-              disabled={!arEnabled}
-              rows={18}
-              className={`${inputCls} font-mono text-xs leading-relaxed`}
-            />
-          </label>
-          <div className="border-primary-100 bg-primary-50/30 mt-4 rounded-lg border p-3" dir="rtl">
-            <div className="text-primary-700 mb-2 text-xs font-semibold uppercase tracking-wide">
-              معاينة
-            </div>
-            {arTitle && <h1 className="text-primary-700 mb-1 font-serif text-xl">{arTitle}</h1>}
-            <MarkdownPreview source={arBody} />
-          </div>
-        </section>
-      </div>
+          {enTitle && <h1 className="text-primary-700 mb-1 font-serif text-xl">{enTitle}</h1>}
+          <MarkdownPreview source={enBody} />
+        </div>
+      </section>
 
       {error && (
         <div
@@ -269,9 +209,6 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
               slug,
               translations: {
                 en: { title: enTitle, body: enBody },
-                ...(arEnabled && (arTitle.trim() || arBody.trim())
-                  ? { ar: { title: arTitle, body: arBody } }
-                  : {}),
               },
               schemaVersion: 1,
             };

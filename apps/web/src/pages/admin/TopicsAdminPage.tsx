@@ -1,8 +1,8 @@
 /**
  * TopicsAdminPage — the lightest-weight editor we've got. Each row is a
- * slug + EN/AR label + order. We allow inline create via a row at the top
- * of the table and inline edit via a small form that expands underneath
- * the clicked row.
+ * slug + label + order. We allow inline create via a row at the top of
+ * the table and inline edit via a small form that expands underneath the
+ * clicked row.
  */
 import { type FormEvent, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -38,7 +38,6 @@ export default function TopicsAdminPage() {
   // Inline "new topic" row — kept separate from the edit state.
   const [newSlug, setNewSlug] = useState('');
   const [newEn, setNewEn] = useState('');
-  const [newAr, setNewAr] = useState('');
   const [newOrder, setNewOrder] = useState<number>(() => 10);
   const [newError, setNewError] = useState<string | null>(null);
 
@@ -46,13 +45,12 @@ export default function TopicsAdminPage() {
     mutationFn: async () => {
       const slug = slugify(newSlug);
       if (!slug) throw new Error('Slug is required.');
-      if (!newEn.trim()) throw new Error('English label is required.');
+      if (!newEn.trim()) throw new Error('Label is required.');
       const data: TopicDoc = {
         slug,
         order: Number.isFinite(newOrder) ? newOrder : 10,
         translations: {
           en: { label: newEn.trim() },
-          ...(newAr.trim() ? { ar: { label: newAr.trim() } } : {}),
         },
         schemaVersion: 1,
       };
@@ -61,7 +59,6 @@ export default function TopicsAdminPage() {
     onSuccess: async () => {
       setNewSlug('');
       setNewEn('');
-      setNewAr('');
       setNewOrder(10);
       setNewError(null);
       await qc.invalidateQueries({ queryKey: ['admin', 'topics'] });
@@ -99,8 +96,7 @@ export default function TopicsAdminPage() {
             <tr>
               <th className="w-24 px-4 py-3">Order</th>
               <th className="px-4 py-3">Slug</th>
-              <th className="px-4 py-3">Label (EN)</th>
-              <th className="px-4 py-3">Label (AR)</th>
+              <th className="px-4 py-3">Label</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -129,17 +125,7 @@ export default function TopicsAdminPage() {
                   type="text"
                   value={newEn}
                   onChange={(e) => setNewEn(e.target.value)}
-                  placeholder="Label in English"
-                  className={inputSmall}
-                />
-              </td>
-              <td className="px-4 py-2">
-                <input
-                  type="text"
-                  dir="rtl"
-                  value={newAr}
-                  onChange={(e) => setNewAr(e.target.value)}
-                  placeholder="التسمية (اختياري)"
+                  placeholder="Label"
                   className={inputSmall}
                 />
               </td>
@@ -159,7 +145,7 @@ export default function TopicsAdminPage() {
             {newError && (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={4}
                   className="border-sienna/30 bg-sienna/5 text-sienna border-t px-4 py-2 text-sm"
                 >
                   {newError}
@@ -169,14 +155,14 @@ export default function TopicsAdminPage() {
 
             {isLoading && (
               <tr>
-                <td colSpan={5} className="text-ink/50 px-4 py-6 text-center">
+                <td colSpan={4} className="text-ink/50 px-4 py-6 text-center">
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={5} className="text-ink/50 px-4 py-6 text-center">
+                <td colSpan={4} className="text-ink/50 px-4 py-6 text-center">
                   No topics yet. Add one using the row above.
                 </td>
               </tr>
@@ -264,9 +250,6 @@ function RowView({
         </td>
         <td className="text-ink/70 px-4 py-3 align-top font-mono text-xs">{row.slug}</td>
         <td className="text-ink/80 px-4 py-3 align-top">{row.translations.en.label}</td>
-        <td className="text-ink/80 px-4 py-3 align-top" dir="rtl">
-          {row.translations.ar?.label ?? ''}
-        </td>
         <td className="px-4 py-3 text-right align-top">
           <div className="flex items-center justify-end gap-3">
             <button
@@ -290,7 +273,7 @@ function RowView({
       </tr>
       {isEditing && (
         <tr>
-          <td colSpan={5} className="border-primary-100 bg-primary-50/20 border-t p-4">
+          <td colSpan={4} className="border-primary-100 bg-primary-50/20 border-t p-4">
             <InlineEdit row={row} onClose={onClose} onSaved={onSaved} />
           </td>
         </tr>
@@ -310,7 +293,6 @@ function InlineEdit({
 }) {
   const [order, setOrder] = useState<number>(row.order);
   const [en, setEn] = useState(row.translations.en.label);
-  const [ar, setAr] = useState(row.translations.ar?.label ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -318,7 +300,7 @@ function InlineEdit({
     e.preventDefault();
     setError(null);
     if (!en.trim()) {
-      setError('English label is required.');
+      setError('Label is required.');
       return;
     }
     setSaving(true);
@@ -328,7 +310,6 @@ function InlineEdit({
         order: Number.isFinite(order) ? order : 10,
         translations: {
           en: { label: en.trim() },
-          ...(ar.trim() ? { ar: { label: ar.trim() } } : {}),
         },
         schemaVersion: 1,
       };
@@ -343,7 +324,7 @@ function InlineEdit({
 
   return (
     <form onSubmit={(e) => void submit(e)} className="space-y-3">
-      <div className="grid gap-3 sm:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-3">
         <label className="block">
           <span className="text-ink/70 block text-xs font-medium">Slug</span>
           <input
@@ -363,21 +344,11 @@ function InlineEdit({
           />
         </label>
         <label className="block">
-          <span className="text-ink/70 block text-xs font-medium">Label (EN)</span>
+          <span className="text-ink/70 block text-xs font-medium">Label</span>
           <input
             type="text"
             value={en}
             onChange={(e) => setEn(e.target.value)}
-            className={inputSmall}
-          />
-        </label>
-        <label className="block">
-          <span className="text-ink/70 block text-xs font-medium">Label (AR)</span>
-          <input
-            type="text"
-            dir="rtl"
-            value={ar}
-            onChange={(e) => setAr(e.target.value)}
             className={inputSmall}
           />
         </label>

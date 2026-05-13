@@ -56,9 +56,8 @@ interface AboutPreviewCopy {
 export default function HomePage() {
   const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
-  const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
-  const arrow = locale === 'ar' ? '←' : '→';
-  const arrowIconClass = locale === 'ar' ? 'rotate-180' : undefined;
+  const dateLocale = 'en-US';
+  const arrow = '→';
 
   const hero = useSiteSetting<HeroCopy>('hero', locale);
   const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
@@ -138,8 +137,7 @@ export default function HomePage() {
                 </p>
                 <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
                   <Link to={localizePath('/learn/articles')} className="btn-primary">
-                    {heroCopy.ctaPrimary}{' '}
-                    <ArrowRight size={16} aria-hidden="true" className={arrowIconClass} />
+                    {heroCopy.ctaPrimary} <ArrowRight size={16} aria-hidden="true" />
                   </Link>
                   <Link to={localizePath('/quran')} className="btn-ghost">
                     {heroCopy.ctaSecondary}
@@ -186,8 +184,7 @@ export default function HomePage() {
                 </h2>
                 <p className="text-ink/70 dark:text-paper/70 mt-4">{featured.excerpt}</p>
                 <span className="text-primary-600 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold">
-                  {t('home.featured.readArticle')}{' '}
-                  <ArrowRight size={14} className={arrowIconClass} />
+                  {t('home.featured.readArticle')} <ArrowRight size={14} />
                 </span>
               </div>
             </Link>
@@ -297,7 +294,7 @@ export default function HomePage() {
                   rel="noopener noreferrer"
                   className="btn-accent mt-8"
                 >
-                  {quranCopy.cta} <ArrowRight size={16} className={arrowIconClass} />
+                  {quranCopy.cta} <ArrowRight size={16} />
                 </a>
               </>
             ) : (
@@ -316,8 +313,8 @@ export default function HomePage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {quickLinkItems.map((item, idx) => {
               const Icon = QUICK_LINK_ICON_MAP[item.icon] ?? Users;
-              const label = locale === 'ar' ? item.labelAr || item.labelEn : item.labelEn;
-              const desc = locale === 'ar' ? item.descAr || item.descEn : item.descEn;
+              const label = item.labelEn;
+              const desc = item.descEn;
               return (
                 <FeatureLink
                   key={`${item.to}-${idx}`}

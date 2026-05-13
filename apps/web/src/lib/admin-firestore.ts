@@ -101,7 +101,6 @@ function stripTimestamps(input: unknown): Record<string, unknown> {
 // ---------- Articles ----------
 
 export type ArticleStatus = 'draft' | 'published';
-export type ArticleLocale = 'en' | 'ar';
 
 export interface AdminArticle {
   id: string; // == slug
@@ -110,7 +109,7 @@ export interface AdminArticle {
   excerpt: string;
   body: string;
   status: ArticleStatus;
-  locale: ArticleLocale;
+  locale: 'en';
   author: string;
   tags: string[];
   heroImage?: string;

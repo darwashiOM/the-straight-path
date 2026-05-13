@@ -46,8 +46,8 @@ export default function PrevNextArticle({ currentSlug, pool }: PrevNextArticlePr
   const prevLabel = t('articlesPage.previousArticle', 'Previous article') as string;
   const nextLabel = t('articlesPage.nextArticle', 'Next article') as string;
 
-  const PrevIcon = locale === 'ar' ? ArrowRight : ArrowLeft;
-  const NextIcon = locale === 'ar' ? ArrowLeft : ArrowRight;
+  const PrevIcon = ArrowLeft;
+  const NextIcon = ArrowRight;
 
   return (
     <nav

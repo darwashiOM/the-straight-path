@@ -1,7 +1,7 @@
 /**
  * SiteSettingsPage — one card per `SiteSettingId`. Each card lets the admin
- * edit the English + Arabic translations of that surface side-by-side, plus
- * any structured `data` fields (currently: `startHere.articleSlugs`).
+ * edit the English translations of that surface, plus any structured `data`
+ * fields (currently: `startHere.articleSlugs`).
  *
  * Data loads from Firestore via `getSiteSetting()`; if the doc is absent we
  * fall back to the English defaults shipped in `content-defaults.ts` so
@@ -229,8 +229,6 @@ type Values = Record<string, string>;
 
 interface CardState {
   en: Values;
-  ar: Values;
-  arEnabled: boolean;
   articleSlugs: string[];
 }
 
@@ -245,8 +243,6 @@ function SettingCard({ spec, articles }: { spec: SettingSpec; articles: AdminArt
 
   const [state, setState] = useState<CardState>({
     en: {},
-    ar: {},
-    arEnabled: false,
     articleSlugs: [],
   });
   const [saving, setSaving] = useState(false);
@@ -257,32 +253,27 @@ function SettingCard({ spec, articles }: { spec: SettingSpec; articles: AdminArt
     if (query.isLoading) return;
     const doc = query.data;
     const enDefaults = (defaults?.translations.en ?? {}) as Values;
-    const arDefaults = (defaults?.translations.ar ?? {}) as Values;
     const enDoc = (doc?.translations?.en ?? {}) as Values;
-    const arDoc = (doc?.translations?.ar ?? {}) as Values;
     const slugs = Array.isArray(doc?.data?.articleSlugs)
       ? (doc?.data?.articleSlugs as string[])
       : ((defaults?.data?.articleSlugs as string[] | undefined) ?? []);
     setState({
       en: { ...enDefaults, ...enDoc },
-      ar: { ...arDefaults, ...arDoc },
-      arEnabled: Boolean(doc?.translations?.ar) || Boolean(defaults?.translations.ar),
       articleSlugs: slugs,
     });
   }, [query.data, query.isLoading, defaults]);
 
-  function patchLocale(which: 'en' | 'ar', key: string, value: string) {
-    setState((s) => ({ ...s, [which]: { ...s[which], [key]: value } }));
+  function patchEn(key: string, value: string) {
+    setState((s) => ({ ...s, en: { ...s.en, [key]: value } }));
   }
 
   function handlePreview() {
     const payload: {
-      translations: { en: Values; ar?: Values };
+      translations: { en: Values };
       data?: Record<string, unknown>;
     } = {
       translations: {
         en: pickFields(state.en, spec.fields),
-        ...(state.arEnabled ? { ar: pickFields(state.ar, spec.fields) } : {}),
       },
     };
     if (spec.hasData) {
@@ -298,12 +289,11 @@ function SettingCard({ spec, articles }: { spec: SettingSpec; articles: AdminArt
     setSaving(true);
     try {
       const payload: {
-        translations: { en: Values; ar?: Values };
+        translations: { en: Values };
         data?: Record<string, unknown>;
       } = {
         translations: {
           en: pickFields(state.en, spec.fields),
-          ...(state.arEnabled ? { ar: pickFields(state.ar, spec.fields) } : {}),
         },
       };
       if (spec.hasData) {
@@ -339,15 +329,6 @@ function SettingCard({ spec, articles }: { spec: SettingSpec; articles: AdminArt
             <Eye className="h-3 w-3" />
             Preview
           </button>
-          {!state.arEnabled && (
-            <button
-              type="button"
-              onClick={() => setState((s) => ({ ...s, arEnabled: true }))}
-              className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
-            >
-              Enable Arabic
-            </button>
-          )}
         </div>
       </header>
 
@@ -355,27 +336,7 @@ function SettingCard({ spec, articles }: { spec: SettingSpec; articles: AdminArt
         <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <LocalePane
-              locale="en"
-              fields={spec.fields}
-              values={state.en}
-              onChange={(k, v) => patchLocale('en', k, v)}
-            />
-            {state.arEnabled ? (
-              <LocalePane
-                locale="ar"
-                fields={spec.fields}
-                values={state.ar}
-                onChange={(k, v) => patchLocale('ar', k, v)}
-              />
-            ) : (
-              <div className="border-primary-100 bg-primary-50/30 text-ink/50 flex h-full min-h-[160px] items-center justify-center rounded-lg border border-dashed p-6 text-center text-sm">
-                Arabic translation not yet provided. Click{' '}
-                <span className="font-medium">Enable Arabic</span> to add one.
-              </div>
-            )}
-          </div>
+          <LocalePane fields={spec.fields} values={state.en} onChange={patchEn} />
 
           {spec.hasData && spec.id === 'startHere' && (
             <ArticleSlugList
@@ -422,25 +383,16 @@ function pickFields(values: Values, fields: FieldSpec[]): Values {
 // ---------- Locale pane ----------
 
 function LocalePane({
-  locale,
   fields,
   values,
   onChange,
 }: {
-  locale: 'en' | 'ar';
   fields: FieldSpec[];
   values: Values;
   onChange: (key: string, value: string) => void;
 }) {
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   return (
     <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-primary-700 text-sm font-semibold uppercase tracking-wide">
-          {locale === 'en' ? 'English' : 'Arabic'}
-        </h3>
-        <span className="text-ink/40 text-xs">{locale}</span>
-      </div>
       <div className="space-y-3">
         {fields.map((f) => (
           <label key={f.key} className="block">
@@ -450,8 +402,8 @@ function LocalePane({
                 value={values[f.key] ?? ''}
                 onChange={(e) => onChange(f.key, e.target.value)}
                 rows={f.type === 'markdown' ? 10 : 3}
-                dir={dir}
-                lang={locale}
+                dir="ltr"
+                lang="en"
                 className={
                   inputCls + (f.type === 'markdown' ? ' font-mono text-xs leading-relaxed' : '')
                 }
@@ -461,8 +413,8 @@ function LocalePane({
                 type={f.type === 'url' ? 'url' : 'text'}
                 value={values[f.key] ?? ''}
                 onChange={(e) => onChange(f.key, e.target.value)}
-                dir={dir}
-                lang={locale}
+                dir="ltr"
+                lang="en"
                 className={inputCls}
               />
             )}
@@ -620,8 +572,6 @@ function BrandCard() {
   });
 
   const [enVal, setEnVal] = useState<BrandTranslations>({ siteName: '', tagline: '' });
-  const [arVal, setArVal] = useState<BrandTranslations>({ siteName: '', tagline: '' });
-  const [arEnabled, setArEnabled] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
   const [ogImage, setOgImage] = useState('');
   const [pickerTarget, setPickerTarget] = useState<'logo' | 'og' | null>(null);
@@ -633,34 +583,24 @@ function BrandCard() {
     if (query.isLoading) return;
     const doc = query.data;
     const defEn = DEFAULT_BRAND_SETTING.translations.en;
-    const defAr = DEFAULT_BRAND_SETTING.translations.ar;
     const defData = (DEFAULT_BRAND_SETTING.data ?? {}) as BrandData;
     const docEn = doc?.translations?.en ?? ({} as BrandTranslations);
-    const docAr = doc?.translations?.ar;
     const docData = (doc?.data ?? {}) as BrandData;
     setEnVal({
       siteName: docEn.siteName ?? defEn.siteName,
       tagline: docEn.tagline ?? defEn.tagline ?? '',
     });
-    setArVal({
-      siteName: docAr?.siteName ?? defAr?.siteName ?? '',
-      tagline: docAr?.tagline ?? defAr?.tagline ?? '',
-    });
-    setArEnabled(Boolean(docAr) || Boolean(defAr));
     setLogoUrl(docData.logoUrl ?? defData.logoUrl ?? '');
     setOgImage(docData.ogImage ?? defData.ogImage ?? '');
   }, [query.data, query.isLoading]);
 
   function buildPayload() {
     const payload: {
-      translations: { en: BrandTranslations; ar?: BrandTranslations };
+      translations: { en: BrandTranslations };
       data?: Record<string, unknown>;
     } = {
       translations: {
         en: { siteName: enVal.siteName, tagline: enVal.tagline || undefined },
-        ...(arEnabled
-          ? { ar: { siteName: arVal.siteName, tagline: arVal.tagline || undefined } }
-          : {}),
       },
       data: { logoUrl: logoUrl.trim(), ogImage: ogImage.trim() },
     };
@@ -707,15 +647,6 @@ function BrandCard() {
             <Eye className="h-3 w-3" />
             Preview
           </button>
-          {!arEnabled && (
-            <button
-              type="button"
-              onClick={() => setArEnabled(true)}
-              className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
-            >
-              Enable Arabic
-            </button>
-          )}
         </div>
       </header>
 
@@ -723,25 +654,10 @@ function BrandCard() {
         <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <BrandLocalePane
-              locale="en"
-              values={enVal}
-              onChange={(patch) => setEnVal((v) => ({ ...v, ...patch }))}
-            />
-            {arEnabled ? (
-              <BrandLocalePane
-                locale="ar"
-                values={arVal}
-                onChange={(patch) => setArVal((v) => ({ ...v, ...patch }))}
-              />
-            ) : (
-              <div className="border-primary-100 bg-primary-50/30 text-ink/50 flex h-full min-h-[160px] items-center justify-center rounded-lg border border-dashed p-6 text-center text-sm">
-                Arabic translation not yet provided. Click{' '}
-                <span className="font-medium">Enable Arabic</span> to add one.
-              </div>
-            )}
-          </div>
+          <BrandLocalePane
+            values={enVal}
+            onChange={(patch) => setEnVal((v) => ({ ...v, ...patch }))}
+          />
 
           <div className="grid gap-5 md:grid-cols-2">
             <MediaField
@@ -802,23 +718,14 @@ function BrandCard() {
 }
 
 function BrandLocalePane({
-  locale,
   values,
   onChange,
 }: {
-  locale: 'en' | 'ar';
   values: BrandTranslations;
   onChange: (patch: Partial<BrandTranslations>) => void;
 }) {
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   return (
     <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-primary-700 text-sm font-semibold uppercase tracking-wide">
-          {locale === 'en' ? 'English' : 'Arabic'}
-        </h3>
-        <span className="text-ink/40 text-xs">{locale}</span>
-      </div>
       <div className="space-y-3">
         <label className="block">
           <span className="text-ink/70 block text-xs font-medium">Site name</span>
@@ -826,8 +733,8 @@ function BrandLocalePane({
             type="text"
             value={values.siteName}
             onChange={(e) => onChange({ siteName: e.target.value })}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -837,8 +744,8 @@ function BrandLocalePane({
             type="text"
             value={values.tagline ?? ''}
             onChange={(e) => onChange({ tagline: e.target.value })}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -974,7 +881,7 @@ function NavItemsCard() {
         to: '/',
         key: `item-${prev.length + 1}`,
         labelEn: 'New item',
-        labelAr: '',
+
         visible: true,
         order: prev.length,
       },
@@ -1053,8 +960,7 @@ function NavItemsCard() {
               <thead>
                 <tr className="text-ink/50 text-left text-xs uppercase tracking-wide">
                   <th className="px-2 py-2 font-medium">Order</th>
-                  <th className="px-2 py-2 font-medium">Label (EN)</th>
-                  <th className="px-2 py-2 font-medium">Label (AR)</th>
+                  <th className="px-2 py-2 font-medium">Label</th>
                   <th className="px-2 py-2 font-medium">Path</th>
                   <th className="px-2 py-2 font-medium">Visible</th>
                   <th className="px-2 py-2 font-medium" />
@@ -1092,16 +998,6 @@ function NavItemsCard() {
                           type="text"
                           value={it.labelEn}
                           onChange={(e) => patch(i, { labelEn: e.target.value })}
-                          className={inputCls + ' mt-0'}
-                        />
-                      </td>
-                      <td className="px-2 py-2 align-top">
-                        <input
-                          type="text"
-                          value={it.labelAr}
-                          onChange={(e) => patch(i, { labelAr: e.target.value })}
-                          dir="rtl"
-                          lang="ar"
                           className={inputCls + ' mt-0'}
                         />
                       </td>
@@ -1146,7 +1042,7 @@ function NavItemsCard() {
                 })}
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="text-ink/50 px-2 py-4 text-center text-xs italic">
+                    <td colSpan={5} className="text-ink/50 px-2 py-4 text-center text-xs italic">
                       No items. Click "Add item" to create one.
                     </td>
                   </tr>
@@ -1273,7 +1169,7 @@ function QuickLinksCard() {
         visible: true,
         order: prev.length,
         labelEn: 'New card',
-        labelAr: '',
+
         descEn: '',
         descAr: '',
       },
@@ -1390,7 +1286,7 @@ function QuickLinksCard() {
                   </div>
                   <div className="grid gap-3 md:grid-cols-2">
                     <label className="block">
-                      <span className="text-ink/70 block text-xs font-medium">Label (EN)</span>
+                      <span className="text-ink/70 block text-xs font-medium">Label</span>
                       <input
                         type="text"
                         value={it.labelEn}
@@ -1399,37 +1295,11 @@ function QuickLinksCard() {
                       />
                     </label>
                     <label className="block">
-                      <span className="text-ink/70 block text-xs font-medium">Label (AR)</span>
-                      <input
-                        type="text"
-                        value={it.labelAr}
-                        onChange={(e) => patch(i, { labelAr: e.target.value })}
-                        dir="rtl"
-                        lang="ar"
-                        className={inputCls}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-ink/70 block text-xs font-medium">
-                        Description (EN)
-                      </span>
+                      <span className="text-ink/70 block text-xs font-medium">Description</span>
                       <textarea
                         value={it.descEn}
                         onChange={(e) => patch(i, { descEn: e.target.value })}
                         rows={2}
-                        className={inputCls}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-ink/70 block text-xs font-medium">
-                        Description (AR)
-                      </span>
-                      <textarea
-                        value={it.descAr}
-                        onChange={(e) => patch(i, { descAr: e.target.value })}
-                        rows={2}
-                        dir="rtl"
-                        lang="ar"
                         className={inputCls}
                       />
                     </label>
@@ -1617,7 +1487,7 @@ function FooterNavCard() {
         i === ci
           ? {
               ...c,
-              links: [...c.links, { to: '/', labelEn: 'New link', labelAr: '', external: false }],
+              links: [...c.links, { to: '/', labelEn: 'New link', external: false }],
             }
           : c,
       ),
@@ -1634,7 +1504,7 @@ function FooterNavCard() {
           links: c.links.map((l) => ({
             to: l.to,
             labelEn: l.labelEn,
-            labelAr: l.labelAr,
+
             ...(l.external ? { external: true } : {}),
           })),
         })),
@@ -1669,7 +1539,7 @@ function FooterNavCard() {
             links: c.links.map((l) => ({
               to: l.to,
               labelEn: l.labelEn,
-              labelAr: l.labelAr,
+
               ...(l.external ? { external: true } : {}),
             })),
           })),
@@ -1753,7 +1623,7 @@ function FooterNavCard() {
                   </button>
                 </div>
               </div>
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className="grid gap-3 md:grid-cols-2">
                 <label className="block">
                   <span className="text-ink/70 block text-xs font-medium">ID</span>
                   <input
@@ -1764,22 +1634,11 @@ function FooterNavCard() {
                   />
                 </label>
                 <label className="block">
-                  <span className="text-ink/70 block text-xs font-medium">Title (EN)</span>
+                  <span className="text-ink/70 block text-xs font-medium">Title</span>
                   <input
                     type="text"
                     value={col.titleEn}
                     onChange={(e) => patchColumn(ci, { titleEn: e.target.value })}
-                    className={inputCls}
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-ink/70 block text-xs font-medium">Title (AR)</span>
-                  <input
-                    type="text"
-                    value={col.titleAr}
-                    onChange={(e) => patchColumn(ci, { titleAr: e.target.value })}
-                    dir="rtl"
-                    lang="ar"
                     className={inputCls}
                   />
                 </label>
@@ -1800,21 +1659,12 @@ function FooterNavCard() {
                         key={`${link.to}-${li}`}
                         className="border-primary-100 rounded-md border bg-white p-3"
                       >
-                        <div className="grid gap-2 md:grid-cols-[1fr_1fr_1fr_auto_auto]">
+                        <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto_auto]">
                           <input
                             type="text"
                             value={link.labelEn}
                             onChange={(e) => patchLink(ci, li, { labelEn: e.target.value })}
-                            placeholder="Label (EN)"
-                            className={inputCls + ' mt-0'}
-                          />
-                          <input
-                            type="text"
-                            value={link.labelAr}
-                            onChange={(e) => patchLink(ci, li, { labelAr: e.target.value })}
-                            placeholder="Label (AR)"
-                            dir="rtl"
-                            lang="ar"
+                            placeholder="Label"
                             className={inputCls + ' mt-0'}
                           />
                           <div>
@@ -1946,10 +1796,7 @@ interface ContactIntroFormLabels {
 }
 interface ContactIntroCardState {
   en: ContactIntroTranslations;
-  ar: ContactIntroTranslations;
-  arEnabled: boolean;
   labelsEn: ContactIntroFormLabels;
-  labelsAr: ContactIntroFormLabels;
 }
 
 const EMPTY_CONTACT_LABELS: ContactIntroFormLabels = {
@@ -1973,10 +1820,7 @@ function ContactIntroCard() {
 
   const [state, setState] = useState<ContactIntroCardState>({
     en: { eyebrow: '', title: '', body: '' },
-    ar: { eyebrow: '', title: '', body: '' },
-    arEnabled: false,
     labelsEn: EMPTY_CONTACT_LABELS,
-    labelsAr: EMPTY_CONTACT_LABELS,
   });
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -1986,45 +1830,32 @@ function ContactIntroCard() {
     if (query.isLoading) return;
     const doc = query.data;
     const enDoc = (doc?.translations?.en ?? {}) as unknown as Partial<ContactIntroTranslations>;
-    const arDoc = (doc?.translations?.ar ?? {}) as unknown as Partial<ContactIntroTranslations>;
     const enDef = (defaults?.translations?.en ??
       {}) as unknown as Partial<ContactIntroTranslations>;
-    const arDef = (defaults?.translations?.ar ??
-      {}) as unknown as Partial<ContactIntroTranslations>;
-    const docLabels = (doc?.data?.formLabels ?? {}) as Record<'en' | 'ar', ContactIntroFormLabels>;
-    const defLabels = (defaults?.data?.formLabels ?? {}) as Record<
-      'en' | 'ar',
-      ContactIntroFormLabels
-    >;
+    const docLabels = (doc?.data?.formLabels ?? {}) as Record<'en', ContactIntroFormLabels>;
+    const defLabels = (defaults?.data?.formLabels ?? {}) as Record<'en', ContactIntroFormLabels>;
     const baseEn: ContactIntroTranslations = { title: '', body: '' };
-    const baseAr: ContactIntroTranslations = { title: '', body: '' };
     setState({
       en: { ...baseEn, ...enDef, ...enDoc },
-      ar: { ...baseAr, ...arDef, ...arDoc },
-      arEnabled: Boolean(doc?.translations?.ar) || Boolean(defaults?.translations?.ar),
       labelsEn: { ...EMPTY_CONTACT_LABELS, ...defLabels.en, ...docLabels.en },
-      labelsAr: { ...EMPTY_CONTACT_LABELS, ...defLabels.ar, ...docLabels.ar },
     });
   }, [query.data, query.isLoading, defaults]);
 
-  function patchCopy(which: 'en' | 'ar', key: keyof ContactIntroTranslations, value: string) {
-    setState((s) => ({ ...s, [which]: { ...s[which], [key]: value } }));
+  function patchCopy(key: keyof ContactIntroTranslations, value: string) {
+    setState((s) => ({ ...s, en: { ...s.en, [key]: value } }));
   }
-  function patchLabel(which: 'en' | 'ar', key: keyof ContactIntroFormLabels, value: string) {
-    const k = which === 'en' ? 'labelsEn' : 'labelsAr';
-    setState((s) => ({ ...s, [k]: { ...s[k], [key]: value } }));
+  function patchLabel(key: keyof ContactIntroFormLabels, value: string) {
+    setState((s) => ({ ...s, labelsEn: { ...s.labelsEn, [key]: value } }));
   }
 
   function buildContactPayload() {
     return {
       translations: {
         en: state.en,
-        ...(state.arEnabled ? { ar: state.ar } : {}),
       },
       data: {
         formLabels: {
           en: state.labelsEn,
-          ...(state.arEnabled ? { ar: state.labelsAr } : {}),
         },
       },
     };
@@ -2070,15 +1901,6 @@ function ContactIntroCard() {
             <Eye className="h-3 w-3" />
             Preview
           </button>
-          {!state.arEnabled && (
-            <button
-              type="button"
-              onClick={() => setState((s) => ({ ...s, arEnabled: true }))}
-              className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
-            >
-              Enable Arabic
-            </button>
-          )}
         </div>
       </header>
 
@@ -2086,28 +1908,12 @@ function ContactIntroCard() {
         <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <ContactIntroPane
-              locale="en"
-              copy={state.en}
-              labels={state.labelsEn}
-              onCopy={(k, v) => patchCopy('en', k, v)}
-              onLabel={(k, v) => patchLabel('en', k, v)}
-            />
-            {state.arEnabled ? (
-              <ContactIntroPane
-                locale="ar"
-                copy={state.ar}
-                labels={state.labelsAr}
-                onCopy={(k, v) => patchCopy('ar', k, v)}
-                onLabel={(k, v) => patchLabel('ar', k, v)}
-              />
-            ) : (
-              <div className="border-primary-100 bg-primary-50/30 text-ink/50 flex h-full min-h-[160px] items-center justify-center rounded-lg border border-dashed p-6 text-center text-sm">
-                Arabic translation not yet provided.
-              </div>
-            )}
-          </div>
+          <ContactIntroPane
+            copy={state.en}
+            labels={state.labelsEn}
+            onCopy={patchCopy}
+            onLabel={patchLabel}
+          />
 
           {error && (
             <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
@@ -2138,19 +1944,16 @@ function ContactIntroCard() {
 }
 
 function ContactIntroPane({
-  locale,
   copy,
   labels,
   onCopy,
   onLabel,
 }: {
-  locale: 'en' | 'ar';
   copy: ContactIntroTranslations;
   labels: ContactIntroFormLabels;
   onCopy: (k: keyof ContactIntroTranslations, v: string) => void;
   onLabel: (k: keyof ContactIntroFormLabels, v: string) => void;
 }) {
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   const labelFields: Array<{ k: keyof ContactIntroFormLabels; l: string }> = [
     { k: 'name', l: 'Name field label' },
     { k: 'email', l: 'Email field label' },
@@ -2163,12 +1966,6 @@ function ContactIntroPane({
   ];
   return (
     <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-primary-700 text-sm font-semibold uppercase tracking-wide">
-          {locale === 'en' ? 'English' : 'Arabic'}
-        </h3>
-        <span className="text-ink/40 text-xs">{locale}</span>
-      </div>
       <div className="space-y-3">
         <label className="block">
           <span className="text-ink/70 block text-xs font-medium">Eyebrow (optional)</span>
@@ -2176,8 +1973,8 @@ function ContactIntroPane({
             type="text"
             value={copy.eyebrow ?? ''}
             onChange={(e) => onCopy('eyebrow', e.target.value)}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -2187,8 +1984,8 @@ function ContactIntroPane({
             type="text"
             value={copy.title ?? ''}
             onChange={(e) => onCopy('title', e.target.value)}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -2198,8 +1995,8 @@ function ContactIntroPane({
             value={copy.body ?? ''}
             onChange={(e) => onCopy('body', e.target.value)}
             rows={3}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -2213,8 +2010,8 @@ function ContactIntroPane({
                   type="text"
                   value={labels[f.k] ?? ''}
                   onChange={(e) => onLabel(f.k, e.target.value)}
-                  dir={dir}
-                  lang={locale}
+                  dir="ltr"
+                  lang="en"
                   className={inputCls}
                 />
               </label>
@@ -2243,8 +2040,6 @@ function NotFoundCard() {
   const defaults = DEFAULT_SITE_SETTINGS.find((d) => d.id === 'notFound');
 
   const [en, setEn] = useState<NotFoundTranslations>({ eyebrow: '', title: '', body: '' });
-  const [ar, setAr] = useState<NotFoundTranslations>({ eyebrow: '', title: '', body: '' });
-  const [arEnabled, setArEnabled] = useState(false);
   const [links, setLinks] = useState<NotFoundPopularLink[]>([]);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -2255,15 +2050,11 @@ function NotFoundCard() {
     const doc = query.data;
     const defTr = (defaults?.translations ?? {}) as {
       en?: NotFoundTranslations;
-      ar?: NotFoundTranslations;
     };
     const docTr = (doc?.translations ?? {}) as {
       en?: NotFoundTranslations;
-      ar?: NotFoundTranslations;
     };
     setEn({ eyebrow: '', title: '', body: '', ...defTr.en, ...docTr.en });
-    setAr({ eyebrow: '', title: '', body: '', ...defTr.ar, ...docTr.ar });
-    setArEnabled(Boolean(docTr.ar) || Boolean(defTr.ar));
     const data = (doc?.data ?? defaults?.data) as NotFoundData | undefined;
     setLinks(data?.popularLinks ?? []);
   }, [query.data, query.isLoading, defaults]);
@@ -2279,7 +2070,7 @@ function NotFoundCard() {
     setLinks(links.filter((_, idx) => idx !== i));
   }
   function addLink() {
-    setLinks([...links, { to: '/', labelEn: '', labelAr: '', hintEn: '', hintAr: '' }]);
+    setLinks([...links, { to: '/', labelEn: '', hintEn: '' }]);
   }
   function patchLink(i: number, key: keyof NotFoundPopularLink, value: string) {
     setLinks(links.map((l, idx) => (idx === i ? { ...l, [key]: value } : l)));
@@ -2289,7 +2080,6 @@ function NotFoundCard() {
     return {
       translations: {
         en,
-        ...(arEnabled ? { ar } : {}),
       },
       data: { popularLinks: links },
     };
@@ -2334,15 +2124,6 @@ function NotFoundCard() {
             <Eye className="h-3 w-3" />
             Preview
           </button>
-          {!arEnabled && (
-            <button
-              type="button"
-              onClick={() => setArEnabled(true)}
-              className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
-            >
-              Enable Arabic
-            </button>
-          )}
         </div>
       </header>
 
@@ -2350,16 +2131,7 @@ function NotFoundCard() {
         <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <NotFoundLocalePane locale="en" copy={en} onChange={setEn} />
-            {arEnabled ? (
-              <NotFoundLocalePane locale="ar" copy={ar} onChange={setAr} />
-            ) : (
-              <div className="border-primary-100 bg-primary-50/30 text-ink/50 flex h-full min-h-[160px] items-center justify-center rounded-lg border border-dashed p-6 text-center text-sm">
-                Arabic translation not yet provided.
-              </div>
-            )}
-          </div>
+          <NotFoundLocalePane copy={en} onChange={setEn} />
 
           <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
             <div className="mb-3 flex items-center justify-between">
@@ -2379,7 +2151,7 @@ function NotFoundCard() {
               {links.map((l, i) => (
                 <li
                   key={i}
-                  className="border-primary-100 grid gap-2 rounded-md border bg-white p-3 md:grid-cols-5"
+                  className="border-primary-100 grid gap-2 rounded-md border bg-white p-3 md:grid-cols-3"
                 >
                   <label className="block md:col-span-1">
                     <span className="text-ink/60 block text-xs">Path (to)</span>
@@ -2391,7 +2163,7 @@ function NotFoundCard() {
                     />
                   </label>
                   <label className="block md:col-span-1">
-                    <span className="text-ink/60 block text-xs">Label (en)</span>
+                    <span className="text-ink/60 block text-xs">Label</span>
                     <input
                       type="text"
                       value={l.labelEn}
@@ -2400,17 +2172,7 @@ function NotFoundCard() {
                     />
                   </label>
                   <label className="block md:col-span-1">
-                    <span className="text-ink/60 block text-xs">Label (ar)</span>
-                    <input
-                      type="text"
-                      value={l.labelAr}
-                      onChange={(e) => patchLink(i, 'labelAr', e.target.value)}
-                      dir="rtl"
-                      className={inputCls}
-                    />
-                  </label>
-                  <label className="block md:col-span-1">
-                    <span className="text-ink/60 block text-xs">Hint (en)</span>
+                    <span className="text-ink/60 block text-xs">Hint</span>
                     <input
                       type="text"
                       value={l.hintEn}
@@ -2418,17 +2180,7 @@ function NotFoundCard() {
                       className={inputCls}
                     />
                   </label>
-                  <label className="block md:col-span-1">
-                    <span className="text-ink/60 block text-xs">Hint (ar)</span>
-                    <input
-                      type="text"
-                      value={l.hintAr}
-                      onChange={(e) => patchLink(i, 'hintAr', e.target.value)}
-                      dir="rtl"
-                      className={inputCls}
-                    />
-                  </label>
-                  <div className="flex items-center gap-1 md:col-span-5 md:justify-end">
+                  <div className="flex items-center gap-1 md:col-span-3 md:justify-end">
                     <button
                       type="button"
                       onClick={() => moveLink(i, -1)}
@@ -2493,23 +2245,14 @@ function NotFoundCard() {
 }
 
 function NotFoundLocalePane({
-  locale,
   copy,
   onChange,
 }: {
-  locale: 'en' | 'ar';
   copy: NotFoundTranslations;
   onChange: (next: NotFoundTranslations) => void;
 }) {
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   return (
     <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-primary-700 text-sm font-semibold uppercase tracking-wide">
-          {locale === 'en' ? 'English' : 'Arabic'}
-        </h3>
-        <span className="text-ink/40 text-xs">{locale}</span>
-      </div>
       <div className="space-y-3">
         <label className="block">
           <span className="text-ink/70 block text-xs font-medium">Eyebrow</span>
@@ -2517,8 +2260,8 @@ function NotFoundLocalePane({
             type="text"
             value={copy.eyebrow}
             onChange={(e) => onChange({ ...copy, eyebrow: e.target.value })}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -2528,8 +2271,8 @@ function NotFoundLocalePane({
             type="text"
             value={copy.title}
             onChange={(e) => onChange({ ...copy, title: e.target.value })}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -2539,8 +2282,8 @@ function NotFoundLocalePane({
             value={copy.body}
             onChange={(e) => onChange({ ...copy, body: e.target.value })}
             rows={3}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -2892,7 +2635,6 @@ function SeoCard() {
 
   const [titleSuffix, setTitleSuffix] = useState('');
   const [descEn, setDescEn] = useState('');
-  const [descAr, setDescAr] = useState('');
   const [ogImage, setOgImage] = useState('');
   const [routes, setRoutes] = useState<SeoRouteEntry[]>([]);
   const [saving, setSaving] = useState(false);
@@ -2905,23 +2647,17 @@ function SeoCard() {
     const d = data?.defaults;
     setTitleSuffix(d?.titleSuffix ?? 'The Straight Path');
     setDescEn(d?.defaultDescriptionEn ?? '');
-    setDescAr(d?.defaultDescriptionAr ?? '');
     setOgImage(d?.defaultOgImageUrl ?? '');
     const entries = Object.entries(data?.routes ?? {}).map(([path, v]) => ({
       path,
       titleEn: v.titleEn,
-      titleAr: v.titleAr,
       descriptionEn: v.descriptionEn,
-      descriptionAr: v.descriptionAr,
     }));
     setRoutes(entries);
   }, [query.data, query.isLoading, defaults]);
 
   function addRoute() {
-    setRoutes([
-      ...routes,
-      { path: '/', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '' },
-    ]);
+    setRoutes([...routes, { path: '/', titleEn: '', descriptionEn: '' }]);
   }
   function removeRoute(i: number) {
     setRoutes(routes.filter((_, idx) => idx !== i));
@@ -2936,16 +2672,13 @@ function SeoCard() {
       if (!r.path) continue;
       const entry: SeoRouteOverride = {};
       if (r.titleEn) entry.titleEn = r.titleEn;
-      if (r.titleAr) entry.titleAr = r.titleAr;
       if (r.descriptionEn) entry.descriptionEn = r.descriptionEn;
-      if (r.descriptionAr) entry.descriptionAr = r.descriptionAr;
       routesMap[r.path] = entry;
     }
     const data: SeoData = {
       defaults: {
         titleSuffix,
         defaultDescriptionEn: descEn,
-        defaultDescriptionAr: descAr,
         defaultOgImageUrl: ogImage,
       },
       routes: routesMap,
@@ -3017,25 +2750,11 @@ function SeoCard() {
                 />
               </label>
               <label className="block">
-                <span className="text-ink/70 block text-xs font-medium">
-                  Default description (en)
-                </span>
+                <span className="text-ink/70 block text-xs font-medium">Default description</span>
                 <textarea
                   value={descEn}
                   onChange={(e) => setDescEn(e.target.value)}
                   rows={2}
-                  className={inputCls}
-                />
-              </label>
-              <label className="block">
-                <span className="text-ink/70 block text-xs font-medium">
-                  Default description (ar)
-                </span>
-                <textarea
-                  value={descAr}
-                  onChange={(e) => setDescAr(e.target.value)}
-                  rows={2}
-                  dir="rtl"
                   className={inputCls}
                 />
               </label>
@@ -3082,7 +2801,7 @@ function SeoCard() {
                   </label>
                   <div className="grid gap-2 md:grid-cols-2">
                     <label className="block">
-                      <span className="text-ink/60 block text-xs">Title (en)</span>
+                      <span className="text-ink/60 block text-xs">Title</span>
                       <input
                         type="text"
                         value={r.titleEn ?? ''}
@@ -3091,31 +2810,11 @@ function SeoCard() {
                       />
                     </label>
                     <label className="block">
-                      <span className="text-ink/60 block text-xs">Title (ar)</span>
-                      <input
-                        type="text"
-                        value={r.titleAr ?? ''}
-                        onChange={(e) => patchRoute(i, 'titleAr', e.target.value)}
-                        dir="rtl"
-                        className={inputCls}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-ink/60 block text-xs">Description (en)</span>
+                      <span className="text-ink/60 block text-xs">Description</span>
                       <textarea
                         value={r.descriptionEn ?? ''}
                         onChange={(e) => patchRoute(i, 'descriptionEn', e.target.value)}
                         rows={2}
-                        className={inputCls}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="text-ink/60 block text-xs">Description (ar)</span>
-                      <textarea
-                        value={r.descriptionAr ?? ''}
-                        onChange={(e) => patchRoute(i, 'descriptionAr', e.target.value)}
-                        rows={2}
-                        dir="rtl"
                         className={inputCls}
                       />
                     </label>

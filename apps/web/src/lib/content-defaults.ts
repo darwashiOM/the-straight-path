@@ -4,8 +4,8 @@
  * should stay minimal and stable; everything that should be editable lives
  * in Firestore.
  *
- * Defaults are authored in English; public loaders fall back to `en` when
- * an Arabic variant is missing.
+ * The site is English-only. Defaults seed only the English locale; the
+ * Translatable wrapper's optional `ar` is intentionally omitted.
  */
 import type {
   ChannelDoc,
@@ -25,21 +25,21 @@ type Id<T> = T & { id: string };
 // ---------- Topics ----------
 
 export const DEFAULT_TOPICS: Id<TopicDoc>[] = [
-  t('foundations', 0, { en: 'Foundations', ar: 'الأساسيات' }),
-  t('creed', 1, { en: 'Creed', ar: 'العقيدة' }),
-  t('quran', 2, { en: "Qur'an", ar: 'القرآن' }),
-  t('prophet', 3, { en: 'Prophet', ar: 'النبي ﷺ' }),
-  t('character', 4, { en: 'Character', ar: 'الأخلاق' }),
-  t('practice', 5, { en: 'Practice', ar: 'العبادة' }),
-  t('comparative-religion', 6, { en: 'Comparative Religion', ar: 'مقارنة الأديان' }),
+  t('foundations', 0, 'Foundations'),
+  t('creed', 1, 'Creed'),
+  t('quran', 2, "Qur'an"),
+  t('prophet', 3, 'Prophet'),
+  t('character', 4, 'Character'),
+  t('practice', 5, 'Practice'),
+  t('comparative-religion', 6, 'Comparative Religion'),
 ];
 
-function t(slug: string, order: number, label: Translatable<string>): Id<TopicDoc> {
+function t(slug: string, order: number, label: string): Id<TopicDoc> {
   return {
     id: slug,
     slug,
     order,
-    translations: { en: { label: label.en }, ar: label.ar ? { label: label.ar } : undefined },
+    translations: { en: { label } },
     schemaVersion: 1,
   };
 }
@@ -63,11 +63,6 @@ export const DEFAULT_SERIES: Id<SeriesDoc>[] = [
         description:
           'Start at the beginning. A short reading order covering what Islam is, why we were created, the core practices, and a ten-point overview for the curious.',
       },
-      ar: {
-        title: 'أساسيات الإسلام',
-        description:
-          'ابدأ من البداية. ترتيب قراءة قصير يغطي ماهية الإسلام، ولماذا خُلقنا، والعبادات الأساسية، ونظرة عامة في عشر نقاط للمهتم.',
-      },
     },
     schemaVersion: 1,
   },
@@ -81,40 +76,29 @@ export const DEFAULT_RESOURCES: Id<ResourceDoc>[] = [
       title: 'Quran.com',
       description: "The Noble Qur'an with translations in many languages.",
     },
-    ar: { title: 'Quran.com', description: 'القرآن الكريم مع ترجماته بلغات متعددة.' },
   }),
   r('sunnahCom', 1, 'https://sunnah.com/', 'hadith', {
     en: {
       title: 'Sunnah.com',
       description: 'Searchable, authenticated hadith collections with gradings.',
     },
-    ar: { title: 'Sunnah.com', description: 'مجموعات الحديث الموثّقة قابلة للبحث، مع درجاتها.' },
   }),
   r('yaqeen', 2, 'https://yaqeeninstitute.org/', 'research', {
     en: {
       title: 'Yaqeen Institute',
       description: 'Research-driven articles addressing contemporary questions about Islam.',
     },
-    ar: { title: 'معهد يقين', description: 'مقالات بحثية تعالج الأسئلة المعاصرة عن الإسلام.' },
   }),
   r('bayyinah', 3, 'https://bayyinah.tv/', 'study', {
     en: {
       title: 'Bayyinah TV',
       description: "Arabic and Qur'an studies taught by Nouman Ali Khan and the Bayyinah team.",
     },
-    ar: {
-      title: 'Bayyinah TV',
-      description: 'دروس في العربية والقرآن يقدمها نعمان علي خان وفريق البينة.',
-    },
   }),
   r('islamicAwareness', 4, 'https://www.islamic-awareness.org/', 'research', {
     en: {
       title: 'Islamic Awareness',
       description: "Scholarly articles on the Qur'an, early Islam, and comparative religion.",
-    },
-    ar: {
-      title: 'Islamic Awareness',
-      description: 'مقالات أكاديمية عن القرآن وصدر الإسلام والأديان المقارنة.',
     },
   }),
 ];
@@ -138,22 +122,12 @@ export const DEFAULT_FAQS: Id<FaqDoc>[] = [
       answer:
         'Islam is the voluntary submission of the heart to the one God (Allāh), expressed in worship, ethics, and daily life — a tradition Muslims trace through all the prophets from Noah to Jesus to Muḥammad ﷺ.',
     },
-    ar: {
-      question: 'ما هو الإسلام في جملة واحدة؟',
-      answer:
-        'الإسلام هو الاستسلام الطوعي للقلب لله الواحد، ويتجلى في العبادة والأخلاق وحياة اليوم — وهو تقليد يرى المسلمون أنه ممتد عبر جميع الأنبياء من نوح إلى عيسى إلى محمد ﷺ.',
-    },
   }),
   f('f2', 1, {
     en: {
       question: 'Do Muslims worship a different God than Christians and Jews?',
       answer:
         'No. Muslims worship the same One God who spoke to Abraham, Moses, and Jesus. "Allāh" is simply the Arabic word for God. Arabic-speaking Christians and Jews also call God "Allāh."',
-    },
-    ar: {
-      question: 'هل يعبد المسلمون إلهاً مختلفاً عن إله المسيحيين واليهود؟',
-      answer:
-        'لا. يعبد المسلمون الإله الواحد نفسه الذي كلّم إبراهيم وموسى وعيسى. و«الله» هي كلمة عربية تعني الإله. والمسيحيون واليهود الناطقون بالعربية يُسمّون الله أيضاً «الله».',
     },
   }),
   f('f3', 2, {
@@ -162,22 +136,12 @@ export const DEFAULT_FAQS: Id<FaqDoc>[] = [
       answer:
         "No. A Muslim can be of any language. Arabic is the language of the Qur'ān, so many Muslims learn some Arabic for prayer and reading scripture, but full translations are widely available.",
     },
-    ar: {
-      question: 'هل يجب تعلّم العربية لأكون مسلماً؟',
-      answer:
-        'لا. يمكن للمسلم أن يكون من أي لغة. العربية هي لغة القرآن، فيتعلم كثير من المسلمين شيئاً منها للصلاة وقراءة الكتاب، لكن الترجمات الكاملة متاحة على نطاق واسع.',
-    },
   }),
   f('f4', 3, {
     en: {
       question: 'What are the five pillars of Islam?',
       answer:
         'Testimony of faith (shahāda), daily prayer (ṣalāh), charity (zakāh), fasting in Ramadan (ṣawm), and pilgrimage to Mecca once in a lifetime if able (ḥajj).',
-    },
-    ar: {
-      question: 'ما هي أركان الإسلام الخمسة؟',
-      answer:
-        'شهادة التوحيد، والصلاة، والزكاة، وصوم رمضان، وحجّ البيت لمن استطاع إليه سبيلاً مرة في العمر.',
     },
   }),
   f('f5', 4, {
@@ -186,21 +150,12 @@ export const DEFAULT_FAQS: Id<FaqDoc>[] = [
       answer:
         'You sincerely declare the testimony of faith: "There is no god but Allāh, and Muḥammad is the messenger of Allāh." That is the beginning of the path; what follows is a lifetime of learning and growth.',
     },
-    ar: {
-      question: 'كيف أصبح مسلماً؟',
-      answer:
-        'تُعلِن شهادة التوحيد صادقاً: «أشهد أن لا إله إلا الله وأشهد أنّ محمداً رسول الله». هذه بداية الطريق، وما بعدها حياةٌ من التعلّم والنمو.',
-    },
   }),
   f('f6', 5, {
     en: {
       question: 'I have more questions. Who can I ask?',
       answer:
         'Please use the contact form. We read every message and respond with care — there is no pressure, just conversation.',
-    },
-    ar: {
-      question: 'لديّ أسئلة أخرى. بمن أتصل؟',
-      answer: 'يرجى استخدام نموذج التواصل. نقرأ كل رسالة ونردّ عليها بعناية — لا ضغط، بل حوار.',
     },
   }),
 ];
@@ -221,18 +176,15 @@ export const DEFAULT_CHANNELS: Id<ChannelDoc>[] = [
       name: 'EF Dawah',
       description: 'Long-form dialogues and Q&A with people of all backgrounds.',
     },
-    ar: { name: 'EF Dawah', description: 'حوارات مطوّلة وأسئلة وأجوبة مع أناس من خلفيات متنوعة.' },
   }),
   c('yaqeen', 1, 'https://www.youtube.com/@YaqeenInstituteOfficial', {
     en: {
       name: 'Yaqeen Institute',
       description: 'Short, research-driven explainers on contemporary topics.',
     },
-    ar: { name: 'معهد يقين', description: 'شروحات قصيرة قائمة على البحث لمواضيع معاصرة.' },
   }),
   c('muftimenk', 2, 'https://www.youtube.com/@muftimenkofficial', {
     en: { name: 'Mufti Menk', description: 'Gentle, accessible reminders and life lessons.' },
-    ar: { name: 'مفتي منك', description: 'تذكيرات لطيفة ودروس حياتية ميسّرة.' },
   }),
 ];
 
@@ -265,23 +217,22 @@ export const DEFAULT_BRAND_SETTING: SiteSettingDefault<{
   id: 'brand',
   translations: {
     en: { siteName: 'The Straight Path', tagline: 'A Clear Path to God' },
-    ar: { siteName: 'الطريق المستقيم', tagline: 'طريق واضح إلى الله' },
   },
   data: { logoUrl: '', ogImage: '' },
 };
 
 /**
- * Default ordered nav items. Paths are canonical (no `/ar` prefix); the
- * navbar prepends the locale at render time. `key` is a stable identifier
- * used as a React key and for deep links from other surfaces.
+ * Default ordered nav items. Paths are canonical; the navbar renders the
+ * English label directly. `key` is a stable identifier used as a React key
+ * and for deep links from other surfaces. `labelAr` is retained at the
+ * interface level for legacy doc compatibility but is unused.
  */
 export const DEFAULT_NAV_ITEMS: NavItem[] = [
-  { to: '/learn', key: 'learn', labelEn: 'Learn', labelAr: 'تعلّم', visible: true, order: 0 },
+  { to: '/learn', key: 'learn', labelEn: 'Learn', visible: true, order: 0 },
   {
     to: '/quran',
     key: 'quran',
     labelEn: "Read the Qur'an",
-    labelAr: 'اقرأ القرآن',
     visible: true,
     order: 1,
   },
@@ -289,7 +240,6 @@ export const DEFAULT_NAV_ITEMS: NavItem[] = [
     to: '/resources',
     key: 'resources',
     labelEn: 'Resources',
-    labelAr: 'روابط مفيدة',
     visible: true,
     order: 2,
   },
@@ -297,7 +247,6 @@ export const DEFAULT_NAV_ITEMS: NavItem[] = [
     to: '/faq',
     key: 'faq',
     labelEn: 'Ask Questions',
-    labelAr: 'اطرح سؤالاً',
     visible: true,
     order: 3,
   },
@@ -305,16 +254,16 @@ export const DEFAULT_NAV_ITEMS: NavItem[] = [
     to: '/social',
     key: 'social',
     labelEn: 'On Social Media',
-    labelAr: 'على وسائل التواصل',
     visible: true,
     order: 4,
   },
-  { to: '/about', key: 'about', labelEn: 'About', labelAr: 'من نحن', visible: true, order: 5 },
+  { to: '/about', key: 'about', labelEn: 'About', visible: true, order: 5 },
 ];
 
 /**
  * Default quick-links grid — the four cards at the bottom of the homepage.
- * `to` is canonical (no locale prefix); HomePage localizes at render.
+ * `to` is canonical (no locale prefix). `labelAr`/`descAr` are retained at
+ * the interface level for legacy doc compatibility but are unused.
  */
 export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
   {
@@ -323,9 +272,7 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     visible: true,
     order: 0,
     labelEn: 'On Social Media',
-    labelAr: 'على وسائل التواصل',
     descEn: 'Follow trusted voices on YouTube and beyond.',
-    descAr: 'تابع أصواتاً موثوقة على يوتيوب وغيره.',
   },
   {
     to: '/resources',
@@ -333,9 +280,7 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     visible: true,
     order: 1,
     labelEn: 'Useful External Links',
-    labelAr: 'روابط خارجية مفيدة',
     descEn: "Qur'an, hadith, research — a small, carefully-picked list.",
-    descAr: 'القرآن، الحديث، البحث — قائمة صغيرة مختارة بعناية.',
   },
   {
     to: '/faq',
@@ -343,9 +288,7 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     visible: true,
     order: 2,
     labelEn: 'FAQ',
-    labelAr: 'الأسئلة الشائعة',
     descEn: 'Short, honest answers to the questions people most often ask.',
-    descAr: 'إجابات قصيرة وصادقة على أكثر الأسئلة تكراراً.',
   },
   {
     to: '/contact',
@@ -353,9 +296,7 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     visible: true,
     order: 3,
     labelEn: 'Get in touch',
-    labelAr: 'تواصل معنا',
     descEn: 'Have a question or want to say hello? Send us a note.',
-    descAr: 'لديك سؤال أو تود إلقاء التحية؟ أرسل لنا رسالة.',
   },
 ];
 
@@ -368,41 +309,37 @@ export const DEFAULT_FOOTER_NAV: FooterNavColumn[] = [
   {
     id: 'learn',
     titleEn: 'Learn',
-    titleAr: 'تعلّم',
     order: 0,
     links: [
-      { to: '/learn', labelEn: 'Learn', labelAr: 'تعلّم' },
-      { to: '/learn/articles', labelEn: 'Articles', labelAr: 'مقالات' },
-      { to: '/quran', labelEn: "Read the Qur'an", labelAr: 'اقرأ القرآن' },
+      { to: '/learn', labelEn: 'Learn' },
+      { to: '/learn/articles', labelEn: 'Articles' },
+      { to: '/quran', labelEn: "Read the Qur'an" },
     ],
   },
   {
     id: 'community',
     titleEn: 'Community',
-    titleAr: 'المجتمع',
     order: 1,
     links: [
-      { to: '/resources', labelEn: 'Resources', labelAr: 'روابط مفيدة' },
-      { to: '/faq', labelEn: 'FAQ', labelAr: 'الأسئلة الشائعة' },
-      { to: '/social', labelEn: 'On Social Media', labelAr: 'على وسائل التواصل' },
+      { to: '/resources', labelEn: 'Resources' },
+      { to: '/faq', labelEn: 'FAQ' },
+      { to: '/social', labelEn: 'On Social Media' },
     ],
   },
   {
     id: 'project',
     titleEn: 'Project',
-    titleAr: 'المشروع',
     order: 2,
     links: [
-      { to: '/about', labelEn: 'About', labelAr: 'من نحن' },
-      { to: '/contact', labelEn: 'Contact', labelAr: 'تواصل' },
-      { to: '/privacy', labelEn: 'Privacy', labelAr: 'الخصوصية' },
-      { to: '/terms', labelEn: 'Terms', labelAr: 'الشروط' },
+      { to: '/about', labelEn: 'About' },
+      { to: '/contact', labelEn: 'Contact' },
+      { to: '/privacy', labelEn: 'Privacy' },
+      { to: '/terms', labelEn: 'Terms' },
     ],
   },
   {
     id: 'follow',
     titleEn: 'Follow',
-    titleAr: 'تابعنا',
     order: 3,
     links: [],
   },
@@ -426,13 +363,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         ctaPrimary: 'Start Learning',
         ctaSecondary: "Read the Qur'an",
       },
-      ar: {
-        eyebrow: 'الطريق المستقيم',
-        title: 'طريق واضح إلى الله',
-        subtitle: 'مقدمة هادئة ورحيمة عن الإسلام — مُنظَّمة حول التعلم والكتاب والتأمل.',
-        ctaPrimary: 'ابدأ التعلّم',
-        ctaSecondary: 'اقرأ القرآن',
-      },
     },
   },
   {
@@ -443,13 +373,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         headline: "Read the Qur'ān — the word of God, preserved for over 1400 years.",
         body: "Quran.com offers the Qur'ān in many languages with a simple, clear interface.",
         cta: 'Open Quran.com',
-        ctaUrl: 'https://quran.com/',
-      },
-      ar: {
-        eyebrow: 'اقرأ القرآن',
-        headline: 'اقرأ القرآن الكريم — كلام الله، محفوظاً منذ أكثر من 1400 عام.',
-        body: 'يُوفِّر موقع Quran.com القرآن الكريم بلغات متعددة، بواجهة بسيطة وواضحة.',
-        cta: 'افتح Quran.com',
         ctaUrl: 'https://quran.com/',
       },
     },
@@ -463,12 +386,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         body: 'The Straight Path is a small, independent effort to share Islam in a calm, reader-first voice — pastoral rather than polemical, for seekers of every background.',
         cta: 'Read more about our mission',
       },
-      ar: {
-        eyebrow: 'من نحن',
-        headline: 'دعوةٌ، لا مجادلة.',
-        body: 'الطريق المستقيم جهد صغير مستقل لمشاركة الإسلام بصوتٍ هادئ يراعي القارئ — رعوي لا جدلي، لكل باحث من أيّ خلفية.',
-        cta: 'اقرأ المزيد عن رسالتنا',
-      },
     },
   },
   {
@@ -478,11 +395,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         eyebrow: 'Start Here',
         title: 'New to Islam? Start here.',
         body: 'Three short articles, in order. Read them in one sitting, or one a day — whichever feels right.',
-      },
-      ar: {
-        eyebrow: 'ابدأ من هنا',
-        title: 'جديد على الإسلام؟ ابدأ من هنا.',
-        body: 'ثلاث مقالات قصيرة بالترتيب. اقرأها في جلسة واحدة، أو واحدة في اليوم — كما يناسبك.',
       },
     },
     data: {
@@ -497,11 +409,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         description:
           'A curated set of articles introducing the core ideas, character, and practices of Islam — written for readers of any background.',
       },
-      ar: {
-        title: 'تعلّم عن الإسلام',
-        description:
-          'مجموعة مختارة من المقالات تُعرِّف بأفكار الإسلام الجوهرية وأخلاقه وعباداته — مكتوبة لقرّاء من أيّ خلفية.',
-      },
     },
   },
   {
@@ -512,10 +419,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         description:
           "Essays on the foundations of Islam — the creed, the Prophet, the Qur'an, and the path.",
       },
-      ar: {
-        title: 'المقالات',
-        description: 'مقالات في أسس الإسلام — العقيدة، والنبي ﷺ، والقرآن، والطريق.',
-      },
     },
   },
   {
@@ -525,10 +428,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         title: "About the Qur'ān",
         body: "The Qur'ān is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.\n\nIt is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good.",
       },
-      ar: {
-        title: 'عن القرآن الكريم',
-        body: 'القرآن هو الوحي الخاتم من الله، أنزله جبريل عليه السلام على النبي محمد ﷺ على مدى ثلاث وعشرين سنة. وقد حُفِظ — حرفاً حرفاً، بلغته العربية الأصلية — نقلاً مكتوباً وحفظاً متواصلاً جيلاً بعد جيل.\n\nوهو الكتاب المركزي في الإسلام — كتاب هداية ورحمة وحكمة. ويؤمن المسلمون أن حفظه مكفول بعناية الله، وأن رسالته امتداد لما بُعث به الأنبياء السابقون: اعبدوا الله وحده، واعملوا الخير.',
-      },
     },
   },
   {
@@ -537,10 +436,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       en: {
         copyright: 'The Straight Path. All rights reserved.',
         madeWith: 'Built with care and in service.',
-      },
-      ar: {
-        copyright: 'الطريق المستقيم. جميع الحقوق محفوظة.',
-        madeWith: 'بُنِي بعناية وخدمةً لله.',
       },
     },
   },
@@ -562,10 +457,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         description:
           'Trusted resources for further study — chosen for their accuracy, accessibility, and tone.',
       },
-      ar: {
-        title: 'روابط خارجية مفيدة',
-        description: 'موارد موثوقة للمزيد من الدراسة — اخترناها لدقتها ويسرها وطيب أسلوبها.',
-      },
     },
   },
   {
@@ -575,10 +466,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         title: 'Ask Questions',
         description:
           'Plain answers to common questions about Islam — and an open door for the rest.',
-      },
-      ar: {
-        title: 'اطرح سؤالاً',
-        description: 'إجابات واضحة عن أسئلة شائعة حول الإسلام — وبابٌ مفتوح لما سواها.',
       },
     },
   },
@@ -590,10 +477,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         description:
           'A small, curated list of channels that explain Islam with clarity and good character.',
       },
-      ar: {
-        title: 'الإسلام على وسائل التواصل',
-        description: 'قائمة صغيرة مختارة من القنوات التي تشرح الإسلام بوضوح وأدب.',
-      },
     },
   },
   {
@@ -603,11 +486,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         eyebrow: '',
         title: 'Contact',
         body: 'Have a question about Islam? A correction? A thought? We read every message.',
-      },
-      ar: {
-        eyebrow: '',
-        title: 'تواصل معنا',
-        body: 'هل لديك سؤال عن الإسلام؟ أو تصحيح؟ أو خاطرة؟ نقرأ كل رسالة.',
       },
     },
     data: {
@@ -622,16 +500,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
           successBody: "We'll reply soon, inshā'Allāh.",
           errorBody: 'Something went wrong. Please try again in a moment.',
         },
-        ar: {
-          name: 'الاسم',
-          email: 'البريد الإلكتروني',
-          message: 'الرسالة',
-          submit: 'أرسل الرسالة',
-          submittingLabel: 'جارٍ الإرسال…',
-          successTitle: 'شكراً — وصلتنا رسالتك.',
-          successBody: 'سنردّ قريباً إن شاء الله.',
-          errorBody: 'حدث خطأ ما. يرجى المحاولة بعد لحظة.',
-        },
       },
     },
   },
@@ -643,55 +511,38 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         title: "We couldn't find that page.",
         body: "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
       },
-      ar: {
-        eyebrow: 'خطأ 404',
-        title: 'لم نجد هذه الصفحة.',
-        body: 'قد يكون الرابط معطوباً، أو نُقِلت الصفحة. إن ضِلّ بك الطريق فلا بأس — لنعد بك إلى المسار.',
-      },
     },
     data: {
       popularLinks: [
         {
           to: '/learn',
           labelEn: 'Start learning',
-          labelAr: 'ابدأ التعلّم',
           hintEn: 'A gentle on-ramp',
-          hintAr: 'بداية هادئة',
         },
         {
           to: '/learn/articles',
           labelEn: 'Articles',
-          labelAr: 'المقالات',
           hintEn: 'Essays and explainers',
-          hintAr: 'مقالات وشروحات',
         },
         {
           to: '/faq',
           labelEn: 'FAQ',
-          labelAr: 'أسئلة شائعة',
           hintEn: 'Common questions, honest answers',
-          hintAr: 'أسئلة متكررة بإجابات صادقة',
         },
         {
           to: '/quran',
           labelEn: "Read the Qur'ān",
-          labelAr: 'اقرأ القرآن',
           hintEn: 'The words themselves',
-          hintAr: 'الكلمات نفسها',
         },
         {
           to: '/about',
           labelEn: 'About',
-          labelAr: 'من نحن',
           hintEn: 'Who we are, why we built this',
-          hintAr: 'من نحن، ولماذا بنينا هذا',
         },
         {
           to: '/contact',
           labelEn: 'Contact',
-          labelAr: 'تواصل معنا',
           hintEn: "We'll write back",
-          hintAr: 'سنردّ عليك',
         },
       ],
     },
@@ -704,8 +555,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         titleSuffix: 'The Straight Path',
         defaultDescriptionEn:
           'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God.',
-        defaultDescriptionAr:
-          'مقدمة هادئة ورحيمة عن الإسلام. تعلّم الأساسيات، واقرأ القرآن، واستكشف طريقاً واضحاً إلى الله.',
         defaultOgImageUrl: '/og-default.png',
       },
       routes: {},
@@ -756,22 +605,6 @@ export const DEFAULT_PAGES: Omit<Id<PageDoc>, 'createdAt' | 'updatedAt' | 'updat
 ## How we are funded
 
 This project is volunteer-run. Its infrastructure is intentionally minimal — a static React site on Firebase Hosting, cached aggressively. If you'd like to contribute time or translation help, please reach out.`,
-      },
-      ar: {
-        title: 'عن الطريق المستقيم',
-        body: `الطريق المستقيم جهد مستقل تطوعي لمشاركة الإسلام بصوتٍ هادئ يراعي القارئ. هدفنا ليس المجادلة بل الدعوة — أن نُقدّم أساسيات الإسلام واضحةً ميسّرةً صادقة، لكل فضوليٍّ يفتح الصفحة.
-
-## مبادئنا
-
-- **رعوي، لا جدلي.** نكتب كأنّنا نحدِّث غريباً متأمّلاً على فنجان قهوة.
-- **التوثيق دائماً.** آيات القرآن والأحاديث الموثّقة، موثَّقةً ومدرّجة.
-- **غير طائفيّ.** نُعلِّم الإسلام الجامع ونترك النقاشات الطائفية خارج الباب.
-- **لغة واضحة.** نُعرِّف المصطلحات العربية عند أول استخدام، ونضبط رسمها بانتظام.
-- **القارئ أولاً.** كلّ جملة تستحق مكانها.
-
-## كيف نموّل هذا المشروع
-
-هذا المشروع يديره متطوعون. بنيته التحتية بسيطة قصداً — موقع React ثابت على Firebase Hosting مع تخزين مؤقت قوي. إذا أردت المساهمة بالوقت أو الترجمة، تواصل معنا.`,
       },
     },
     schemaVersion: 1,

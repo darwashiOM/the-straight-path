@@ -41,9 +41,8 @@ export default function LearnPage() {
   const { localizePath, locale } = useLocalizedPath();
   const [searchParams, setSearchParams] = useSearchParams();
   const meta = getRouteMeta('/learn')!;
-  const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
-  const arrow = locale === 'ar' ? '←' : '→';
-  const arrowIconClass = locale === 'ar' ? 'rotate-180' : undefined;
+  const dateLocale = 'en-US';
+  const arrow = '→';
 
   // --- Draft visibility ------------------------------------------------------
   // Drafts are hidden by default. Anyone can flip them on with ?showDrafts=1
@@ -270,7 +269,7 @@ export default function LearnPage() {
               className="text-primary-600 hover:text-primary-700 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold"
             >
               {t('learn.faqPreview.seeAll')}
-              <ArrowRight size={14} aria-hidden="true" className={arrowIconClass} />
+              <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
 
@@ -311,7 +310,7 @@ export default function LearnPage() {
               className="text-primary-600 hover:text-primary-700 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold"
             >
               {t('learn.resourcesPreview.seeAll')}
-              <ArrowRight size={14} aria-hidden="true" className={arrowIconClass} />
+              <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
         </section>

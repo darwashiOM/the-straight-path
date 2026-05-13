@@ -2,8 +2,8 @@
  * ResourcesAdminPage — catalog editor for the resources collection.
  *
  * Presents an ordered table with up/down reorder arrows, a quick-add row,
- * and a dialog for full editing with side-by-side English / Arabic fields.
- * Writes go through `admin-catalog.ts` (V2, translations-nested schema).
+ * and a dialog for full English-only editing. Writes go through
+ * `admin-catalog.ts` (V2, translations-nested schema).
  */
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -79,10 +79,9 @@ export default function ResourcesAdminPage() {
           <thead className="bg-primary-50 text-primary-700 text-left text-xs uppercase tracking-wide">
             <tr>
               <th className="w-16 px-3 py-3">Order</th>
-              <th className="px-3 py-3">EN Title</th>
+              <th className="px-3 py-3">Title</th>
               <th className="px-3 py-3">URL</th>
               <th className="px-3 py-3">Category</th>
-              <th className="px-3 py-3">AR Title</th>
               <th className="w-40 px-3 py-3"></th>
             </tr>
           </thead>
@@ -104,14 +103,14 @@ export default function ResourcesAdminPage() {
             />
             {isLoading && (
               <tr>
-                <td colSpan={6} className="text-ink/50 px-4 py-6 text-center">
+                <td colSpan={5} className="text-ink/50 px-4 py-6 text-center">
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="text-ink/50 px-4 py-6 text-center">
+                <td colSpan={5} className="text-ink/50 px-4 py-6 text-center">
                   No resources yet.
                 </td>
               </tr>
@@ -162,13 +161,6 @@ export default function ResourcesAdminPage() {
                   </a>
                 </td>
                 <td className="text-ink/70 px-3 py-3 align-top">{row.category}</td>
-                <td className="text-ink/80 px-3 py-3 align-top" dir="rtl">
-                  {row.translations.ar?.title || (
-                    <span className="text-ink/40" dir="ltr">
-                      —
-                    </span>
-                  )}
-                </td>
                 <td className="px-3 py-3 text-right">
                   <div className="flex items-center justify-end gap-3">
                     <button
@@ -260,7 +252,7 @@ function QuickAddRow({
       <td className="px-3 py-2">
         <input
           type="text"
-          placeholder="English title"
+          placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="border-primary-200 w-full rounded border bg-white px-2 py-1 text-sm"
@@ -288,7 +280,6 @@ function QuickAddRow({
           ))}
         </select>
       </td>
-      <td className="text-ink/40 px-3 py-2">—</td>
       <td className="px-3 py-2 text-right">
         <button
           type="button"
@@ -368,19 +359,7 @@ function ResourceEditor({ initial, initialId, onClose, onSave, onDelete }: Edito
         <LocalePanes
           keys={LOCALE_KEYS}
           en={doc.translations.en}
-          ar={doc.translations.ar}
-          onChangeEn={(next) => setDoc({ ...doc, translations: { ...doc.translations, en: next } })}
-          onChangeAr={(next) =>
-            setDoc({
-              ...doc,
-              translations: {
-                en: doc.translations.en,
-                ...(next
-                  ? { ar: { title: next.title ?? '', description: next.description ?? '' } }
-                  : {}),
-              },
-            })
-          }
+          onChangeEn={(next) => setDoc({ ...doc, translations: { en: next } })}
         />
       </div>
 

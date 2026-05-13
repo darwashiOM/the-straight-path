@@ -7,10 +7,10 @@ import { useSiteSetting } from '@/lib/content';
 import type { FooterNavColumn } from '@/lib/content-schema';
 
 export default function Footer() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { localizePath } = useLocalizedPath();
   const year = new Date().getFullYear();
-  const locale = i18n.language === 'ar' ? 'ar' : 'en';
+  const locale = 'en' as const;
 
   const footerNav = useSiteSetting('footerNav', locale);
   const columns = ((footerNav.data?.data?.columns as FooterNavColumn[] | undefined) ?? [])
@@ -31,7 +31,7 @@ export default function Footer() {
             <p className="text-ink/70 dark:text-paper/70 mt-3 text-sm">{t('site.tagline')}</p>
           </div>
           {columns.map((col) => {
-            const title = locale === 'ar' ? col.titleAr || col.titleEn : col.titleEn;
+            const title = col.titleEn;
             return (
               <div key={col.id}>
                 <h3 className="text-primary-700 dark:text-accent-300 mb-3 text-xs font-semibold uppercase tracking-wider">
@@ -39,7 +39,7 @@ export default function Footer() {
                 </h3>
                 <ul className="text-ink/70 dark:text-paper/70 space-y-2 text-sm">
                   {col.links.map((link, i) => {
-                    const label = locale === 'ar' ? link.labelAr || link.labelEn : link.labelEn;
+                    const label = link.labelEn;
                     const key = `${col.id}-${link.to}-${i}`;
                     if (link.external) {
                       return (

@@ -30,8 +30,7 @@ export default function ArticlesListPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-ink/70 text-sm">
-          Firestore articles with English + Arabic variants. MDX files in the repo are listed for
-          reference only.
+          Firestore articles. MDX files in the repo are listed for reference only.
         </p>
         <Link
           to="/admin/articles/new"
@@ -47,8 +46,7 @@ export default function ArticlesListPage() {
           <thead className="bg-primary-50 text-primary-700 text-left text-xs uppercase tracking-wide">
             <tr>
               <th className="px-4 py-3">Slug</th>
-              <th className="px-4 py-3">Title (EN)</th>
-              <th className="px-4 py-3">Title (AR)</th>
+              <th className="px-4 py-3">Title</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Published</th>
               <th className="px-4 py-3">Topic</th>
@@ -59,21 +57,20 @@ export default function ArticlesListPage() {
           <tbody className="divide-primary-100 divide-y">
             {isLoading && (
               <tr>
-                <td colSpan={8} className="text-ink/50 px-4 py-6 text-center">
+                <td colSpan={7} className="text-ink/50 px-4 py-6 text-center">
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && (data ?? []).length === 0 && mdxOnly.length === 0 && (
               <tr>
-                <td colSpan={8} className="text-ink/50 px-4 py-6 text-center">
+                <td colSpan={7} className="text-ink/50 px-4 py-6 text-center">
                   No articles yet.
                 </td>
               </tr>
             )}
             {(data ?? []).map((a) => {
               const enTitle = a.translations?.en?.title ?? '';
-              const arTitle = a.translations?.ar?.title ?? '';
               return (
                 <tr key={a.id} className="hover:bg-primary-50/30">
                   <td className="text-ink/60 px-4 py-3 font-mono text-xs">
@@ -91,13 +88,6 @@ export default function ArticlesListPage() {
                     >
                       {enTitle || '(untitled)'}
                     </Link>
-                  </td>
-                  <td
-                    className="text-ink/70 px-4 py-3"
-                    dir={arTitle ? 'rtl' : undefined}
-                    lang={arTitle ? 'ar' : undefined}
-                  >
-                    {arTitle || <span className="text-ink/40">—</span>}
                   </td>
                   <td className="px-4 py-3">
                     <StatusPill status={a.status} />
@@ -126,7 +116,7 @@ export default function ArticlesListPage() {
             {mdxOnly.map((fm) => (
               <tr key={fm.slug} className="bg-paper/50">
                 <td className="text-ink/60 px-4 py-3 font-mono text-xs">{fm.slug}</td>
-                <td className="text-ink/80 px-4 py-3 font-medium" colSpan={2}>
+                <td className="text-ink/80 px-4 py-3 font-medium">
                   <span className="inline-flex items-center gap-2">
                     <FileText className="text-ink/40 h-3 w-3" />
                     {fm.title}

@@ -18,8 +18,7 @@ export interface SeriesCardProps {
 
 export default function SeriesCard({ series, articles }: SeriesCardProps) {
   const { t } = useTranslation();
-  const { localizePath, locale } = useLocalizedPath();
-  const arrowIconClass = locale === 'ar' ? 'rotate-180' : undefined;
+  const { localizePath } = useLocalizedPath();
 
   const first = articles[0];
   if (!first) return null;
@@ -41,7 +40,7 @@ export default function SeriesCard({ series, articles }: SeriesCardProps) {
           className="bg-accent-400 text-primary-900 hover:bg-accent-300 focus-visible:outline-accent-400 inline-flex w-fit items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           {t('learn.series.start')}
-          <ArrowRight size={14} aria-hidden="true" className={arrowIconClass} />
+          <ArrowRight size={14} aria-hidden="true" />
         </Link>
       </div>
 
@@ -70,7 +69,7 @@ export default function SeriesCard({ series, articles }: SeriesCardProps) {
               <ArrowRight
                 size={16}
                 aria-hidden="true"
-                className={`text-primary-400 dark:text-accent-400 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 ${arrowIconClass ?? ''}`}
+                className="text-primary-400 dark:text-accent-400 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
               />
             </Link>
           </li>

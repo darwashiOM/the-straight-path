@@ -31,7 +31,7 @@ export default function ArticleIndexPage() {
   const { localizePath, locale } = useLocalizedPath();
   const [searchParams, setSearchParams] = useSearchParams();
   const meta = getRouteMeta('/learn/articles')!;
-  const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
+  const dateLocale = 'en-US';
 
   const showDrafts = searchParams.get('showDrafts') === '1';
 

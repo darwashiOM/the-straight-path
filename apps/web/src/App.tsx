@@ -1,10 +1,8 @@
-import { Suspense, lazy, useEffect, type ReactElement } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Suspense, lazy } from 'react';
+import { Route, Routes } from 'react-router-dom';
 
 import RootLayout from '@/layouts/RootLayout';
 import LoadingScreen from '@/components/LoadingScreen';
-import { localeFromPath } from '@/lib/i18n';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const LearnPage = lazy(() => import('@/pages/LearnPage'));
@@ -20,8 +18,6 @@ const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
 const TermsPage = lazy(() => import('@/pages/TermsPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
-// Admin surface — English-only, not wrapped in i18n. Lazy-loaded so the
-// public bundle never pays for the CMS.
 const AdminLayout = lazy(() => import('@/layouts/AdminLayout'));
 const LoginPage = lazy(() => import('@/pages/admin/LoginPage'));
 const DashboardPage = lazy(() => import('@/pages/admin/DashboardPage'));
@@ -38,75 +34,43 @@ const TopicsAdminPage = lazy(() => import('@/pages/admin/TopicsAdminPage'));
 const PagesAdminPage = lazy(() => import('@/pages/admin/PagesAdminPage'));
 const MediaPage = lazy(() => import('@/pages/admin/MediaPage'));
 
-/**
- * Keeps i18next in lock-step with the route. The URL is the single source of
- * truth — `/ar/...` renders Arabic RTL, everything else renders English LTR.
- * Browser back/forward, deep links, and the <LanguageSwitcher> <Link> all
- * flow through here.
- */
-function LocaleSync() {
-  const { pathname } = useLocation();
-  const { i18n } = useTranslation();
-  useEffect(() => {
-    const desired = localeFromPath(pathname);
-    if (i18n.language !== desired) void i18n.changeLanguage(desired);
-  }, [pathname, i18n]);
-  return null;
-}
-
-/**
- * The shared page tree. Rendered twice inside <Routes> — once at the root
- * (English) and once nested under `ar` (Arabic). Keeping it in one place
- * guarantees the two locales never drift structurally.
- */
-function pageRoutes(keyPrefix: string): ReactElement[] {
-  return [
-    <Route key={`${keyPrefix}-index`} index element={<HomePage />} />,
-    <Route key={`${keyPrefix}-learn`} path="learn" element={<LearnPage />} />,
-    <Route key={`${keyPrefix}-articles`} path="learn/articles" element={<ArticleIndexPage />} />,
-    <Route key={`${keyPrefix}-article`} path="learn/articles/:slug" element={<ArticlePage />} />,
-    <Route key={`${keyPrefix}-quran`} path="quran" element={<QuranPage />} />,
-    <Route key={`${keyPrefix}-resources`} path="resources" element={<ResourcesPage />} />,
-    <Route key={`${keyPrefix}-faq`} path="faq" element={<FaqPage />} />,
-    <Route key={`${keyPrefix}-social`} path="social" element={<SocialPage />} />,
-    <Route key={`${keyPrefix}-about`} path="about" element={<AboutPage />} />,
-    <Route key={`${keyPrefix}-contact`} path="contact" element={<ContactPage />} />,
-    <Route key={`${keyPrefix}-privacy`} path="privacy" element={<PrivacyPage />} />,
-    <Route key={`${keyPrefix}-terms`} path="terms" element={<TermsPage />} />,
-    <Route key={`${keyPrefix}-404`} path="*" element={<NotFoundPage />} />,
-  ];
-}
-
 export default function App() {
   return (
-    <>
-      <LocaleSync />
-      <Suspense fallback={<LoadingScreen />}>
-        <Routes>
-          <Route element={<RootLayout />}>
-            {pageRoutes('en')}
-            <Route path="ar">{pageRoutes('ar')}</Route>
-          </Route>
-          {/* Admin surface — sits outside RootLayout so it has its own chrome. */}
-          <Route path="admin/login" element={<LoginPage />} />
-          <Route path="admin" element={<AdminLayout />}>
-            <Route index element={<DashboardPage />} />
-            <Route path="articles" element={<ArticlesListPage />} />
-            <Route path="articles/new" element={<ArticleEditorPage />} />
-            <Route path="articles/:id" element={<ArticleEditorPage />} />
-            <Route path="resources" element={<ResourcesAdminPage />} />
-            <Route path="faq" element={<FaqAdminPage />} />
-            <Route path="channels" element={<ChannelsAdminPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="site" element={<SiteSettingsPage />} />
-            <Route path="activity" element={<ActivityPage />} />
-            <Route path="series" element={<SeriesAdminPage />} />
-            <Route path="topics" element={<TopicsAdminPage />} />
-            <Route path="pages" element={<PagesAdminPage />} />
-            <Route path="media" element={<MediaPage />} />
-          </Route>
-        </Routes>
-      </Suspense>
-    </>
+    <Suspense fallback={<LoadingScreen />}>
+      <Routes>
+        <Route element={<RootLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="learn" element={<LearnPage />} />
+          <Route path="learn/articles" element={<ArticleIndexPage />} />
+          <Route path="learn/articles/:slug" element={<ArticlePage />} />
+          <Route path="quran" element={<QuranPage />} />
+          <Route path="resources" element={<ResourcesPage />} />
+          <Route path="faq" element={<FaqPage />} />
+          <Route path="social" element={<SocialPage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="terms" element={<TermsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+        <Route path="admin/login" element={<LoginPage />} />
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="articles" element={<ArticlesListPage />} />
+          <Route path="articles/new" element={<ArticleEditorPage />} />
+          <Route path="articles/:id" element={<ArticleEditorPage />} />
+          <Route path="resources" element={<ResourcesAdminPage />} />
+          <Route path="faq" element={<FaqAdminPage />} />
+          <Route path="channels" element={<ChannelsAdminPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="site" element={<SiteSettingsPage />} />
+          <Route path="activity" element={<ActivityPage />} />
+          <Route path="series" element={<SeriesAdminPage />} />
+          <Route path="topics" element={<TopicsAdminPage />} />
+          <Route path="pages" element={<PagesAdminPage />} />
+          <Route path="media" element={<MediaPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
 }

@@ -108,10 +108,10 @@ export default function NotFoundPage() {
                   className="border-ink/10 hover:border-primary-500/60 hover:bg-paper/60 focus:ring-primary-500/40 dark:border-paper/10 dark:hover:bg-ink/40 block h-full rounded-xl border p-4 transition focus:outline-none focus:ring-2"
                 >
                   <span className="text-primary-700 dark:text-accent-300 block font-serif text-lg">
-                    {locale === 'ar' ? link.labelAr : link.labelEn}
+                    {link.labelEn}
                   </span>
                   <span className="text-ink/60 dark:text-paper/60 mt-1 block text-sm">
-                    {locale === 'ar' ? link.hintAr : link.hintEn}
+                    {link.hintEn}
                   </span>
                 </Link>
               </li>

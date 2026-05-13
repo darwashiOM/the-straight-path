@@ -35,7 +35,7 @@ export default function RelatedArticles({
 }: RelatedArticlesProps) {
   const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
-  const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
+  const dateLocale = 'en-US';
 
   const fallback = usePublishedArticles(locale);
   const articles = pool ?? fallback.data;
