@@ -78,16 +78,18 @@ export default function Footer() {
           <span>
             &copy; {year} {t('footer.copyright')}
           </span>
-          <span className="flex items-center gap-3">
-            <span>{t('footer.madeWith')}</span>
-            {/* Intentionally tiny and unadvertised — a discoverable entry
-                point for admins without hinting at it to general visitors. */}
+          <span className="flex items-center gap-4">
             <Link
-              to="/admin/login"
-              className="text-ink/30 hover:text-ink/60 dark:text-paper/30 dark:hover:text-paper/60"
-              aria-label={t('footerExtras.signIn', { defaultValue: 'Sign in' }) as string}
+              to={localizePath('/privacy')}
+              className="hover:text-primary-700 dark:hover:text-accent-300"
             >
-              {t('footerExtras.signIn', { defaultValue: 'Sign in' }) as string}
+              {t('footer.privacy', { defaultValue: 'Privacy' }) as string}
+            </Link>
+            <Link
+              to={localizePath('/terms')}
+              className="hover:text-primary-700 dark:hover:text-accent-300"
+            >
+              {t('footer.terms', { defaultValue: 'Terms' }) as string}
             </Link>
           </span>
         </div>
