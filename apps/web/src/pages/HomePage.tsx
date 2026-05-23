@@ -125,8 +125,8 @@ export default function HomePage() {
   function renderHero() {
   const [textIndex, setTextIndex] = useState(0);
   const phrases = [
-    "Find Purpose and Inner Peace",
-    "Islam... the straight path"
+    'Find Purpose and Inner Peace',
+    'Islam... the straight path',
   ];
 
   useEffect(() => {
@@ -147,13 +147,13 @@ export default function HomePage() {
         height: '500px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
       }}
     >
       <div
         style={{
           textAlign: 'center',
-          animation: 'fadeIn 0.5s ease-in-out'
+          animation: 'fadeIn 0.5s ease-in-out',
         }}
       >
         <h1
@@ -162,7 +162,7 @@ export default function HomePage() {
             fontWeight: 'bold',
             color: '#1a3a3a',
             marginBottom: '20px',
-            fontFamily: 'serif'
+            fontFamily: 'serif',
           }}
         >
           The Straight Path
@@ -172,7 +172,7 @@ export default function HomePage() {
             fontSize: '24px',
             color: '#666',
             minHeight: '35px',
-            fontFamily: 'serif'
+            fontFamily: 'serif',
           }}
         >
           {phrases[textIndex]}
@@ -195,38 +195,46 @@ export default function HomePage() {
 
 function renderHeroButtons() {
   return (
-    <div style={{
-      textAlign: 'center',
-      padding: '40px',
-      display: 'flex',
-      gap: '20px',
-      justifyContent: 'center',
-      backgroundColor: '#f5f5f5'
-    }}>
-      <Link to={localizePath('/learn/articles')} style={{
-        backgroundColor: '#2a5a5a',
-        color: 'white',
-        padding: '12px 30px',
-        border: 'none',
-        borderRadius: '25px',
-        fontSize: '16px',
-        cursor: 'pointer',
-        textDecoration: 'none',
-        display: 'inline-block'
-      }}>
+    <div
+      style={{
+        textAlign: 'center',
+        padding: '40px',
+        display: 'flex',
+        gap: '20px',
+        justifyContent: 'center',
+        backgroundColor: '#f5f5f5',
+      }}
+    >
+      <Link
+        to={localizePath('/learn/articles')}
+        style={{
+          backgroundColor: '#2a5a5a',
+          color: 'white',
+          padding: '12px 30px',
+          border: 'none',
+          borderRadius: '25px',
+          fontSize: '16px',
+          cursor: 'pointer',
+          textDecoration: 'none',
+          display: 'inline-block',
+        }}
+      >
         Learn More →
       </Link>
-      <Link to={localizePath('/quran')} style={{
-        backgroundColor: 'white',
-        color: '#333',
-        padding: '12px 30px',
-        border: '1px solid #ddd',
-        borderRadius: '25px',
-        fontSize: '16px',
-        cursor: 'pointer',
-        textDecoration: 'none',
-        display: 'inline-block'
-      }}>
+      <Link
+        to={localizePath('/quran')}
+        style={{
+          backgroundColor: 'white',
+          color: '#333',
+          padding: '12px 30px',
+          border: '1px solid #ddd',
+          borderRadius: '25px',
+          fontSize: '16px',
+          cursor: 'pointer',
+          textDecoration: 'none',
+          display: 'inline-block',
+        }}
+      >
         Read the Qur'an
       </Link>
     </div>
