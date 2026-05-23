@@ -40,7 +40,7 @@ interface SeoHeadProps {
 const SITE_NAME = 'The Straight Path';
 const DEFAULT_TAGLINE_EN = 'A Clear Path to God';
 const DEFAULT_DESCRIPTION_EN =
-  'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God.';
+  'A pastoral, accessible introduction to Islam. Learn the essentials, read the Quran, and explore a clear path to God.';
 const DEFAULT_OG = `${SITE_ORIGIN}/og-default.png`;
 
 function absoluteOg(url: string): string {
@@ -66,14 +66,20 @@ export default function SeoHead({
   const siteName = SITE_NAME;
   const tagline = DEFAULT_TAGLINE_EN;
   const resolvedDescription = description ?? DEFAULT_DESCRIPTION_EN;
-  const fullTitle = title ? `${title} — ${siteName}` : `${siteName} — ${tagline}`;
+  const fullTitle = title
+    ? `${title} — ${siteName}`
+    : `${siteName} — ${tagline}`;
   const ogImageUrl = absoluteOg(ogImage ?? DEFAULT_OG);
   const ogLocale = 'en_US';
 
   const canonicalUrl = canonical ?? canonicalFor(resolvedPath, locale);
   const enUrl = canonicalFor(resolvedPath, 'en');
 
-  const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+  const schemas = Array.isArray(jsonLd)
+    ? jsonLd
+    : jsonLd
+    ? [jsonLd]
+    : [];
 
   return (
     <Helmet>
