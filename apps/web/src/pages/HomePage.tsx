@@ -123,138 +123,105 @@ export default function HomePage() {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   function renderHero() {
-    const [textIndex, setTextIndex] = useState(0);
-    const phrases = [
-      "Find Purpose and Inner Peace",
-      "Islam... the straight path"
-    ];
+  const [textIndex, setTextIndex] = useState(0);
+  const phrases = [
+    "Find Purpose and Inner Peace",
+    "Islam... the straight path"
+  ];
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setTextIndex((prev) => (prev + 1) % phrases.length);
-      }, 3000);
-      return () => clearInterval(interval);
-    }, []);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTextIndex((prev) => (prev + 1) % phrases.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
-    return (
-      <section
-        key="hero"
-        className="relative overflow-hidden"
-        style={{
-          backgroundImage: 'url(/Masjid Nabawi - Gemini- cropped.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '500px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <div style={{
-          textAlign: 'center',
-          animation: 'fadeIn 0.5s ease-in-out'
-        }}>
-          <h1 style={{
-            fontSize: '48px',
-            fontWeight: 'bold',
-            color: '#1a3a3a',
-            marginBottom: '20px',
-            fontFamily: 'serif'
-          }}>
-            The Straight Path
-          </h1>
-          <p style={{
-            fontSize: '24px',
-            color: '#666',
-            minHeight: '35px',
-            fontFamily: 'serif'
-          }}>
-            {phrases[textIndex]}
-          </p>
-        </div>
-
-        <style>{`
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-        `}</style>
-      </section>
-    );
-  }
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            {heroCopy ? (
-              <>
-                <p className="text-accent-500 mb-4 font-serif text-sm uppercase tracking-widest">
-                  {heroCopy.eyebrow}
-                </p>
-                <h1 className="text-primary-700 dark:text-accent-300 text-balance font-serif text-5xl font-semibold md:text-7xl">
-                  {heroCopy.title}
-                </h1>
-                <p className="text-ink/70 dark:text-paper/80 mt-6 text-pretty text-lg md:text-xl">
-                  {heroCopy.subtitle}
-                </p>
-                <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-                  <Link to={localizePath('/learn/articles')} className="btn-primary">
-                    {heroCopy.ctaPrimary} <ArrowRight size={16} aria-hidden="true" />
-                  </Link>
-                  <Link to={localizePath('/quran')} className="btn-ghost">
-                    {heroCopy.ctaSecondary}
-                  </Link>
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-4">
-                <Skeleton height="0.75rem" width={160} />
-                <Skeleton height="3rem" width="80%" />
-                <Skeleton variant="text-line" lines={2} className="w-full max-w-xl" />
-              </div>
-            )}
-          </div>
-        </Container>
-      </section>
-    );
-  }
-function renderHeroButtons() {
-    return (
+  return (
+    <section
+      key="hero"
+      className="relative overflow-hidden"
+      style={{
+        backgroundImage: 'url(/Masjid Nabawi - Gemini- cropped.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        height: '500px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
       <div style={{
         textAlign: 'center',
-        padding: '40px',
-        display: 'flex',
-        gap: '20px',
-        justifyContent: 'center',
-        backgroundColor: '#f5f5f5'
+        animation: 'fadeIn 0.5s ease-in-out'
       }}>
-        <Link to={localizePath('/learn/articles')} style={{
-          backgroundColor: '#2a5a5a',
-          color: 'white',
-          padding: '12px 30px',
-          border: 'none',
-          borderRadius: '25px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          textDecoration: 'none',
-          display: 'inline-block'
+        <h1 style={{
+          fontSize: '48px',
+          fontWeight: 'bold',
+          color: '#1a3a3a',
+          marginBottom: '20px',
+          fontFamily: 'serif'
         }}>
-          Learn More →
-        </Link>
-        <Link to={localizePath('/quran')} style={{
-          backgroundColor: 'white',
-          color: '#333',
-          padding: '12px 30px',
-          border: '1px solid #ddd',
-          borderRadius: '25px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          textDecoration: 'none',
-          display: 'inline-block'
+          The Straight Path
+        </h1>
+        <p style={{
+          fontSize: '24px',
+          color: '#666',
+          minHeight: '35px',
+          fontFamily: 'serif'
         }}>
-          Read the Qur'an
-        </Link>
+          {phrases[textIndex]}
+        </p>
       </div>
-    );
-  }
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+function renderHeroButtons() {
+  return (
+    <div style={{
+      textAlign: 'center',
+      padding: '40px',
+      display: 'flex',
+      gap: '20px',
+      justifyContent: 'center',
+      backgroundColor: '#f5f5f5'
+    }}>
+      <Link to={localizePath('/learn/articles')} style={{
+        backgroundColor: '#2a5a5a',
+        color: 'white',
+        padding: '12px 30px',
+        border: 'none',
+        borderRadius: '25px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        textDecoration: 'none',
+        display: 'inline-block'
+      }}>
+        Learn More →
+      </Link>
+      <Link to={localizePath('/quran')} style={{
+        backgroundColor: 'white',
+        color: '#333',
+        padding: '12px 30px',
+        border: '1px solid #ddd',
+        borderRadius: '25px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        textDecoration: 'none',
+        display: 'inline-block'
+      }}>
+        Read the Qur'an
+      </Link>
+    </div>
+  );
+}
   function renderFeatured() {
     if (featured) {
       return (
