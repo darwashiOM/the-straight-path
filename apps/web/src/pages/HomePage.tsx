@@ -373,10 +373,11 @@ export default function HomePage() {
                 </h2>
                 <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
                 
+                <a
                   href={quranCtaUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-accent mt-8"
+                  className="btn-accent mt-8 inline-flex items-center gap-2"
                 >
                   {quranCopy.cta} <ArrowRight size={16} />
                 </a>
