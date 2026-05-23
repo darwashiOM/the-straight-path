@@ -66,14 +66,20 @@ export default function SeoHead({
   const siteName = SITE_NAME;
   const tagline = DEFAULT_TAGLINE_EN;
   const resolvedDescription = description ?? DEFAULT_DESCRIPTION_EN;
-  const fullTitle = title ? `${title} — ${siteName}` : `${siteName} — ${tagline}`;
+  const fullTitle = title
+    ? `${title} — ${siteName}`
+    : `${siteName} — ${tagline}`;
   const ogImageUrl = absoluteOg(ogImage ?? DEFAULT_OG);
   const ogLocale = 'en_US';
 
   const canonicalUrl = canonical ?? canonicalFor(resolvedPath, locale);
   const enUrl = canonicalFor(resolvedPath, 'en');
 
-  const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+  const schemas = Array.isArray(jsonLd)
+    ? jsonLd
+    : jsonLd
+    ? [jsonLd]
+    : [];
 
   return (
     <Helmet>
