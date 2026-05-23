@@ -79,11 +79,7 @@ export default function SeoHead({
   const canonicalUrl = canonical ?? canonicalFor(resolvedPath, locale);
   const enUrl = canonicalFor(resolvedPath, 'en');
 
-  const schemas = Array.isArray(jsonLd)
-    ? jsonLd
-    : jsonLd
-      ? [jsonLd]
-      : [];
+  const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 
   return (
     <Helmet>
