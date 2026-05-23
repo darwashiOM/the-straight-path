@@ -40,12 +40,16 @@ interface SeoHeadProps {
 const SITE_NAME = 'The Straight Path';
 const DEFAULT_TAGLINE_EN = 'A Clear Path to God';
 const DEFAULT_DESCRIPTION_EN =
-  'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur'an, and explore a clear path to God.';
+  'A pastoral, accessible introduction to Islam. Learn the essentials, read the Quran, and explore a clear path to God.';
 const DEFAULT_OG = `${SITE_ORIGIN}/og-default.png`;
 
 function absoluteOg(url: string): string {
-  if (!url) return DEFAULT_OG;
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (!url) {
+    return DEFAULT_OG;
+  }
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
   return `${SITE_ORIGIN}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
@@ -78,8 +82,8 @@ export default function SeoHead({
   const schemas = Array.isArray(jsonLd)
     ? jsonLd
     : jsonLd
-    ? [jsonLd]
-    : [];
+      ? [jsonLd]
+      : [];
 
   return (
     <Helmet>
