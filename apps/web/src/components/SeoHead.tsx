@@ -7,7 +7,7 @@ import type { Locale } from '@/lib/i18n';
 interface SeoHeadProps {
   /** Page-level title fragment; gets suffixed with the site name. */
   title?: string;
-  /** Meta description, 140–160 chars. */
+  /** Meta description, 140-160 chars. */
   description?: string;
   /**
    * Absolute canonical URL. If omitted, derived from the current route +
@@ -21,7 +21,7 @@ interface SeoHeadProps {
   type?: 'website' | 'article';
   /**
    * Locale of the current page. When omitted, derived from the URL via
-   * `useLocalizedPath` — the URL is the source of truth.
+   * `useLocalizedPath` - the URL is the source of truth.
    */
   locale?: Locale;
   /**
@@ -70,9 +70,7 @@ export default function SeoHead({
   const siteName = SITE_NAME;
   const tagline = DEFAULT_TAGLINE_EN;
   const resolvedDescription = description ?? DEFAULT_DESCRIPTION_EN;
-  const fullTitle = title
-    ? `${title} — ${siteName}`
-    : `${siteName} — ${tagline}`;
+  const fullTitle = title ? `${title} - ${siteName}` : `${siteName} - ${tagline}`;
   const ogImageUrl = absoluteOg(ogImage ?? DEFAULT_OG);
   const ogLocale = 'en_US';
 
