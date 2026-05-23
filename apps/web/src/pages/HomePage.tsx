@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -30,14 +32,6 @@ import { readingTimeMinutes } from '@/lib/reading-time';
 import { graph, organizationSchema, websiteSchema } from '@/lib/schema';
 import { formatDate } from '@/lib/utils';
 
-interface HeroCopy {
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  ctaPrimary: string;
-  ctaSecondary: string;
-}
-
 interface QuranBannerCopy {
   eyebrow: string;
   headline: string;
@@ -53,13 +47,124 @@ interface AboutPreviewCopy {
   cta: string;
 }
 
+const HERO_PHRASES = ['Find Purpose and Inner Peace', 'Islam... the straight path'];
+
+function HeroSection() {
+  const [textIndex, setTextIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setTextIndex((prev) => (prev + 1) % HERO_PHRASES.length);
+    }, 3000);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  return (
+    <section
+      key="hero"
+      className="relative flex h-[500px] items-center justify-center overflow-hidden bg-cover bg-center"
+      style={{
+        backgroundImage: 'url("/Masjid Nabawi - Gemini- cropped.png")',
+      }}
+    >
+      <div
+        style={{
+          textAlign: 'center',
+          animation: 'fadeIn 0.5s ease-in-out',
+        }}
+      >
+        <h1
+          style={{
+            fontSize: '48px',
+            fontWeight: 'bold',
+            color: '#1a3a3a',
+            marginBottom: '20px',
+            fontFamily: 'serif',
+          }}
+        >
+          The Straight Path
+        </h1>
+        <p
+          style={{
+            fontSize: '24px',
+            color: '#666',
+            minHeight: '35px',
+            fontFamily: 'serif',
+          }}
+        >
+          {HERO_PHRASES[textIndex]}
+        </p>
+      </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+function renderHeroButtons(localizePath: (path: string) => string) {
+  return (
+    <div
+      style={{
+        textAlign: 'center',
+        padding: '40px',
+        display: 'flex',
+        gap: '20px',
+        justifyContent: 'center',
+        backgroundColor: '#f5f5f5',
+      }}
+    >
+      <Link
+        to={localizePath('/learn/articles')}
+        style={{
+          backgroundColor: '#2a5a5a',
+          color: 'white',
+          padding: '12px 30px',
+          border: 'none',
+          borderRadius: '25px',
+          fontSize: '16px',
+          cursor: 'pointer',
+          textDecoration: 'none',
+          display: 'inline-block',
+        }}
+      >
+        Learn More →
+      </Link>
+      <Link
+        to={localizePath('/quran')}
+        style={{
+          backgroundColor: 'white',
+          color: '#333',
+          padding: '12px 30px',
+          border: '1px solid #ddd',
+          borderRadius: '25px',
+          fontSize: '16px',
+          cursor: 'pointer',
+          textDecoration: 'none',
+          display: 'inline-block',
+        }}
+      >
+        Read the Qur&apos;an
+      </Link>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
   const dateLocale = 'en-US';
   const arrow = '→';
 
-  const hero = useSiteSetting<HeroCopy>('hero', locale);
   const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
   const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
   const quickLinks = useSiteSetting('quickLinks', locale);
@@ -79,6 +184,7 @@ export default function HomePage() {
   const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
     mode: 'newest' as const,
   };
+
   const manualFeatured = useArticle(
     featuredConfig.mode === 'manual' ? featuredConfig.articleSlug : undefined,
     locale,
@@ -89,7 +195,6 @@ export default function HomePage() {
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-  const heroCopy = hero.data?.value;
   const quranCopy = quranBanner.data?.value;
   const aboutCopy = aboutPreview.data?.value;
 
@@ -102,8 +207,13 @@ export default function HomePage() {
 
   const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
 
-  const renderers: Record<HomepageSectionId, () => React.ReactNode> = {
-    hero: () => renderHero(),
+  const renderers: Record<HomepageSectionId, () => ReactNode> = {
+    hero: () => (
+      <>
+        <HeroSection />
+        {renderHeroButtons(localizePath)}
+      </>
+    ),
     featured: () => renderFeatured(),
     learnRow: () => renderLearnRow(),
     quranBanner: () => renderQuranBanner(),
@@ -115,47 +225,6 @@ export default function HomePage() {
     .filter((s) => s && s.visible !== false)
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
-  function renderHero() {
-    return (
-      <section
-        key="hero"
-        className="from-primary-50 to-paper dark:from-primary-800 dark:to-primary-900 relative overflow-hidden bg-gradient-to-b py-24 md:py-32"
-      >
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            {heroCopy ? (
-              <>
-                <p className="text-accent-500 mb-4 font-serif text-sm uppercase tracking-widest">
-                  {heroCopy.eyebrow}
-                </p>
-                <h1 className="text-primary-700 dark:text-accent-300 text-balance font-serif text-5xl font-semibold md:text-7xl">
-                  {heroCopy.title}
-                </h1>
-                <p className="text-ink/70 dark:text-paper/80 mt-6 text-pretty text-lg md:text-xl">
-                  {heroCopy.subtitle}
-                </p>
-                <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-                  <Link to={localizePath('/learn/articles')} className="btn-primary">
-                    {heroCopy.ctaPrimary} <ArrowRight size={16} aria-hidden="true" />
-                  </Link>
-                  <Link to={localizePath('/quran')} className="btn-ghost">
-                    {heroCopy.ctaSecondary}
-                  </Link>
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-4">
-                <Skeleton height="0.75rem" width={160} />
-                <Skeleton height="3rem" width="80%" />
-                <Skeleton variant="text-line" lines={2} className="w-full max-w-xl" />
-              </div>
-            )}
-          </div>
-        </Container>
-      </section>
-    );
-  }
 
   function renderFeatured() {
     if (featured) {
@@ -192,6 +261,7 @@ export default function HomePage() {
         </section>
       );
     }
+
     if (articlesQuery.isLoading) {
       return (
         <section key="featured" className="py-20">
@@ -201,6 +271,7 @@ export default function HomePage() {
         </section>
       );
     }
+
     return null;
   }
 
@@ -238,6 +309,7 @@ export default function HomePage() {
             <div className="grid gap-6 md:grid-cols-3">
               {articles.map((a) => {
                 const topicLabel = a.topic ? (t(`learn.topics.${a.topic}`) as string) : undefined;
+
                 return (
                   <Link
                     key={a.slug}
@@ -275,36 +347,37 @@ export default function HomePage() {
   }
 
   function renderQuranBanner() {
-  return (
-    <section key="quranBanner" className="bg-primary-700 text-paper dark:bg-primary-900 py-20">
-      <Container>
-        <div className="mx-auto max-w-3xl text-center">
-          {quranCopy ? (
-            <>
-              <p className="text-accent-300 font-serif text-sm uppercase tracking-widest">
-                {quranCopy.eyebrow ?? t('home.sections.quran')}
-              </p>
-              <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
-                {quranCopy.headline}
-              </h2>
-              <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
-              
-                href={quranCtaUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-accent mt-8"
-              >
-                {quranCopy.cta} <ArrowRight size={16} />
-              </a>
-            </>
-          ) : (
-            <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
-          )}
-        </div>
-      </Container>
-    </section>
-  );
-}
+    return (
+      <section key="quranBanner" className="bg-primary-700 text-paper dark:bg-primary-900 py-20">
+        <Container>
+          <div className="mx-auto max-w-3xl text-center">
+            {quranCopy ? (
+              <>
+                <p className="text-accent-300 font-serif text-sm uppercase tracking-widest">
+                  {quranCopy.eyebrow ?? t('home.sections.quran')}
+                </p>
+                <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
+                  {quranCopy.headline}
+                </h2>
+                <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
+                <a
+                  href={quranCtaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-accent mt-8 inline-flex items-center gap-2"
+                >
+                  {quranCopy.cta} <ArrowRight size={16} />
+                </a>
+              </>
+            ) : (
+              <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
+            )}
+          </div>
+        </Container>
+      </section>
+    );
+  }
+
   function renderQuickLinks() {
     return (
       <section key="quickLinks" className="py-20">
@@ -312,15 +385,14 @@ export default function HomePage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {quickLinkItems.map((item, idx) => {
               const Icon = QUICK_LINK_ICON_MAP[item.icon] ?? Users;
-              const label = item.labelEn;
-              const desc = item.descEn;
+
               return (
                 <FeatureLink
                   key={`${item.to}-${idx}`}
                   to={localizePath(item.to)}
                   icon={<Icon size={20} />}
-                  title={label}
-                  desc={desc}
+                  title={item.labelEn}
+                  desc={item.descEn}
                   exploreLabel={t('home.quickLinks.explore')}
                   arrow={arrow}
                 />
@@ -389,7 +461,7 @@ function FeatureLink({
   arrow,
 }: {
   to: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   desc: string;
   exploreLabel: string;
