@@ -54,75 +54,7 @@ interface AboutPreviewCopy {
   cta: string;
 }
 
-export default function HomePage() {
-  const { t } = useTranslation();
-  const { localizePath, locale } = useLocalizedPath();
-  const dateLocale = 'en-US';
-  const arrow = '→';
-
-  const hero = useSiteSetting<HeroCopy>('hero', locale);
-  const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
-  const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
-  const quickLinks = useSiteSetting('quickLinks', locale);
-  const sectionsSetting = useSiteSetting('homepageSections', locale);
-  const featuredSetting = useSiteSetting('featured', locale);
-  const articlesQuery = usePublishedArticles(locale);
-
-  const sections = ((sectionsSetting.data?.data as HomepageSectionsData | undefined)?.sections ?? [
-    { id: 'hero', visible: true, order: 0 },
-    { id: 'featured', visible: true, order: 1 },
-    { id: 'learnRow', visible: true, order: 2 },
-    { id: 'quranBanner', visible: true, order: 3 },
-    { id: 'quickLinks', visible: true, order: 4 },
-    { id: 'aboutPreview', visible: true, order: 5 },
-  ]) as HomepageSection[];
-
-  const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
-    mode: 'newest' as const,
-  };
-  const manualFeatured = useArticle(
-    featuredConfig.mode === 'manual' ? featuredConfig.articleSlug : undefined,
-    locale,
-  );
-
-  const quickLinkItems = ((quickLinks.data?.data?.items as QuickLinkItem[] | undefined) ?? [])
-    .filter((i) => i && i.visible !== false)
-    .slice()
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
-  const heroCopy = hero.data?.value;
-  const quranCopy = quranBanner.data?.value;
-  const aboutCopy = aboutPreview.data?.value;
-
-  const articles = (articlesQuery.data ?? []).slice(0, 3);
-  const manualMatch =
-    featuredConfig.mode === 'manual' && manualFeatured.data?.status === 'published'
-      ? manualFeatured.data
-      : undefined;
-  const featured = manualMatch ?? articles[0];
-
-  const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
-
-  const renderers: Record<HomepageSectionId, () => React.ReactNode> = {
-    hero: () => (
-      <>
-        {renderHero()}
-        {renderHeroButtons()}
-      </>
-    ),
-    featured: () => renderFeatured(),
-    learnRow: () => renderLearnRow(),
-    quranBanner: () => renderQuranBanner(),
-    quickLinks: () => renderQuickLinks(),
-    aboutPreview: () => renderAboutPreview(),
-  };
-
-  const orderedSections = sections
-    .filter((s) => s && s.visible !== false)
-    .slice()
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-
-  function renderHero() {
+function renderHero() {
   const [textIndex, setTextIndex] = useState(0);
   const phrases = [
     'Find Purpose and Inner Peace',
@@ -193,7 +125,7 @@ export default function HomePage() {
   );
 }
 
-function renderHeroButtons() {
+function renderHeroButtons(localizePath: (path: string) => string) {
   return (
     <div
       style={{
@@ -240,6 +172,75 @@ function renderHeroButtons() {
     </div>
   );
 }
+
+export default function HomePage() {
+  const { t } = useTranslation();
+  const { localizePath, locale } = useLocalizedPath();
+  const dateLocale = 'en-US';
+  const arrow = '→';
+
+  const hero = useSiteSetting<HeroCopy>('hero', locale);
+  const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
+  const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
+  const quickLinks = useSiteSetting('quickLinks', locale);
+  const sectionsSetting = useSiteSetting('homepageSections', locale);
+  const featuredSetting = useSiteSetting('featured', locale);
+  const articlesQuery = usePublishedArticles(locale);
+
+  const sections = ((sectionsSetting.data?.data as HomepageSectionsData | undefined)?.sections ?? [
+    { id: 'hero', visible: true, order: 0 },
+    { id: 'featured', visible: true, order: 1 },
+    { id: 'learnRow', visible: true, order: 2 },
+    { id: 'quranBanner', visible: true, order: 3 },
+    { id: 'quickLinks', visible: true, order: 4 },
+    { id: 'aboutPreview', visible: true, order: 5 },
+  ]) as HomepageSection[];
+
+  const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
+    mode: 'newest' as const,
+  };
+  const manualFeatured = useArticle(
+    featuredConfig.mode === 'manual' ? featuredConfig.articleSlug : undefined,
+    locale,
+  );
+
+  const quickLinkItems = ((quickLinks.data?.data?.items as QuickLinkItem[] | undefined) ?? [])
+    .filter((i) => i && i.visible !== false)
+    .slice()
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  const heroCopy = hero.data?.value;
+  const quranCopy = quranBanner.data?.value;
+  const aboutCopy = aboutPreview.data?.value;
+
+  const articles = (articlesQuery.data ?? []).slice(0, 3);
+  const manualMatch =
+    featuredConfig.mode === 'manual' && manualFeatured.data?.status === 'published'
+      ? manualFeatured.data
+      : undefined;
+  const featured = manualMatch ?? articles[0];
+
+  const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
+
+  const renderers: Record<HomepageSectionId, () => React.ReactNode> = {
+    hero: () => (
+      <>
+        {renderHero()}
+        {renderHeroButtons(localizePath)}
+      </>
+    ),
+    featured: () => renderFeatured(),
+    learnRow: () => renderLearnRow(),
+    quranBanner: () => renderQuranBanner(),
+    quickLinks: () => renderQuickLinks(),
+    aboutPreview: () => renderAboutPreview(),
+  };
+
+  const orderedSections = sections
+    .filter((s) => s && s.visible !== false)
+    .slice()
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
   function renderFeatured() {
     if (featured) {
       return (
@@ -371,7 +372,7 @@ function renderHeroButtons() {
                   {quranCopy.headline}
                 </h2>
                 <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
-                <a
+                
                   href={quranCtaUrl}
                   target="_blank"
                   rel="noopener noreferrer"
