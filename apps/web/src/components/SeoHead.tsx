@@ -72,7 +72,9 @@ export default function SeoHead({
   const tagline = DEFAULT_TAGLINE_EN;
   const resolvedTitle = cleanMeta(title, '');
   const resolvedDescription = cleanMeta(description, DEFAULT_DESCRIPTION_EN);
-  const fullTitle = resolvedTitle ? `${resolvedTitle} — ${siteName}` : `${siteName} — ${tagline}`;
+  const fullTitle = resolvedTitle
+    ? `${resolvedTitle} — ${siteName}`
+    : `${siteName} — ${tagline}`;
 
   const canonicalUrl = canonical ?? canonicalFor(resolvedPath, locale);
   const enUrl = canonicalFor(resolvedPath, 'en');
@@ -88,7 +90,10 @@ export default function SeoHead({
 
       <title>{fullTitle}</title>
       <meta name="description" content={resolvedDescription} />
-      <meta name="robots" content={noindex ? 'noindex,nofollow' : 'index,follow'} />
+      <meta
+        name="robots"
+        content={noindex ? 'noindex,nofollow' : 'index,follow'}
+      />
 
       <link rel="canonical" href={canonicalUrl} />
       <link rel="alternate" hrefLang="en" href={enUrl} />
