@@ -92,7 +92,17 @@ export default defineConfig({
         // precached URL resolves to the React app shell so client-side routes
         // (including /ar/*) render correctly when served from the SW cache.
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/__/, /^\/api\//, /^\/sw\.js/, /^\/workbox-/, /\/sitemap\.xml$/, /\/robots\.txt$/, /\/ai\.txt$/, /\/llms.*\.txt$/, /\/manifest\.webmanifest$/],
+        navigateFallbackDenylist: [
+          /^\/__/,
+          /^\/api\//,
+          /^\/sw\.js/,
+          /^\/workbox-/,
+          /\/sitemap\.xml$/,
+          /\/robots\.txt$/,
+          /\/ai\.txt$/,
+          /\/llms.*\.txt$/,
+          /\/manifest\.webmanifest$/,
+        ],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
@@ -154,8 +164,7 @@ export default defineConfig({
             // on failure, Workbox serves the precached app shell (index.html).
             // The dedicated /offline.html is used only when the precache is
             // itself unavailable.
-            urlPattern: ({ request, sameOrigin }) =>
-              sameOrigin && request.mode === 'navigate',
+            urlPattern: ({ request, sameOrigin }) => sameOrigin && request.mode === 'navigate',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'pages',

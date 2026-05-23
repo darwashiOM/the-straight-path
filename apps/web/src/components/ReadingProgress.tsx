@@ -13,10 +13,7 @@ interface ReadingProgressProps {
  * article element. Uses `requestAnimationFrame` to rate-limit scroll work.
  * Honours `prefers-reduced-motion` by removing width-transitions.
  */
-export default function ReadingProgress({
-  target,
-  topOffset = 64,
-}: ReadingProgressProps) {
+export default function ReadingProgress({ target, topOffset = 64 }: ReadingProgressProps) {
   const [progress, setProgress] = useState(0);
   const [reduced, setReduced] = useState(false);
 
@@ -68,7 +65,7 @@ export default function ReadingProgress({
       style={{ top: topOffset }}
     >
       <div
-        className="h-full bg-accent-500 origin-left"
+        className="bg-accent-500 h-full origin-left"
         style={{
           transform: `scaleX(${progress})`,
           transition: reduced ? 'none' : 'transform 120ms linear',

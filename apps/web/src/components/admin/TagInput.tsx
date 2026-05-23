@@ -31,11 +31,11 @@ export default function TagInput({ value, onChange, placeholder }: Props) {
   }
 
   return (
-    <div className="flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-primary-100 bg-white px-2 py-1.5 focus-within:border-primary-400 focus-within:ring-1 focus-within:ring-primary-400">
+    <div className="border-primary-100 focus-within:border-primary-400 focus-within:ring-primary-400 flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border bg-white px-2 py-1.5 focus-within:ring-1">
       {value.map((tag) => (
         <span
           key={tag}
-          className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2 py-0.5 text-xs text-primary-700"
+          className="bg-primary-50 text-primary-700 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs"
         >
           {tag}
           <button

@@ -40,10 +40,7 @@ export default function TopicChips({ value, onChange, className }: TopicChipsPro
     <div
       role="group"
       aria-label={t('learn.topics.ariaLabel')}
-      className={cn(
-        '-mx-1 flex flex-wrap gap-2 px-1',
-        className,
-      )}
+      className={cn('-mx-1 flex flex-wrap gap-2 px-1', className)}
     >
       {TOPICS.map((topic) => {
         const active = value === topic;
@@ -54,10 +51,10 @@ export default function TopicChips({ value, onChange, className }: TopicChipsPro
             aria-pressed={active}
             onClick={() => onChange(topic)}
             className={cn(
-              'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400',
+              'focus-visible:outline-accent-400 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
               active
-                ? 'border-primary-600 bg-primary-600 text-white shadow-sm dark:border-accent-400 dark:bg-accent-400 dark:text-primary-900'
-                : 'border-primary-500/20 bg-white text-ink/80 hover:border-primary-500/40 hover:bg-primary-50 dark:border-primary-700/60 dark:bg-primary-800 dark:text-paper/80 dark:hover:bg-primary-700/60',
+                ? 'border-primary-600 bg-primary-600 dark:border-accent-400 dark:bg-accent-400 dark:text-primary-900 text-white shadow-sm'
+                : 'border-primary-500/20 text-ink/80 hover:border-primary-500/40 hover:bg-primary-50 dark:border-primary-700/60 dark:bg-primary-800 dark:text-paper/80 dark:hover:bg-primary-700/60 bg-white',
             )}
           >
             {t(`learn.topics.${topic}`)}

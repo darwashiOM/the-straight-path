@@ -45,3 +45,6 @@ coverage
 apps/web/src/content/articles/reading-times.generated.ts
 apps/web/public/sitemap.xml
 apps/web/public/llms-full.txt
+
+# Local-only reference assets
+image.png

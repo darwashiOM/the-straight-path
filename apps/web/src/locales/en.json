@@ -16,8 +16,7 @@
     "contact": "Contact",
     "privacy": "Privacy",
     "terms": "Terms",
-    "toggleMenu": "Toggle menu",
-    "switchLanguage": "Switch language"
+    "toggleMenu": "Toggle menu"
   },
   "footer": {
     "copyright": "The Straight Path. All rights reserved.",
@@ -125,8 +124,7 @@
     "draft": "Draft",
     "backToArticles": "All articles",
     "notFound": "Article not found",
-    "backBtn": "Back to articles",
-    "arabicComingSoon": "This article is available in English for now. An Arabic translation is in preparation, in shā' Allāh."
+    "backBtn": "Back to articles"
   },
   "quranPage": {
     "eyebrow": "The Noble Qur'ān",
@@ -393,11 +391,5 @@
   },
   "breadcrumbs": {
     "label": "Breadcrumb"
-  },
-  "navExtras": {
-    "admin": "Admin"
-  },
-  "footerExtras": {
-    "signIn": "Sign in"
   }
 }

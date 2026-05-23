@@ -49,7 +49,7 @@ export function websiteSchema(): JsonLd {
     alternateName: 'TSP',
     url: SITE_ORIGIN,
     description: DEFAULT_DESCRIPTION,
-    inLanguage: ['en', 'ar'],
+    inLanguage: 'en',
     publisher: { '@id': `${SITE_ORIGIN}/#organization` },
   };
 }

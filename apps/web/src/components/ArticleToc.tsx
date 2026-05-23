@@ -105,9 +105,7 @@ export default function ArticleToc({ bodyRef, scrollOffset = 96 }: ArticleTocPro
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const top = window.scrollY + rect.top - scrollOffset;
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({ top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     // Update the URL without triggering a jump.
     window.history.replaceState(null, '', `#${id}`);
@@ -121,12 +119,10 @@ export default function ArticleToc({ bodyRef, scrollOffset = 96 }: ArticleTocPro
   return (
     <nav
       aria-label={label}
-      className="hidden lg:block sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto w-60 shrink-0"
+      className="sticky top-24 hidden max-h-[calc(100vh-8rem)] w-60 shrink-0 overflow-y-auto lg:block"
     >
-      <p className="font-serif text-xs uppercase tracking-widest text-accent-500 mb-3">
-        {label}
-      </p>
-      <ul className="space-y-2 text-sm border-l border-primary-500/20 dark:border-primary-700/50">
+      <p className="text-accent-500 mb-3 font-serif text-xs uppercase tracking-widest">{label}</p>
+      <ul className="border-primary-500/20 dark:border-primary-700/50 space-y-2 border-l text-sm">
         {headings.map((h) => {
           const isActive = h.id === activeId;
           return (
@@ -135,10 +131,10 @@ export default function ArticleToc({ bodyRef, scrollOffset = 96 }: ArticleTocPro
                 href={`#${h.id}`}
                 onClick={(e) => handleClick(e, h.id)}
                 className={
-                  'block -ml-px border-l-2 pl-3 py-0.5 transition-colors ' +
+                  '-ml-px block border-l-2 py-0.5 pl-3 transition-colors ' +
                   (isActive
                     ? 'border-accent-500 text-primary-700 dark:text-accent-300 font-medium'
-                    : 'border-transparent text-ink/60 hover:text-primary-600 dark:text-paper/60 dark:hover:text-accent-400')
+                    : 'text-ink/60 hover:text-primary-600 dark:text-paper/60 dark:hover:text-accent-400 border-transparent')
                 }
               >
                 {h.text}

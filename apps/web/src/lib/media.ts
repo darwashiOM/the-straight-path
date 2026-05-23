@@ -18,12 +18,7 @@ import {
   serverTimestamp,
   type Timestamp,
 } from 'firebase/firestore';
-import {
-  deleteObject,
-  getDownloadURL,
-  ref as storageRef,
-  uploadBytes,
-} from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage';
 
 import { getDb, getFirebaseAuth, getFirebaseStorage } from './firebase';
 import type { MediaDoc } from './content-schema';
@@ -102,9 +97,9 @@ export async function uploadMedia(file: File, alt: string): Promise<MediaDoc> {
 
 /** List every media item, newest first. */
 export async function listMedia(): Promise<MediaDoc[]> {
-  const snap = await getDocs(
-    query(collection(getDb(), MEDIA), orderBy('createdAt', 'desc')),
-  ).catch(async () => getDocs(collection(getDb(), MEDIA)));
+  const snap = await getDocs(query(collection(getDb(), MEDIA), orderBy('createdAt', 'desc'))).catch(
+    async () => getDocs(collection(getDb(), MEDIA)),
+  );
   return snap.docs.map((d) => ({
     id: d.id,
     ...(d.data() as Omit<MediaDoc, 'id'>),

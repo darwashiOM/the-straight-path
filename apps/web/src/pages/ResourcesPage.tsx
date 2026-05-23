@@ -16,10 +16,7 @@ export default function ResourcesPage() {
   const meta = getRouteMeta('/resources')!;
 
   const { data: resources = [], isLoading } = useResources(locale);
-  const header = useSiteSetting<{ title: string; description: string }>(
-    'resourcesHeader',
-    locale,
-  );
+  const header = useSiteSetting<{ title: string; description: string }>('resourcesHeader', locale);
   const headerTitle = header.data?.value.title || t('resourcesPage.title');
   const headerDescription = header.data?.value.description || t('resourcesPage.description');
 
@@ -42,10 +39,10 @@ export default function ResourcesPage() {
             to: n.path === '/resources' ? undefined : localizePath(n.path),
           }))}
         />
-        <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
+        <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
           {headerTitle}
         </h1>
-        <p className="mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
+        <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
           {headerDescription}
         </p>
         {isLoading && resources.length === 0 ? (
@@ -66,16 +63,16 @@ export default function ResourcesPage() {
                   rel="noopener noreferrer"
                   className="card group flex h-full flex-col p-6"
                 >
-                  <span className="text-xs font-semibold uppercase tracking-wider text-accent-500">
+                  <span className="text-accent-500 text-xs font-semibold uppercase tracking-wider">
                     {t(`resourcesPage.categories.${r.category}`, {
                       defaultValue: r.category,
                     })}
                   </span>
-                  <h2 className="mt-2 flex items-center gap-2 font-serif text-xl font-semibold text-primary-700 group-hover:text-primary-600 dark:text-accent-300">
+                  <h2 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 mt-2 flex items-center gap-2 font-serif text-xl font-semibold">
                     {r.title}
                     <ExternalLink size={14} aria-hidden="true" />
                   </h2>
-                  <p className="mt-2 flex-1 text-sm text-ink/70 dark:text-paper/70">
+                  <p className="text-ink/70 dark:text-paper/70 mt-2 flex-1 text-sm">
                     {r.description}
                   </p>
                 </a>

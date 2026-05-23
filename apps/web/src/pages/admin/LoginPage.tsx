@@ -27,50 +27,55 @@ export default function LoginPage() {
       navigate('/admin', { replace: true });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Sign-in failed';
-      setError(msg.replace('Firebase: ', '').replace(/\(auth\/[^)]+\)\.?/, '').trim() || msg);
+      setError(
+        msg
+          .replace('Firebase: ', '')
+          .replace(/\(auth\/[^)]+\)\.?/, '')
+          .trim() || msg,
+      );
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-paper px-4">
-      <div className="w-full max-w-sm rounded-xl border border-primary-100 bg-white p-8 shadow-sm">
+    <div className="bg-paper flex min-h-screen items-center justify-center px-4">
+      <div className="border-primary-100 w-full max-w-sm rounded-xl border bg-white p-8 shadow-sm">
         <div className="mb-6 flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary-500" />
-          <span className="font-serif text-lg text-primary-700">TSP Admin</span>
+          <BookOpen className="text-primary-500 h-5 w-5" />
+          <span className="text-primary-700 font-serif text-lg">TSP Admin</span>
         </div>
-        <h1 className="mb-1 font-serif text-2xl text-primary-700">Sign in</h1>
-        <p className="mb-6 text-sm text-ink/60">
+        <h1 className="text-primary-700 mb-1 font-serif text-2xl">Sign in</h1>
+        <p className="text-ink/60 mb-6 text-sm">
           For editors on the allowlist. If you need access, contact an existing admin.
         </p>
         <form onSubmit={onSubmit} className="space-y-4">
           <label className="block">
-            <span className="block text-sm font-medium text-ink/80">Email</span>
+            <span className="text-ink/80 block text-sm font-medium">Email</span>
             <input
               type="email"
               autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+              className="border-primary-100 focus:border-primary-400 focus:ring-primary-400 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
             />
           </label>
           <label className="block">
-            <span className="block text-sm font-medium text-ink/80">Password</span>
+            <span className="text-ink/80 block text-sm font-medium">Password</span>
             <input
               type="password"
               autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+              className="border-primary-100 focus:border-primary-400 focus:ring-primary-400 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
             />
           </label>
           {error && (
             <div
               role="alert"
-              className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna"
+              className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm"
             >
               {error}
             </div>
@@ -78,7 +83,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="btn w-full bg-primary-500 text-white hover:bg-primary-600"
+            className="btn bg-primary-500 hover:bg-primary-600 w-full text-white"
           >
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>

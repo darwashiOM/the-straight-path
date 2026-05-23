@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ArrowRight, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -27,7 +27,7 @@ export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: article, isLoading } = useArticle(slug, locale);
   const { data: publishedArticles } = usePublishedArticles(locale);
-  const dateLocale = locale === 'ar' ? 'ar' : 'en-US';
+  const dateLocale = 'en-US';
 
   // Refs for progress bar (article scroll target) and TOC (body heading scan).
   const articleRef = useRef<HTMLElement>(null);
@@ -59,21 +59,11 @@ export default function ArticlePage() {
     );
   }
 
-  const {
-    slug: articleSlug,
-    title,
-    excerpt,
-    body,
-    publishedAt,
-    author,
-    tags,
-    heroImage,
-  } = article;
+  const { slug: articleSlug, title, excerpt, body, publishedAt, author, tags, heroImage } = article;
 
-  // The back-arrow points "backwards" in the reading direction: left in LTR,
-  // right in RTL. Using two icons keeps the chevron semantically correct.
-  const BackIcon = locale === 'ar' ? ArrowRight : ArrowLeft;
-  const CrumbIcon = ChevronRight; // Visual direction handled by rtl text flow.
+  // The back-arrow points "backwards" in the reading direction (LTR-only now).
+  const BackIcon = ArrowLeft;
+  const CrumbIcon = ChevronRight;
 
   const canonicalUrl = canonicalFor(`/learn/articles/${articleSlug}`, locale);
 
@@ -117,7 +107,7 @@ export default function ArticlePage() {
               Articles / <title>. */}
           <nav
             aria-label={t('nav.breadcrumbs', 'Breadcrumb') as string}
-            className="text-sm text-ink/60 dark:text-paper/60"
+            className="text-ink/60 dark:text-paper/60 text-sm"
           >
             <ol className="flex flex-wrap items-center gap-1">
               <li>
@@ -155,7 +145,7 @@ export default function ArticlePage() {
               </li>
               <li
                 aria-current="page"
-                className="max-w-[18rem] truncate text-primary-700 dark:text-accent-300"
+                className="text-primary-700 dark:text-accent-300 max-w-[18rem] truncate"
               >
                 {title}
               </li>
@@ -164,19 +154,19 @@ export default function ArticlePage() {
 
           <Link
             to={localizePath('/learn/articles')}
-            className="mt-6 inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 dark:text-accent-400"
+            className="text-primary-600 hover:text-primary-700 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm"
           >
             <BackIcon size={14} /> {t('articlesPage.backToArticles')}
           </Link>
 
-          <header className="mt-8 border-b border-primary-500/10 pb-8 dark:border-primary-700/40">
-            <p className="font-serif text-sm uppercase tracking-widest text-accent-500">
+          <header className="border-primary-500/10 dark:border-primary-700/40 mt-8 border-b pb-8">
+            <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
               {formatDate(publishedAt, dateLocale)} · {author}
             </p>
-            <h1 className="mt-3 text-balance font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300 md:text-6xl">
+            <h1 className="text-primary-700 dark:text-accent-300 mt-3 text-balance font-serif text-5xl font-semibold md:text-6xl">
               {title}
             </h1>
-            <p className="text-pretty mt-4 max-w-prose text-lg text-ink/70 dark:text-paper/70">
+            <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-pretty text-lg">
               {excerpt}
             </p>
           </header>
@@ -199,25 +189,13 @@ export default function ArticlePage() {
             )}
           </div>
 
-          {/* Arabic UX note for English-only bodies. */}
-          {locale === 'ar' ? (
-            <div
-              className="mx-auto mt-8 max-w-prose rounded-xl border border-accent-300/50 bg-accent-50/60 p-4 text-sm text-primary-700 dark:border-accent-500/30 dark:bg-primary-800/60 dark:text-accent-200"
-              role="note"
-            >
-              {t('articlesPage.arabicComingSoon')}
-            </div>
-          ) : null}
-
           {/* Two-column layout on lg+: article body + sticky TOC. On smaller
               screens the TOC is hidden and the body takes the full column. */}
           <div className="mt-12 lg:flex lg:items-start lg:gap-12">
             <div className="min-w-0 flex-1">
               <div
                 ref={bodyRef}
-                className="prose prose-lg mx-auto dark:prose-invert prose-p:leading-[1.8] prose-blockquote:border-l-4 prose-blockquote:border-accent-400 prose-blockquote:bg-accent-50/40 dark:prose-blockquote:bg-primary-800/40 prose-blockquote:px-6 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:rounded-r-lg first-of-type:prose-p:first-letter:float-left first-of-type:prose-p:first-letter:mr-2 first-of-type:prose-p:first-letter:font-serif first-of-type:prose-p:first-letter:text-6xl first-of-type:prose-p:first-letter:leading-[0.9] first-of-type:prose-p:first-letter:text-accent-500"
-                lang={locale === 'ar' ? 'en' : undefined}
-                dir={locale === 'ar' ? 'ltr' : undefined}
+                className="prose prose-lg dark:prose-invert prose-p:leading-[1.8] prose-blockquote:border-l-4 prose-blockquote:border-accent-400 prose-blockquote:bg-accent-50/40 dark:prose-blockquote:bg-primary-800/40 prose-blockquote:px-6 prose-blockquote:py-3 prose-blockquote:not-italic prose-blockquote:rounded-r-lg first-of-type:prose-p:first-letter:float-left first-of-type:prose-p:first-letter:mr-2 first-of-type:prose-p:first-letter:font-serif first-of-type:prose-p:first-letter:text-6xl first-of-type:prose-p:first-letter:leading-[0.9] first-of-type:prose-p:first-letter:text-accent-500 mx-auto"
               >
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
               </div>
@@ -225,11 +203,7 @@ export default function ArticlePage() {
               <div className="mx-auto max-w-prose">
                 <ShareButtons url={canonicalUrl} title={title} description={excerpt} />
 
-                <RelatedArticles
-                  currentSlug={articleSlug}
-                  tags={tags}
-                  pool={publishedArticles}
-                />
+                <RelatedArticles currentSlug={articleSlug} tags={tags} pool={publishedArticles} />
 
                 <PrevNextArticle currentSlug={articleSlug} pool={publishedArticles} />
               </div>

@@ -34,10 +34,10 @@ export default function PrivacyPage() {
           }))}
         />
         <div className="mx-auto max-w-3xl">
-          <h1 className="font-serif text-5xl font-semibold text-primary-700 dark:text-accent-300">
+          <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
             {title}
           </h1>
-          <div className="prose prose-lg mt-8 dark:prose-invert">
+          <div className="prose prose-lg dark:prose-invert mt-8">
             {page ? (
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{page.body}</ReactMarkdown>
             ) : isLoading ? (

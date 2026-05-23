@@ -108,17 +108,14 @@ export const health = onRequest((_req, res) => {
  *   - On delivery failure, log but do NOT throw — the Firestore write has
  *     already succeeded and we don't want infinite retries filling logs.
  */
-export const onContactSubmission = onDocumentCreated(
-  'contact-submissions/{id}',
-  async (event) => {
-    const data = event.data?.data();
-    if (!data) return;
-    logger.info('New contact submission', {
-      id: event.params.id,
-      name: data.name,
-      email: data.email,
-    });
-    // See the TODO block above for the email delivery sketch. Enabling
-    // that code requires the Blaze plan.
-  },
-);
+export const onContactSubmission = onDocumentCreated('contact-submissions/{id}', async (event) => {
+  const data = event.data?.data();
+  if (!data) return;
+  logger.info('New contact submission', {
+    id: event.params.id,
+    name: data.name,
+    email: data.email,
+  });
+  // See the TODO block above for the email delivery sketch. Enabling
+  // that code requires the Blaze plan.
+});

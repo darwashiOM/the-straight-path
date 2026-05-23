@@ -62,14 +62,14 @@ export default function CommandK({ className, variant = 'auto' }: CommandKProps)
       onClick={() => setOpen(true)}
       aria-label={label}
       className={cn(
-        'items-center gap-2 rounded-lg border border-primary-500/15 bg-paper/60 px-3 py-1.5 text-xs text-ink/60 transition-colors hover:border-primary-500/30 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400 dark:border-primary-700/50 dark:bg-primary-900/40 dark:text-paper/60 dark:hover:bg-primary-800',
+        'border-primary-500/15 bg-paper/60 text-ink/60 hover:border-primary-500/30 focus-visible:outline-accent-400 dark:border-primary-700/50 dark:bg-primary-900/40 dark:text-paper/60 dark:hover:bg-primary-800 items-center gap-2 rounded-lg border px-3 py-1.5 text-xs transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
         variant === 'auto' ? 'hidden md:flex' : 'flex',
         className,
       )}
     >
       <Search size={14} aria-hidden="true" />
       <span>{short}</span>
-      <kbd className="ms-2 rounded border border-primary-500/20 bg-paper px-1.5 py-0.5 font-mono text-2xs dark:border-primary-700/60 dark:bg-primary-900">
+      <kbd className="border-primary-500/20 bg-paper text-2xs dark:border-primary-700/60 dark:bg-primary-900 ms-2 rounded border px-1.5 py-0.5 font-mono">
         {shortcut}
       </kbd>
     </button>
@@ -81,11 +81,7 @@ export default function CommandK({ className, variant = 'auto' }: CommandKProps)
       onClick={() => setOpen(true)}
       aria-label={label}
       title={`${short} (${shortcut})`}
-      className={cn(
-        'btn-ghost !px-2 !py-2',
-        variant === 'auto' ? 'md:hidden' : '',
-        className,
-      )}
+      className={cn('btn-ghost !px-2 !py-2', variant === 'auto' ? 'md:hidden' : '', className)}
     >
       <Search size={16} aria-hidden="true" />
     </button>
@@ -93,7 +89,11 @@ export default function CommandK({ className, variant = 'auto' }: CommandKProps)
 
   return (
     <>
-      {variant === 'pill' ? pill : variant === 'icon' ? icon : (
+      {variant === 'pill' ? (
+        pill
+      ) : variant === 'icon' ? (
+        icon
+      ) : (
         <>
           {pill}
           {icon}

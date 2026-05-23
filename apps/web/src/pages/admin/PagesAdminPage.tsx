@@ -1,7 +1,7 @@
 /**
  * PagesAdminPage — a tiny surface for the three fixed editorial pages:
- * About, Privacy, Terms. Each has an EN + optional AR translation with
- * a markdown body and live preview.
+ * About, Privacy, Terms. Each has an English markdown body with a live
+ * preview.
  */
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -36,8 +36,8 @@ export default function PagesAdminPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-serif text-lg text-primary-700">Editorial pages</h2>
-        <p className="mt-1 text-sm text-ink/60">
+        <h2 className="text-primary-700 font-serif text-lg">Editorial pages</h2>
+        <p className="text-ink/60 mt-1 text-sm">
           Static long-form pages. Body is markdown; preview is live.
         </p>
       </div>
@@ -48,16 +48,16 @@ export default function PagesAdminPage() {
             key={card.slug}
             type="button"
             onClick={() => setOpenSlug(card.slug)}
-            className="group flex flex-col items-start gap-3 rounded-xl border border-primary-100 bg-white p-5 text-left shadow-sm transition-shadow hover:shadow-md"
+            className="border-primary-100 group flex flex-col items-start gap-3 rounded-xl border bg-white p-5 text-left shadow-sm transition-shadow hover:shadow-md"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 text-primary-600">
+            <div className="bg-primary-50 text-primary-600 flex h-9 w-9 items-center justify-center rounded-lg">
               <FileText className="h-5 w-5" />
             </div>
             <div>
-              <div className="font-serif text-base text-primary-700">{card.title}</div>
-              <div className="mt-1 text-sm text-ink/60">{card.blurb}</div>
+              <div className="text-primary-700 font-serif text-base">{card.title}</div>
+              <div className="text-ink/60 mt-1 text-sm">{card.blurb}</div>
             </div>
-            <span className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-primary-600 group-hover:text-primary-700">
+            <span className="text-primary-600 group-hover:text-primary-700 mt-auto inline-flex items-center gap-1 text-xs font-semibold">
               Edit
               <ChevronRight className="h-3 w-3" />
             </span>
@@ -65,9 +65,7 @@ export default function PagesAdminPage() {
         ))}
       </div>
 
-      {openSlug && (
-        <PageEditor slug={openSlug} onClose={() => setOpenSlug(null)} />
-      )}
+      {openSlug && <PageEditor slug={openSlug} onClose={() => setOpenSlug(null)} />}
     </div>
   );
 }
@@ -82,19 +80,17 @@ function PageEditor({ slug, onClose }: { slug: PageSlug; onClose: () => void }) 
   const card = CARDS.find((c) => c.slug === slug)!;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+    <div className="bg-ink/40 fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-xl bg-white shadow-lg">
-        <div className="flex items-center justify-between border-b border-primary-100 px-6 py-4">
+        <div className="border-primary-100 flex items-center justify-between border-b px-6 py-4">
           <div>
-            <h3 className="font-serif text-lg text-primary-700">{card.title}</h3>
-            <p className="text-xs text-ink/60">
-              /{slug} — edit EN and (optional) AR side-by-side.
-            </p>
+            <h3 className="text-primary-700 font-serif text-lg">{card.title}</h3>
+            <p className="text-ink/60 text-xs">/{slug} — edit the English body.</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 text-ink/50 hover:bg-primary-50 hover:text-primary-700"
+            className="text-ink/50 hover:bg-primary-50 hover:text-primary-700 rounded p-1"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -103,7 +99,7 @@ function PageEditor({ slug, onClose }: { slug: PageSlug; onClose: () => void }) 
 
         <div className="flex-1 overflow-y-auto p-6">
           {isLoading ? (
-            <div className="text-sm text-ink/60">Loading…</div>
+            <div className="text-ink/60 text-sm">Loading…</div>
           ) : (
             <PageForm
               slug={slug}
@@ -128,9 +124,6 @@ interface FormProps {
 function PageForm({ slug, initial, onSaved }: FormProps) {
   const [enTitle, setEnTitle] = useState(initial?.translations.en.title ?? '');
   const [enBody, setEnBody] = useState(initial?.translations.en.body ?? '');
-  const [arEnabled, setArEnabled] = useState(Boolean(initial?.translations.ar));
-  const [arTitle, setArTitle] = useState(initial?.translations.ar?.title ?? '');
-  const [arBody, setArBody] = useState(initial?.translations.ar?.body ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -139,7 +132,7 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
     setError(null);
     setSaved(false);
     if (!enTitle.trim()) {
-      setError('English title is required.');
+      setError('Title is required.');
       return;
     }
     setSaving(true);
@@ -148,9 +141,6 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
         slug,
         translations: {
           en: { title: enTitle, body: enBody },
-          ...(arEnabled && (arTitle.trim() || arBody.trim())
-            ? { ar: { title: arTitle, body: arBody } }
-            : {}),
         },
         schemaVersion: 1,
       };
@@ -166,105 +156,47 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* EN pane */}
-        <section className="rounded-xl border border-primary-100 p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="text-xs font-semibold uppercase tracking-wide text-primary-700">
-              English
-            </div>
+      <section className="border-primary-100 rounded-xl border p-4">
+        <label className="block">
+          <span className="text-ink/80 block text-sm font-medium">Title</span>
+          <input
+            type="text"
+            value={enTitle}
+            onChange={(e) => setEnTitle(e.target.value)}
+            required
+            className={inputCls}
+          />
+        </label>
+        <label className="mt-3 block">
+          <span className="text-ink/80 block text-sm font-medium">Body (Markdown)</span>
+          <textarea
+            value={enBody}
+            onChange={(e) => setEnBody(e.target.value)}
+            rows={18}
+            className={`${inputCls} font-mono text-xs leading-relaxed`}
+            placeholder="# Heading\n\nYour content…"
+          />
+        </label>
+        <div className="border-primary-100 bg-primary-50/30 mt-4 rounded-lg border p-3">
+          <div className="text-primary-700 mb-2 text-xs font-semibold uppercase tracking-wide">
+            Live preview
           </div>
-          <label className="block">
-            <span className="block text-sm font-medium text-ink/80">Title</span>
-            <input
-              type="text"
-              value={enTitle}
-              onChange={(e) => setEnTitle(e.target.value)}
-              required
-              className={inputCls}
-            />
-          </label>
-          <label className="mt-3 block">
-            <span className="block text-sm font-medium text-ink/80">Body (Markdown)</span>
-            <textarea
-              value={enBody}
-              onChange={(e) => setEnBody(e.target.value)}
-              rows={18}
-              className={`${inputCls} font-mono text-xs leading-relaxed`}
-              placeholder="# Heading\n\nYour content…"
-            />
-          </label>
-          <div className="mt-4 rounded-lg border border-primary-100 bg-primary-50/30 p-3">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-700">
-              Live preview
-            </div>
-            {enTitle && (
-              <h1 className="mb-1 font-serif text-xl text-primary-700">{enTitle}</h1>
-            )}
-            <MarkdownPreview source={enBody} />
-          </div>
-        </section>
-
-        {/* AR pane */}
-        <section className="rounded-xl border border-primary-100 p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="text-xs font-semibold uppercase tracking-wide text-primary-700">
-              Arabic
-            </div>
-            <label className="inline-flex items-center gap-2 text-xs text-ink/70">
-              <input
-                type="checkbox"
-                checked={arEnabled}
-                onChange={(e) => setArEnabled(e.target.checked)}
-              />
-              Include Arabic translation
-            </label>
-          </div>
-          <label className="block">
-            <span className="block text-sm font-medium text-ink/80">Title</span>
-            <input
-              type="text"
-              dir="rtl"
-              value={arTitle}
-              onChange={(e) => setArTitle(e.target.value)}
-              disabled={!arEnabled}
-              className={inputCls}
-            />
-          </label>
-          <label className="mt-3 block">
-            <span className="block text-sm font-medium text-ink/80">Body (Markdown)</span>
-            <textarea
-              dir="rtl"
-              value={arBody}
-              onChange={(e) => setArBody(e.target.value)}
-              disabled={!arEnabled}
-              rows={18}
-              className={`${inputCls} font-mono text-xs leading-relaxed`}
-            />
-          </label>
-          <div className="mt-4 rounded-lg border border-primary-100 bg-primary-50/30 p-3" dir="rtl">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-700">
-              معاينة
-            </div>
-            {arTitle && (
-              <h1 className="mb-1 font-serif text-xl text-primary-700">{arTitle}</h1>
-            )}
-            <MarkdownPreview source={arBody} />
-          </div>
-        </section>
-      </div>
+          {enTitle && <h1 className="text-primary-700 mb-1 font-serif text-xl">{enTitle}</h1>}
+          <MarkdownPreview source={enBody} />
+        </div>
+      </section>
 
       {error && (
         <div
           role="alert"
-          className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna"
+          className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm"
         >
           {error}
         </div>
       )}
 
       {saved && !error && (
-        <div className="rounded-lg border border-primary-200 bg-primary-50 px-3 py-2 text-sm text-primary-700">
+        <div className="border-primary-200 bg-primary-50 text-primary-700 rounded-lg border px-3 py-2 text-sm">
           Saved.
         </div>
       )}
@@ -277,9 +209,6 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
               slug,
               translations: {
                 en: { title: enTitle, body: enBody },
-                ...(arEnabled && (arTitle.trim() || arBody.trim())
-                  ? { ar: { title: arTitle, body: arBody } }
-                  : {}),
               },
               schemaVersion: 1,
             };
@@ -296,7 +225,7 @@ function PageForm({ slug, initial, onSaved }: FormProps) {
           type="button"
           onClick={() => void handleSave()}
           disabled={saving}
-          className="btn bg-primary-500 px-4 py-2 text-white hover:bg-primary-600"
+          className="btn bg-primary-500 hover:bg-primary-600 px-4 py-2 text-white"
         >
           <Save className="h-4 w-4" />
           {saving ? 'Saving…' : 'Save'}

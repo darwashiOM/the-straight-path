@@ -17,14 +17,7 @@
  */
 import { Fragment, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  collection,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  type Timestamp,
-} from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query, type Timestamp } from 'firebase/firestore';
 import { ChevronDown, ChevronRight, RefreshCw, Undo2 } from 'lucide-react';
 
 import { getDb } from '@/lib/firebase';
@@ -76,10 +69,8 @@ function ActionBadge({ action }: { action: AuditLogDoc['action'] }) {
 function DiffBlock({ label, value }: { label: string; value: unknown }) {
   return (
     <div className="min-w-0 flex-1">
-      <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink/60">
-        {label}
-      </div>
-      <pre className="max-h-80 overflow-auto rounded-md border border-primary-100 bg-paper p-3 font-mono text-xs leading-relaxed text-ink/80">
+      <div className="text-ink/60 mb-1 text-xs font-semibold uppercase tracking-wide">{label}</div>
+      <pre className="border-primary-100 bg-paper text-ink/80 max-h-80 overflow-auto rounded-md border p-3 font-mono text-xs leading-relaxed">
         {value === undefined ? '(none)' : JSON.stringify(value, null, 2)}
       </pre>
     </div>
@@ -154,28 +145,28 @@ export default function ActivityPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <p className="text-sm text-ink/70">
-          The last {data?.length ?? 0} admin writes, newest first. Click a row to expand the
-          before / after snapshot.
+        <p className="text-ink/70 text-sm">
+          The last {data?.length ?? 0} admin writes, newest first. Click a row to expand the before
+          / after snapshot.
         </p>
         <button
           type="button"
           onClick={() => void refetch()}
           disabled={isFetching}
-          className="inline-flex items-center gap-2 rounded-lg border border-primary-100 px-3 py-1.5 text-sm text-ink/70 hover:border-primary-300 hover:text-primary-700 disabled:opacity-50"
+          className="border-primary-100 text-ink/70 hover:border-primary-300 hover:text-primary-700 inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
         >
           <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
           Refresh
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-primary-100 bg-white p-4 shadow-sm">
-        <label className="flex items-center gap-2 text-sm text-ink/70">
+      <div className="border-primary-100 flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm">
+        <label className="text-ink/70 flex items-center gap-2 text-sm">
           <span>Collection</span>
           <select
             value={collectionFilter}
             onChange={(e) => setCollectionFilter(e.target.value)}
-            className="rounded-md border border-primary-100 bg-white px-2 py-1 text-sm focus:border-primary-300 focus:outline-none"
+            className="border-primary-100 focus:border-primary-300 rounded-md border bg-white px-2 py-1 text-sm focus:outline-none"
           >
             <option value="">All</option>
             {collectionOptions.map((c) => (
@@ -185,14 +176,14 @@ export default function ActivityPage() {
             ))}
           </select>
         </label>
-        <label className="flex flex-1 items-center gap-2 text-sm text-ink/70">
+        <label className="text-ink/70 flex flex-1 items-center gap-2 text-sm">
           <span>Who</span>
           <input
             type="text"
             value={whoFilter}
             onChange={(e) => setWhoFilter(e.target.value)}
             placeholder="uid or email substring"
-            className="w-full max-w-sm rounded-md border border-primary-100 bg-white px-2 py-1 text-sm focus:border-primary-300 focus:outline-none"
+            className="border-primary-100 focus:border-primary-300 w-full max-w-sm rounded-md border bg-white px-2 py-1 text-sm focus:outline-none"
           />
         </label>
         {(collectionFilter || whoFilter) && (
@@ -202,7 +193,7 @@ export default function ActivityPage() {
               setCollectionFilter('');
               setWhoFilter('');
             }}
-            className="text-xs text-primary-600 hover:text-primary-700"
+            className="text-primary-600 hover:text-primary-700 text-xs"
           >
             Clear filters
           </button>
@@ -210,19 +201,19 @@ export default function ActivityPage() {
       </div>
 
       {error ? (
-        <div className="rounded-xl border border-sienna/30 bg-sienna/5 p-4 text-sm text-sienna">
+        <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-xl border p-4 text-sm">
           Failed to load audit log: {(error as Error).message}
         </div>
       ) : null}
       {revertError ? (
-        <div className="rounded-xl border border-sienna/30 bg-sienna/5 p-4 text-sm text-sienna">
+        <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-xl border p-4 text-sm">
           Revert failed: {revertError}
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
+      <div className="border-primary-100 overflow-hidden rounded-xl border bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-primary-50 text-left text-xs uppercase tracking-wide text-primary-700">
+          <thead className="bg-primary-50 text-primary-700 text-left text-xs uppercase tracking-wide">
             <tr>
               <th className="w-6 px-2 py-3"></th>
               <th className="px-4 py-3">When</th>
@@ -232,17 +223,17 @@ export default function ActivityPage() {
               <th className="px-4 py-3">Doc ID</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-primary-100">
+          <tbody className="divide-primary-100 divide-y">
             {isLoading && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-ink/50">
+                <td colSpan={6} className="text-ink/50 px-4 py-6 text-center">
                   Loading…
                 </td>
               </tr>
             )}
             {!isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-ink/50">
+                <td colSpan={6} className="text-ink/50 px-4 py-6 text-center">
                   No audit entries match these filters.
                 </td>
               </tr>
@@ -253,34 +244,34 @@ export default function ActivityPage() {
                 <Fragment key={r.id}>
                   <tr
                     onClick={() => toggle(r.id)}
-                    className="cursor-pointer hover:bg-primary-50/30"
+                    className="hover:bg-primary-50/30 cursor-pointer"
                   >
-                    <td className="px-2 py-3 text-ink/40">
+                    <td className="text-ink/40 px-2 py-3">
                       {isOpen ? (
                         <ChevronDown className="h-4 w-4" />
                       ) : (
                         <ChevronRight className="h-4 w-4" />
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-ink/70">
+                    <td className="text-ink/70 whitespace-nowrap px-4 py-3 font-mono text-xs">
                       {formatWhen(r.at)}
                     </td>
-                    <td className="px-4 py-3 text-ink">
+                    <td className="text-ink px-4 py-3">
                       <div className="font-medium">{r.email || '(no email)'}</div>
-                      <div className="font-mono text-xs text-ink/50">{r.uid}</div>
+                      <div className="text-ink/50 font-mono text-xs">{r.uid}</div>
                     </td>
                     <td className="px-4 py-3">
                       <ActionBadge action={r.action} />
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-ink/70">{r.collection}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-ink/70">{r.docId}</td>
+                    <td className="text-ink/70 px-4 py-3 font-mono text-xs">{r.collection}</td>
+                    <td className="text-ink/70 px-4 py-3 font-mono text-xs">{r.docId}</td>
                   </tr>
                   {isOpen && (
                     <tr className="bg-paper/40">
                       <td></td>
                       <td colSpan={5} className="px-4 py-4">
                         <div className="mb-3 flex items-center justify-between gap-4">
-                          <div className="text-xs text-ink/60">
+                          <div className="text-ink/60 text-xs">
                             {r.before
                               ? 'You can restore the "before" snapshot below.'
                               : '(No "before" snapshot — this was a new create.)'}
@@ -292,7 +283,7 @@ export default function ActivityPage() {
                               void revert(r);
                             }}
                             disabled={!r.before || reverting === r.id}
-                            className="inline-flex items-center gap-1.5 rounded-md border border-accent-400 bg-accent-50 px-3 py-1.5 text-xs font-medium text-accent-700 hover:bg-accent-100 disabled:cursor-not-allowed disabled:opacity-40"
+                            className="border-accent-400 bg-accent-50 text-accent-700 hover:bg-accent-100 inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-40"
                           >
                             <Undo2 className="h-3.5 w-3.5" />
                             {reverting === r.id ? 'Reverting…' : 'Revert to "Before"'}

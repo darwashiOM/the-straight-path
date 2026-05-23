@@ -37,7 +37,7 @@ export default function Breadcrumbs({ items, className }: BreadcrumbsProps) {
       aria-label={t('breadcrumbs.label', { defaultValue: 'Breadcrumb' }) as string}
       className={cn('mb-6 text-sm', className)}
     >
-      <ol className="flex flex-wrap items-center gap-1.5 text-ink/60 dark:text-paper/60">
+      <ol className="text-ink/60 dark:text-paper/60 flex flex-wrap items-center gap-1.5">
         {items.map((item, i) => {
           const isLast = i === items.length - 1;
           return (
@@ -46,16 +46,14 @@ export default function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 {item.to && !isLast ? (
                   <Link
                     to={item.to}
-                    className="rounded transition-colors hover:text-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-400 dark:hover:text-accent-300"
+                    className="hover:text-primary-700 focus-visible:outline-accent-400 dark:hover:text-accent-300 rounded transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                   >
                     {item.label}
                   </Link>
                 ) : (
                   <span
                     aria-current={isLast ? 'page' : undefined}
-                    className={cn(
-                      isLast && 'font-medium text-ink/80 dark:text-paper/80',
-                    )}
+                    className={cn(isLast && 'text-ink/80 dark:text-paper/80 font-medium')}
                   >
                     {item.label}
                   </span>

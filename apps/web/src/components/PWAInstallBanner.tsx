@@ -91,7 +91,7 @@ export default function PWAInstallBanner() {
     <div
       role="dialog"
       aria-label="Install The Straight Path"
-      className="fixed bottom-4 right-4 z-50 max-w-[22rem] rounded-xl border border-primary-500/20 bg-white/95 p-4 shadow-lg backdrop-blur dark:border-primary-700/40 dark:bg-primary-800/95"
+      className="border-primary-500/20 dark:border-primary-700/40 dark:bg-primary-800/95 fixed bottom-4 right-4 z-50 max-w-[22rem] rounded-xl border bg-white/95 p-4 shadow-lg backdrop-blur"
       style={{
         bottom: 'max(1rem, env(safe-area-inset-bottom))',
         right: 'max(1rem, env(safe-area-inset-right))',
@@ -100,24 +100,24 @@ export default function PWAInstallBanner() {
       <div className="flex items-start gap-3">
         <img src="/icon-192.png" alt="" width={40} height={40} className="rounded-lg" />
         <div className="flex-1">
-          <p className="text-sm font-semibold text-primary-700 dark:text-paper">
+          <p className="text-primary-700 dark:text-paper text-sm font-semibold">
             Install The Straight Path
           </p>
-          <p className="mt-0.5 text-xs text-ink/70 dark:text-paper/70">
+          <p className="text-ink/70 dark:text-paper/70 mt-0.5 text-xs">
             Add to your home screen for quick access, offline reading, and a cleaner experience.
           </p>
           <div className="mt-3 flex items-center gap-2">
             <button
               type="button"
               onClick={install}
-              className="inline-flex items-center rounded-lg bg-primary-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-600 active:bg-primary-700"
+              className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-semibold text-white"
             >
               Install
             </button>
             <button
               type="button"
               onClick={dismiss}
-              className="inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-medium text-ink/70 hover:bg-primary-50 dark:text-paper/80 dark:hover:bg-primary-700"
+              className="text-ink/70 hover:bg-primary-50 dark:text-paper/80 dark:hover:bg-primary-700 inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-medium"
             >
               Not now
             </button>
@@ -127,7 +127,7 @@ export default function PWAInstallBanner() {
           type="button"
           onClick={dismiss}
           aria-label="Dismiss install banner"
-          className="ml-1 rounded p-1 text-ink/50 hover:bg-primary-50 hover:text-ink dark:text-paper/60 dark:hover:bg-primary-700"
+          className="text-ink/50 hover:bg-primary-50 hover:text-ink dark:text-paper/60 dark:hover:bg-primary-700 ml-1 rounded p-1"
         >
           <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
             <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />

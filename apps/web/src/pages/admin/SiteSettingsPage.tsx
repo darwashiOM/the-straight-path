@@ -1,7 +1,7 @@
 /**
  * SiteSettingsPage — one card per `SiteSettingId`. Each card lets the admin
- * edit the English + Arabic translations of that surface side-by-side, plus
- * any structured `data` fields (currently: `startHere.articleSlugs`).
+ * edit the English translations of that surface, plus any structured `data`
+ * fields (currently: `startHere.articleSlugs`).
  *
  * Data loads from Firestore via `getSiteSetting()`; if the doc is absent we
  * fall back to the English defaults shipped in `content-defaults.ts` so
@@ -201,7 +201,7 @@ export default function SiteSettingsPage() {
   return (
     <div className="space-y-6 pb-8">
       <div>
-        <p className="text-sm text-ink/70">
+        <p className="text-ink/70 text-sm">
           Edit every piece of homepage and chrome copy. Each card saves independently.
         </p>
       </div>
@@ -229,33 +229,20 @@ type Values = Record<string, string>;
 
 interface CardState {
   en: Values;
-  ar: Values;
-  arEnabled: boolean;
   articleSlugs: string[];
 }
 
-function SettingCard({
-  spec,
-  articles,
-}: {
-  spec: SettingSpec;
-  articles: AdminArticleV2[];
-}) {
+function SettingCard({ spec, articles }: { spec: SettingSpec; articles: AdminArticleV2[] }) {
   const qc = useQueryClient();
   const query = useQuery({
     queryKey: ['admin', 'siteSetting', spec.id],
     queryFn: () => getSiteSetting(spec.id),
   });
 
-  const defaults = useMemo(
-    () => DEFAULT_SITE_SETTINGS.find((d) => d.id === spec.id),
-    [spec.id],
-  );
+  const defaults = useMemo(() => DEFAULT_SITE_SETTINGS.find((d) => d.id === spec.id), [spec.id]);
 
   const [state, setState] = useState<CardState>({
     en: {},
-    ar: {},
-    arEnabled: false,
     articleSlugs: [],
   });
   const [saving, setSaving] = useState(false);
@@ -266,32 +253,27 @@ function SettingCard({
     if (query.isLoading) return;
     const doc = query.data;
     const enDefaults = (defaults?.translations.en ?? {}) as Values;
-    const arDefaults = (defaults?.translations.ar ?? {}) as Values;
     const enDoc = (doc?.translations?.en ?? {}) as Values;
-    const arDoc = (doc?.translations?.ar ?? {}) as Values;
     const slugs = Array.isArray(doc?.data?.articleSlugs)
       ? (doc?.data?.articleSlugs as string[])
       : ((defaults?.data?.articleSlugs as string[] | undefined) ?? []);
     setState({
       en: { ...enDefaults, ...enDoc },
-      ar: { ...arDefaults, ...arDoc },
-      arEnabled: Boolean(doc?.translations?.ar) || Boolean(defaults?.translations.ar),
       articleSlugs: slugs,
     });
   }, [query.data, query.isLoading, defaults]);
 
-  function patchLocale(which: 'en' | 'ar', key: string, value: string) {
-    setState((s) => ({ ...s, [which]: { ...s[which], [key]: value } }));
+  function patchEn(key: string, value: string) {
+    setState((s) => ({ ...s, en: { ...s.en, [key]: value } }));
   }
 
   function handlePreview() {
     const payload: {
-      translations: { en: Values; ar?: Values };
+      translations: { en: Values };
       data?: Record<string, unknown>;
     } = {
       translations: {
         en: pickFields(state.en, spec.fields),
-        ...(state.arEnabled ? { ar: pickFields(state.ar, spec.fields) } : {}),
       },
     };
     if (spec.hasData) {
@@ -307,12 +289,11 @@ function SettingCard({
     setSaving(true);
     try {
       const payload: {
-        translations: { en: Values; ar?: Values };
+        translations: { en: Values };
         data?: Record<string, unknown>;
       } = {
         translations: {
           en: pickFields(state.en, spec.fields),
-          ...(state.arEnabled ? { ar: pickFields(state.ar, spec.fields) } : {}),
         },
       };
       if (spec.hasData) {
@@ -330,12 +311,12 @@ function SettingCard({
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">{spec.title}</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">{spec.id}</span> · {spec.description}
+          <h2 className="text-primary-700 font-serif text-xl">{spec.title}</h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">{spec.id}</span> · {spec.description}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -348,43 +329,14 @@ function SettingCard({
             <Eye className="h-3 w-3" />
             Preview
           </button>
-          {!state.arEnabled && (
-            <button
-              type="button"
-              onClick={() => setState((s) => ({ ...s, arEnabled: true }))}
-              className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-            >
-              Enable Arabic
-            </button>
-          )}
         </div>
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <LocalePane
-              locale="en"
-              fields={spec.fields}
-              values={state.en}
-              onChange={(k, v) => patchLocale('en', k, v)}
-            />
-            {state.arEnabled ? (
-              <LocalePane
-                locale="ar"
-                fields={spec.fields}
-                values={state.ar}
-                onChange={(k, v) => patchLocale('ar', k, v)}
-              />
-            ) : (
-              <div className="flex h-full min-h-[160px] items-center justify-center rounded-lg border border-dashed border-primary-100 bg-primary-50/30 p-6 text-center text-sm text-ink/50">
-                Arabic translation not yet provided. Click{' '}
-                <span className="font-medium">Enable Arabic</span> to add one.
-              </div>
-            )}
-          </div>
+          <LocalePane fields={spec.fields} values={state.en} onChange={patchEn} />
 
           {spec.hasData && spec.id === 'startHere' && (
             <ArticleSlugList
@@ -395,14 +347,14 @@ function SettingCard({
           )}
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -410,7 +362,7 @@ function SettingCard({
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -431,39 +383,29 @@ function pickFields(values: Values, fields: FieldSpec[]): Values {
 // ---------- Locale pane ----------
 
 function LocalePane({
-  locale,
   fields,
   values,
   onChange,
 }: {
-  locale: 'en' | 'ar';
   fields: FieldSpec[];
   values: Values;
   onChange: (key: string, value: string) => void;
 }) {
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   return (
-    <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-700">
-          {locale === 'en' ? 'English' : 'Arabic'}
-        </h3>
-        <span className="text-xs text-ink/40">{locale}</span>
-      </div>
+    <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
       <div className="space-y-3">
         {fields.map((f) => (
           <label key={f.key} className="block">
-            <span className="block text-xs font-medium text-ink/70">{f.label}</span>
+            <span className="text-ink/70 block text-xs font-medium">{f.label}</span>
             {f.type === 'textarea' || f.type === 'markdown' ? (
               <textarea
                 value={values[f.key] ?? ''}
                 onChange={(e) => onChange(f.key, e.target.value)}
                 rows={f.type === 'markdown' ? 10 : 3}
-                dir={dir}
-                lang={locale}
+                dir="ltr"
+                lang="en"
                 className={
-                  inputCls +
-                  (f.type === 'markdown' ? ' font-mono text-xs leading-relaxed' : '')
+                  inputCls + (f.type === 'markdown' ? ' font-mono text-xs leading-relaxed' : '')
                 }
               />
             ) : (
@@ -471,12 +413,12 @@ function LocalePane({
                 type={f.type === 'url' ? 'url' : 'text'}
                 value={values[f.key] ?? ''}
                 onChange={(e) => onChange(f.key, e.target.value)}
-                dir={dir}
-                lang={locale}
+                dir="ltr"
+                lang="en"
                 className={inputCls}
               />
             )}
-            {f.hint && <span className="mt-1 block text-xs text-ink/50">{f.hint}</span>}
+            {f.hint && <span className="text-ink/50 mt-1 block text-xs">{f.hint}</span>}
           </label>
         ))}
       </div>
@@ -527,36 +469,36 @@ function ArticleSlugList({
   const byslug = new Map(articles.map((a) => [a.slug, a]));
 
   return (
-    <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
+    <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-700">
+        <h3 className="text-primary-700 text-sm font-semibold uppercase tracking-wide">
           Ordered articles
         </h3>
-        <span className="text-xs text-ink/50">{slugs.length} selected</span>
+        <span className="text-ink/50 text-xs">{slugs.length} selected</span>
       </div>
       <ul className="space-y-2">
         {slugs.length === 0 && (
-          <li className="text-xs italic text-ink/50">No articles selected.</li>
+          <li className="text-ink/50 text-xs italic">No articles selected.</li>
         )}
         {slugs.map((slug, i) => {
           const article = byslug.get(slug);
           return (
             <li
               key={`${slug}-${i}`}
-              className="flex items-center justify-between gap-2 rounded-md border border-primary-100 bg-white px-3 py-2"
+              className="border-primary-100 flex items-center justify-between gap-2 rounded-md border bg-white px-3 py-2"
             >
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm text-ink">
+                <div className="text-ink truncate text-sm">
                   {article?.translations?.en?.title ?? slug}
                 </div>
-                <div className="truncate font-mono text-xs text-ink/50">{slug}</div>
+                <div className="text-ink/50 truncate font-mono text-xs">{slug}</div>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => move(i, -1)}
                   disabled={i === 0}
-                  className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                  className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                   aria-label="Move up"
                 >
                   <ArrowUp className="h-4 w-4" />
@@ -565,7 +507,7 @@ function ArticleSlugList({
                   type="button"
                   onClick={() => move(i, 1)}
                   disabled={i === slugs.length - 1}
-                  className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                  className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                   aria-label="Move down"
                 >
                   <ArrowDown className="h-4 w-4" />
@@ -573,7 +515,7 @@ function ArticleSlugList({
                 <button
                   type="button"
                   onClick={() => remove(i)}
-                  className="rounded p-1 text-sienna hover:bg-sienna/10"
+                  className="text-sienna hover:bg-sienna/10 rounded p-1"
                   aria-label="Remove"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -603,7 +545,7 @@ function ArticleSlugList({
           type="button"
           onClick={add}
           disabled={!picker}
-          className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50 disabled:opacity-50"
+          className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs disabled:opacity-50"
         >
           Add
         </button>
@@ -630,8 +572,6 @@ function BrandCard() {
   });
 
   const [enVal, setEnVal] = useState<BrandTranslations>({ siteName: '', tagline: '' });
-  const [arVal, setArVal] = useState<BrandTranslations>({ siteName: '', tagline: '' });
-  const [arEnabled, setArEnabled] = useState(false);
   const [logoUrl, setLogoUrl] = useState('');
   const [ogImage, setOgImage] = useState('');
   const [pickerTarget, setPickerTarget] = useState<'logo' | 'og' | null>(null);
@@ -643,34 +583,24 @@ function BrandCard() {
     if (query.isLoading) return;
     const doc = query.data;
     const defEn = DEFAULT_BRAND_SETTING.translations.en;
-    const defAr = DEFAULT_BRAND_SETTING.translations.ar;
     const defData = (DEFAULT_BRAND_SETTING.data ?? {}) as BrandData;
     const docEn = doc?.translations?.en ?? ({} as BrandTranslations);
-    const docAr = doc?.translations?.ar;
     const docData = (doc?.data ?? {}) as BrandData;
     setEnVal({
       siteName: docEn.siteName ?? defEn.siteName,
       tagline: docEn.tagline ?? defEn.tagline ?? '',
     });
-    setArVal({
-      siteName: docAr?.siteName ?? defAr?.siteName ?? '',
-      tagline: docAr?.tagline ?? defAr?.tagline ?? '',
-    });
-    setArEnabled(Boolean(docAr) || Boolean(defAr));
     setLogoUrl(docData.logoUrl ?? defData.logoUrl ?? '');
     setOgImage(docData.ogImage ?? defData.ogImage ?? '');
   }, [query.data, query.isLoading]);
 
   function buildPayload() {
     const payload: {
-      translations: { en: BrandTranslations; ar?: BrandTranslations };
+      translations: { en: BrandTranslations };
       data?: Record<string, unknown>;
     } = {
       translations: {
         en: { siteName: enVal.siteName, tagline: enVal.tagline || undefined },
-        ...(arEnabled
-          ? { ar: { siteName: arVal.siteName, tagline: arVal.tagline || undefined } }
-          : {}),
       },
       data: { logoUrl: logoUrl.trim(), ogImage: ogImage.trim() },
     };
@@ -698,13 +628,13 @@ function BrandCard() {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">Brand</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">brand</span> · Site name, tagline,
-            logo, and default OG image.
+          <h2 className="text-primary-700 font-serif text-xl">Brand</h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">brand</span> · Site name, tagline, logo,
+            and default OG image.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -717,41 +647,17 @@ function BrandCard() {
             <Eye className="h-3 w-3" />
             Preview
           </button>
-          {!arEnabled && (
-            <button
-              type="button"
-              onClick={() => setArEnabled(true)}
-              className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-            >
-              Enable Arabic
-            </button>
-          )}
         </div>
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <BrandLocalePane
-              locale="en"
-              values={enVal}
-              onChange={(patch) => setEnVal((v) => ({ ...v, ...patch }))}
-            />
-            {arEnabled ? (
-              <BrandLocalePane
-                locale="ar"
-                values={arVal}
-                onChange={(patch) => setArVal((v) => ({ ...v, ...patch }))}
-              />
-            ) : (
-              <div className="flex h-full min-h-[160px] items-center justify-center rounded-lg border border-dashed border-primary-100 bg-primary-50/30 p-6 text-center text-sm text-ink/50">
-                Arabic translation not yet provided. Click{' '}
-                <span className="font-medium">Enable Arabic</span> to add one.
-              </div>
-            )}
-          </div>
+          <BrandLocalePane
+            values={enVal}
+            onChange={(patch) => setEnVal((v) => ({ ...v, ...patch }))}
+          />
 
           <div className="grid gap-5 md:grid-cols-2">
             <MediaField
@@ -773,14 +679,14 @@ function BrandCard() {
           <BrandLivePreview siteName={enVal.siteName} logoUrl={logoUrl} />
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -788,7 +694,7 @@ function BrandCard() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -812,43 +718,34 @@ function BrandCard() {
 }
 
 function BrandLocalePane({
-  locale,
   values,
   onChange,
 }: {
-  locale: 'en' | 'ar';
   values: BrandTranslations;
   onChange: (patch: Partial<BrandTranslations>) => void;
 }) {
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   return (
-    <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-700">
-          {locale === 'en' ? 'English' : 'Arabic'}
-        </h3>
-        <span className="text-xs text-ink/40">{locale}</span>
-      </div>
+    <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
       <div className="space-y-3">
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Site name</span>
+          <span className="text-ink/70 block text-xs font-medium">Site name</span>
           <input
             type="text"
             value={values.siteName}
             onChange={(e) => onChange({ siteName: e.target.value })}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Tagline (optional)</span>
+          <span className="text-ink/70 block text-xs font-medium">Tagline (optional)</span>
           <input
             type="text"
             value={values.tagline ?? ''}
             onChange={(e) => onChange({ tagline: e.target.value })}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -871,15 +768,15 @@ function MediaField({
   onOpenPicker: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
+    <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wide text-primary-700">
+        <span className="text-primary-700 text-xs font-semibold uppercase tracking-wide">
           {label}
         </span>
         <button
           type="button"
           onClick={onOpenPicker}
-          className="inline-flex items-center gap-1 rounded-md border border-primary-200 px-2 py-1 text-xs text-primary-700 hover:bg-primary-50"
+          className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
         >
           <ImageIcon className="h-3 w-3" />
           Pick from library
@@ -892,9 +789,9 @@ function MediaField({
         placeholder="https://…"
         className={inputCls}
       />
-      {hint && <p className="mt-1 text-xs text-ink/50">{hint}</p>}
+      {hint && <p className="text-ink/50 mt-1 text-xs">{hint}</p>}
       {value ? (
-        <div className="mt-3 overflow-hidden rounded-md border border-primary-100 bg-white">
+        <div className="border-primary-100 mt-3 overflow-hidden rounded-md border bg-white">
           <img
             src={value}
             alt=""
@@ -911,15 +808,15 @@ function MediaField({
 
 function BrandLivePreview({ siteName, logoUrl }: { siteName: string; logoUrl: string }) {
   return (
-    <div className="rounded-lg border border-primary-100 bg-paper/40 p-4">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-700">
+    <div className="border-primary-100 bg-paper/40 rounded-lg border p-4">
+      <div className="text-primary-700 mb-2 text-xs font-semibold uppercase tracking-wide">
         Navbar preview
       </div>
-      <div className="flex h-16 items-center gap-2 rounded-md border border-primary-500/10 bg-paper/80 px-4 font-serif text-xl font-semibold text-primary-700">
+      <div className="border-primary-500/10 bg-paper/80 text-primary-700 flex h-16 items-center gap-2 rounded-md border px-4 font-serif text-xl font-semibold">
         {logoUrl ? (
           <img src={logoUrl} alt={siteName} className="h-8 w-auto object-contain" />
         ) : (
-          <span aria-hidden="true" className="inline-block h-2 w-2 rounded-full bg-accent-400" />
+          <span aria-hidden="true" className="bg-accent-400 inline-block h-2 w-2 rounded-full" />
         )}
         {siteName || <span className="text-ink/40">Site name</span>}
       </div>
@@ -984,7 +881,7 @@ function NavItemsCard() {
         to: '/',
         key: `item-${prev.length + 1}`,
         labelEn: 'New item',
-        labelAr: '',
+
         visible: true,
         order: prev.length,
       },
@@ -1034,13 +931,13 @@ function NavItemsCard() {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">Navigation items</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">navItems</span> · Reorder, rename,
-            or hide the navbar links.
+          <h2 className="text-primary-700 font-serif text-xl">Navigation items</h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">navItems</span> · Reorder, rename, or
+            hide the navbar links.
           </p>
         </div>
         <button
@@ -1055,16 +952,15 @@ function NavItemsCard() {
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-4">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-ink/50">
+                <tr className="text-ink/50 text-left text-xs uppercase tracking-wide">
                   <th className="px-2 py-2 font-medium">Order</th>
-                  <th className="px-2 py-2 font-medium">Label (EN)</th>
-                  <th className="px-2 py-2 font-medium">Label (AR)</th>
+                  <th className="px-2 py-2 font-medium">Label</th>
                   <th className="px-2 py-2 font-medium">Path</th>
                   <th className="px-2 py-2 font-medium">Visible</th>
                   <th className="px-2 py-2 font-medium" />
@@ -1074,14 +970,14 @@ function NavItemsCard() {
                 {items.map((it, i) => {
                   const pathError = validatePath(it.to);
                   return (
-                    <tr key={`${it.key}-${i}`} className="border-t border-primary-100">
+                    <tr key={`${it.key}-${i}`} className="border-primary-100 border-t">
                       <td className="px-2 py-2 align-top">
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() => move(i, -1)}
                             disabled={i === 0}
-                            className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                            className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                             aria-label="Move up"
                           >
                             <ArrowUp className="h-4 w-4" />
@@ -1090,7 +986,7 @@ function NavItemsCard() {
                             type="button"
                             onClick={() => move(i, 1)}
                             disabled={i === items.length - 1}
-                            className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                            className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                             aria-label="Move down"
                           >
                             <ArrowDown className="h-4 w-4" />
@@ -1108,28 +1004,16 @@ function NavItemsCard() {
                       <td className="px-2 py-2 align-top">
                         <input
                           type="text"
-                          value={it.labelAr}
-                          onChange={(e) => patch(i, { labelAr: e.target.value })}
-                          dir="rtl"
-                          lang="ar"
-                          className={inputCls + ' mt-0'}
-                        />
-                      </td>
-                      <td className="px-2 py-2 align-top">
-                        <input
-                          type="text"
                           value={it.to}
                           onChange={(e) => patch(i, { to: e.target.value })}
                           placeholder="/learn"
                           className={
                             inputCls +
-                            ' mt-0 font-mono text-xs ' +
+                            ' mt-0 font-mono text-xs' +
                             (pathError ? 'border-sienna focus:border-sienna focus:ring-sienna' : '')
                           }
                         />
-                        {pathError && (
-                          <p className="mt-1 text-xs text-sienna">{pathError}</p>
-                        )}
+                        {pathError && <p className="text-sienna mt-1 text-xs">{pathError}</p>}
                       </td>
                       <td className="px-2 py-2 align-top">
                         <label className="inline-flex items-center gap-2">
@@ -1138,16 +1022,16 @@ function NavItemsCard() {
                             checked={it.visible}
                             onChange={(e) => patch(i, { visible: e.target.checked })}
                           />
-                          <span className="text-xs text-ink/60">
+                          <span className="text-ink/60 text-xs">
                             {it.visible ? 'Visible' : 'Hidden'}
                           </span>
                         </label>
                       </td>
-                      <td className="px-2 py-2 align-top text-right">
+                      <td className="px-2 py-2 text-right align-top">
                         <button
                           type="button"
                           onClick={() => remove(i)}
-                          className="rounded p-1 text-sienna hover:bg-sienna/10"
+                          className="text-sienna hover:bg-sienna/10 rounded p-1"
                           aria-label="Remove item"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1158,7 +1042,7 @@ function NavItemsCard() {
                 })}
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-2 py-4 text-center text-xs italic text-ink/50">
+                    <td colSpan={5} className="text-ink/50 px-2 py-4 text-center text-xs italic">
                       No items. Click "Add item" to create one.
                     </td>
                   </tr>
@@ -1171,7 +1055,7 @@ function NavItemsCard() {
             <button
               type="button"
               onClick={addItem}
-              className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+              className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
             >
               <Plus className="h-3 w-3" />
               Add item
@@ -1179,14 +1063,14 @@ function NavItemsCard() {
           </div>
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -1194,7 +1078,7 @@ function NavItemsCard() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -1285,7 +1169,7 @@ function QuickLinksCard() {
         visible: true,
         order: prev.length,
         labelEn: 'New card',
-        labelAr: '',
+
         descEn: '',
         descAr: '',
       },
@@ -1330,13 +1214,13 @@ function QuickLinksCard() {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">Quick links</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">quickLinks</span> · The four cards
-            at the bottom of the homepage.
+          <h2 className="text-primary-700 font-serif text-xl">Quick links</h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">quickLinks</span> · The four cards at
+            the bottom of the homepage.
           </p>
         </div>
         <button
@@ -1351,11 +1235,11 @@ function QuickLinksCard() {
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-4">
           {items.length === 0 && (
-            <div className="rounded-lg border border-dashed border-primary-100 bg-primary-50/30 p-4 text-center text-xs italic text-ink/50">
+            <div className="border-primary-100 bg-primary-50/30 text-ink/50 rounded-lg border border-dashed p-4 text-center text-xs italic">
               No cards. Click "Add card" to create one.
             </div>
           )}
@@ -1365,10 +1249,10 @@ function QuickLinksCard() {
               return (
                 <li
                   key={`${it.to}-${i}`}
-                  className="rounded-lg border border-primary-100 bg-paper/30 p-4"
+                  className="border-primary-100 bg-paper/30 rounded-lg border p-4"
                 >
                   <div className="mb-3 flex items-center justify-between gap-2">
-                    <span className="text-xs font-medium uppercase tracking-wide text-ink/50">
+                    <span className="text-ink/50 text-xs font-medium uppercase tracking-wide">
                       Card {i + 1}
                     </span>
                     <div className="flex items-center gap-1">
@@ -1376,7 +1260,7 @@ function QuickLinksCard() {
                         type="button"
                         onClick={() => move(i, -1)}
                         disabled={i === 0}
-                        className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                        className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                         aria-label="Move up"
                       >
                         <ArrowUp className="h-4 w-4" />
@@ -1385,7 +1269,7 @@ function QuickLinksCard() {
                         type="button"
                         onClick={() => move(i, 1)}
                         disabled={i === items.length - 1}
-                        className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                        className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                         aria-label="Move down"
                       >
                         <ArrowDown className="h-4 w-4" />
@@ -1393,7 +1277,7 @@ function QuickLinksCard() {
                       <button
                         type="button"
                         onClick={() => remove(i)}
-                        className="rounded p-1 text-sienna hover:bg-sienna/10"
+                        className="text-sienna hover:bg-sienna/10 rounded p-1"
                         aria-label="Remove card"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1402,7 +1286,7 @@ function QuickLinksCard() {
                   </div>
                   <div className="grid gap-3 md:grid-cols-2">
                     <label className="block">
-                      <span className="block text-xs font-medium text-ink/70">Label (EN)</span>
+                      <span className="text-ink/70 block text-xs font-medium">Label</span>
                       <input
                         type="text"
                         value={it.labelEn}
@@ -1411,20 +1295,7 @@ function QuickLinksCard() {
                       />
                     </label>
                     <label className="block">
-                      <span className="block text-xs font-medium text-ink/70">Label (AR)</span>
-                      <input
-                        type="text"
-                        value={it.labelAr}
-                        onChange={(e) => patch(i, { labelAr: e.target.value })}
-                        dir="rtl"
-                        lang="ar"
-                        className={inputCls}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="block text-xs font-medium text-ink/70">
-                        Description (EN)
-                      </span>
+                      <span className="text-ink/70 block text-xs font-medium">Description</span>
                       <textarea
                         value={it.descEn}
                         onChange={(e) => patch(i, { descEn: e.target.value })}
@@ -1433,25 +1304,10 @@ function QuickLinksCard() {
                       />
                     </label>
                     <label className="block">
-                      <span className="block text-xs font-medium text-ink/70">
-                        Description (AR)
-                      </span>
-                      <textarea
-                        value={it.descAr}
-                        onChange={(e) => patch(i, { descAr: e.target.value })}
-                        rows={2}
-                        dir="rtl"
-                        lang="ar"
-                        className={inputCls}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="block text-xs font-medium text-ink/70">Icon</span>
+                      <span className="text-ink/70 block text-xs font-medium">Icon</span>
                       <select
                         value={it.icon}
-                        onChange={(e) =>
-                          patch(i, { icon: e.target.value as QuickLinkIcon })
-                        }
+                        onChange={(e) => patch(i, { icon: e.target.value as QuickLinkIcon })}
                         className={inputCls}
                       >
                         {QUICK_LINK_ICON_OPTIONS.map((o) => (
@@ -1462,7 +1318,7 @@ function QuickLinksCard() {
                       </select>
                     </label>
                     <label className="block">
-                      <span className="block text-xs font-medium text-ink/70">Path</span>
+                      <span className="text-ink/70 block text-xs font-medium">Path</span>
                       <input
                         type="text"
                         value={it.to}
@@ -1470,15 +1326,11 @@ function QuickLinksCard() {
                         placeholder="/faq"
                         className={
                           inputCls +
-                          ' font-mono text-xs ' +
-                          (pathError
-                            ? 'border-sienna focus:border-sienna focus:ring-sienna'
-                            : '')
+                          ' font-mono text-xs' +
+                          (pathError ? 'border-sienna focus:border-sienna focus:ring-sienna' : '')
                         }
                       />
-                      {pathError && (
-                        <p className="mt-1 text-xs text-sienna">{pathError}</p>
-                      )}
+                      {pathError && <p className="text-sienna mt-1 text-xs">{pathError}</p>}
                     </label>
                     <label className="inline-flex items-center gap-2 md:col-span-2">
                       <input
@@ -1486,7 +1338,7 @@ function QuickLinksCard() {
                         checked={it.visible}
                         onChange={(e) => patch(i, { visible: e.target.checked })}
                       />
-                      <span className="text-xs text-ink/60">
+                      <span className="text-ink/60 text-xs">
                         {it.visible ? 'Visible on homepage' : 'Hidden'}
                       </span>
                     </label>
@@ -1500,7 +1352,7 @@ function QuickLinksCard() {
             <button
               type="button"
               onClick={addItem}
-              className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+              className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
             >
               <Plus className="h-3 w-3" />
               Add card
@@ -1508,14 +1360,14 @@ function QuickLinksCard() {
           </div>
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -1523,7 +1375,7 @@ function QuickLinksCard() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -1582,9 +1434,7 @@ function FooterNavCard() {
   }
 
   function removeColumn(ci: number) {
-    setColumns((prev) =>
-      prev.filter((_, i) => i !== ci).map((c, i) => ({ ...c, order: i })),
-    );
+    setColumns((prev) => prev.filter((_, i) => i !== ci).map((c, i) => ({ ...c, order: i })));
   }
 
   function addColumn() {
@@ -1603,9 +1453,7 @@ function FooterNavCard() {
   function patchLink(ci: number, li: number, next: Partial<FooterNavColumn['links'][number]>) {
     setColumns((prev) =>
       prev.map((c, i) =>
-        i === ci
-          ? { ...c, links: c.links.map((l, j) => (j === li ? { ...l, ...next } : l)) }
-          : c,
+        i === ci ? { ...c, links: c.links.map((l, j) => (j === li ? { ...l, ...next } : l)) } : c,
       ),
     );
   }
@@ -1629,9 +1477,7 @@ function FooterNavCard() {
 
   function removeLink(ci: number, li: number) {
     setColumns((prev) =>
-      prev.map((c, i) =>
-        i === ci ? { ...c, links: c.links.filter((_, j) => j !== li) } : c,
-      ),
+      prev.map((c, i) => (i === ci ? { ...c, links: c.links.filter((_, j) => j !== li) } : c)),
     );
   }
 
@@ -1641,10 +1487,7 @@ function FooterNavCard() {
         i === ci
           ? {
               ...c,
-              links: [
-                ...c.links,
-                { to: '/', labelEn: 'New link', labelAr: '', external: false },
-              ],
+              links: [...c.links, { to: '/', labelEn: 'New link', external: false }],
             }
           : c,
       ),
@@ -1661,7 +1504,7 @@ function FooterNavCard() {
           links: c.links.map((l) => ({
             to: l.to,
             labelEn: l.labelEn,
-            labelAr: l.labelAr,
+
             ...(l.external ? { external: true } : {}),
           })),
         })),
@@ -1696,7 +1539,7 @@ function FooterNavCard() {
             links: c.links.map((l) => ({
               to: l.to,
               labelEn: l.labelEn,
-              labelAr: l.labelAr,
+
               ...(l.external ? { external: true } : {}),
             })),
           })),
@@ -1713,13 +1556,13 @@ function FooterNavCard() {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">Footer navigation</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">footerNav</span> · The link columns
-            in the site footer.
+          <h2 className="text-primary-700 font-serif text-xl">Footer navigation</h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">footerNav</span> · The link columns in
+            the site footer.
           </p>
         </div>
         <button
@@ -1734,21 +1577,21 @@ function FooterNavCard() {
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
           {columns.length === 0 && (
-            <div className="rounded-lg border border-dashed border-primary-100 bg-primary-50/30 p-4 text-center text-xs italic text-ink/50">
+            <div className="border-primary-100 bg-primary-50/30 text-ink/50 rounded-lg border border-dashed p-4 text-center text-xs italic">
               No columns. Click "Add column" to create one.
             </div>
           )}
           {columns.map((col, ci) => (
             <div
               key={`${col.id}-${ci}`}
-              className="rounded-lg border border-primary-100 bg-paper/30 p-4"
+              className="border-primary-100 bg-paper/30 rounded-lg border p-4"
             >
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-medium uppercase tracking-wide text-ink/50">
+                <span className="text-ink/50 text-xs font-medium uppercase tracking-wide">
                   Column {ci + 1}
                 </span>
                 <div className="flex items-center gap-1">
@@ -1756,7 +1599,7 @@ function FooterNavCard() {
                     type="button"
                     onClick={() => moveColumn(ci, -1)}
                     disabled={ci === 0}
-                    className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                    className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                     aria-label="Move column up"
                   >
                     <ArrowUp className="h-4 w-4" />
@@ -1765,7 +1608,7 @@ function FooterNavCard() {
                     type="button"
                     onClick={() => moveColumn(ci, 1)}
                     disabled={ci === columns.length - 1}
-                    className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                    className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                     aria-label="Move column down"
                   >
                     <ArrowDown className="h-4 w-4" />
@@ -1773,16 +1616,16 @@ function FooterNavCard() {
                   <button
                     type="button"
                     onClick={() => removeColumn(ci)}
-                    className="rounded p-1 text-sienna hover:bg-sienna/10"
+                    className="text-sienna hover:bg-sienna/10 rounded p-1"
                     aria-label="Remove column"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className="grid gap-3 md:grid-cols-2">
                 <label className="block">
-                  <span className="block text-xs font-medium text-ink/70">ID</span>
+                  <span className="text-ink/70 block text-xs font-medium">ID</span>
                   <input
                     type="text"
                     value={col.id}
@@ -1791,7 +1634,7 @@ function FooterNavCard() {
                   />
                 </label>
                 <label className="block">
-                  <span className="block text-xs font-medium text-ink/70">Title (EN)</span>
+                  <span className="text-ink/70 block text-xs font-medium">Title</span>
                   <input
                     type="text"
                     value={col.titleEn}
@@ -1799,49 +1642,29 @@ function FooterNavCard() {
                     className={inputCls}
                   />
                 </label>
-                <label className="block">
-                  <span className="block text-xs font-medium text-ink/70">Title (AR)</span>
-                  <input
-                    type="text"
-                    value={col.titleAr}
-                    onChange={(e) => patchColumn(ci, { titleAr: e.target.value })}
-                    dir="rtl"
-                    lang="ar"
-                    className={inputCls}
-                  />
-                </label>
               </div>
 
               <div className="mt-4">
-                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-700">
+                <h4 className="text-primary-700 mb-2 text-xs font-semibold uppercase tracking-wide">
                   Links
                 </h4>
                 <ul className="space-y-2">
                   {col.links.length === 0 && (
-                    <li className="text-xs italic text-ink/50">No links in this column.</li>
+                    <li className="text-ink/50 text-xs italic">No links in this column.</li>
                   )}
                   {col.links.map((link, li) => {
                     const pathError = link.external ? null : validatePath(link.to);
                     return (
                       <li
                         key={`${link.to}-${li}`}
-                        className="rounded-md border border-primary-100 bg-white p-3"
+                        className="border-primary-100 rounded-md border bg-white p-3"
                       >
-                        <div className="grid gap-2 md:grid-cols-[1fr_1fr_1fr_auto_auto]">
+                        <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto_auto]">
                           <input
                             type="text"
                             value={link.labelEn}
                             onChange={(e) => patchLink(ci, li, { labelEn: e.target.value })}
-                            placeholder="Label (EN)"
-                            className={inputCls + ' mt-0'}
-                          />
-                          <input
-                            type="text"
-                            value={link.labelAr}
-                            onChange={(e) => patchLink(ci, li, { labelAr: e.target.value })}
-                            placeholder="Label (AR)"
-                            dir="rtl"
-                            lang="ar"
+                            placeholder="Label"
                             className={inputCls + ' mt-0'}
                           />
                           <div>
@@ -1852,23 +1675,19 @@ function FooterNavCard() {
                               placeholder={link.external ? 'https://…' : '/about'}
                               className={
                                 inputCls +
-                                ' mt-0 font-mono text-xs ' +
+                                ' mt-0 font-mono text-xs' +
                                 (pathError
                                   ? 'border-sienna focus:border-sienna focus:ring-sienna'
                                   : '')
                               }
                             />
-                            {pathError && (
-                              <p className="mt-1 text-xs text-sienna">{pathError}</p>
-                            )}
+                            {pathError && <p className="text-sienna mt-1 text-xs">{pathError}</p>}
                           </div>
-                          <label className="inline-flex items-center gap-1 text-xs text-ink/60">
+                          <label className="text-ink/60 inline-flex items-center gap-1 text-xs">
                             <input
                               type="checkbox"
                               checked={Boolean(link.external)}
-                              onChange={(e) =>
-                                patchLink(ci, li, { external: e.target.checked })
-                              }
+                              onChange={(e) => patchLink(ci, li, { external: e.target.checked })}
                             />
                             Ext
                           </label>
@@ -1877,7 +1696,7 @@ function FooterNavCard() {
                               type="button"
                               onClick={() => moveLink(ci, li, -1)}
                               disabled={li === 0}
-                              className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                              className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                               aria-label="Move link up"
                             >
                               <ArrowUp className="h-4 w-4" />
@@ -1886,7 +1705,7 @@ function FooterNavCard() {
                               type="button"
                               onClick={() => moveLink(ci, li, 1)}
                               disabled={li === col.links.length - 1}
-                              className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                              className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                               aria-label="Move link down"
                             >
                               <ArrowDown className="h-4 w-4" />
@@ -1894,7 +1713,7 @@ function FooterNavCard() {
                             <button
                               type="button"
                               onClick={() => removeLink(ci, li)}
-                              className="rounded p-1 text-sienna hover:bg-sienna/10"
+                              className="text-sienna hover:bg-sienna/10 rounded p-1"
                               aria-label="Remove link"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -1909,7 +1728,7 @@ function FooterNavCard() {
                   <button
                     type="button"
                     onClick={() => addLink(ci)}
-                    className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1 text-xs text-primary-700 hover:bg-primary-50"
+                    className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1 text-xs"
                   >
                     <Plus className="h-3 w-3" />
                     Add link
@@ -1923,7 +1742,7 @@ function FooterNavCard() {
             <button
               type="button"
               onClick={addColumn}
-              className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+              className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
             >
               <Plus className="h-3 w-3" />
               Add column
@@ -1931,14 +1750,14 @@ function FooterNavCard() {
           </div>
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -1946,7 +1765,7 @@ function FooterNavCard() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -1977,10 +1796,7 @@ interface ContactIntroFormLabels {
 }
 interface ContactIntroCardState {
   en: ContactIntroTranslations;
-  ar: ContactIntroTranslations;
-  arEnabled: boolean;
   labelsEn: ContactIntroFormLabels;
-  labelsAr: ContactIntroFormLabels;
 }
 
 const EMPTY_CONTACT_LABELS: ContactIntroFormLabels = {
@@ -2004,10 +1820,7 @@ function ContactIntroCard() {
 
   const [state, setState] = useState<ContactIntroCardState>({
     en: { eyebrow: '', title: '', body: '' },
-    ar: { eyebrow: '', title: '', body: '' },
-    arEnabled: false,
     labelsEn: EMPTY_CONTACT_LABELS,
-    labelsAr: EMPTY_CONTACT_LABELS,
   });
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -2017,40 +1830,32 @@ function ContactIntroCard() {
     if (query.isLoading) return;
     const doc = query.data;
     const enDoc = (doc?.translations?.en ?? {}) as unknown as Partial<ContactIntroTranslations>;
-    const arDoc = (doc?.translations?.ar ?? {}) as unknown as Partial<ContactIntroTranslations>;
-    const enDef = (defaults?.translations?.en ?? {}) as unknown as Partial<ContactIntroTranslations>;
-    const arDef = (defaults?.translations?.ar ?? {}) as unknown as Partial<ContactIntroTranslations>;
-    const docLabels = (doc?.data?.formLabels ?? {}) as Record<'en' | 'ar', ContactIntroFormLabels>;
-    const defLabels = (defaults?.data?.formLabels ?? {}) as Record<'en' | 'ar', ContactIntroFormLabels>;
+    const enDef = (defaults?.translations?.en ??
+      {}) as unknown as Partial<ContactIntroTranslations>;
+    const docLabels = (doc?.data?.formLabels ?? {}) as Record<'en', ContactIntroFormLabels>;
+    const defLabels = (defaults?.data?.formLabels ?? {}) as Record<'en', ContactIntroFormLabels>;
     const baseEn: ContactIntroTranslations = { title: '', body: '' };
-    const baseAr: ContactIntroTranslations = { title: '', body: '' };
     setState({
       en: { ...baseEn, ...enDef, ...enDoc },
-      ar: { ...baseAr, ...arDef, ...arDoc },
-      arEnabled: Boolean(doc?.translations?.ar) || Boolean(defaults?.translations?.ar),
       labelsEn: { ...EMPTY_CONTACT_LABELS, ...defLabels.en, ...docLabels.en },
-      labelsAr: { ...EMPTY_CONTACT_LABELS, ...defLabels.ar, ...docLabels.ar },
     });
   }, [query.data, query.isLoading, defaults]);
 
-  function patchCopy(which: 'en' | 'ar', key: keyof ContactIntroTranslations, value: string) {
-    setState((s) => ({ ...s, [which]: { ...s[which], [key]: value } }));
+  function patchCopy(key: keyof ContactIntroTranslations, value: string) {
+    setState((s) => ({ ...s, en: { ...s.en, [key]: value } }));
   }
-  function patchLabel(which: 'en' | 'ar', key: keyof ContactIntroFormLabels, value: string) {
-    const k = which === 'en' ? 'labelsEn' : 'labelsAr';
-    setState((s) => ({ ...s, [k]: { ...s[k], [key]: value } }));
+  function patchLabel(key: keyof ContactIntroFormLabels, value: string) {
+    setState((s) => ({ ...s, labelsEn: { ...s.labelsEn, [key]: value } }));
   }
 
   function buildContactPayload() {
     return {
       translations: {
         en: state.en,
-        ...(state.arEnabled ? { ar: state.ar } : {}),
       },
       data: {
         formLabels: {
           en: state.labelsEn,
-          ...(state.arEnabled ? { ar: state.labelsAr } : {}),
         },
       },
     };
@@ -2077,12 +1882,13 @@ function ContactIntroCard() {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">Contact page intro + form labels</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">contactIntro</span> · Copy + form labels on /contact.
+          <h2 className="text-primary-700 font-serif text-xl">Contact page intro + form labels</h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">contactIntro</span> · Copy + form labels
+            on /contact.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -2095,54 +1901,29 @@ function ContactIntroCard() {
             <Eye className="h-3 w-3" />
             Preview
           </button>
-          {!state.arEnabled && (
-            <button
-              type="button"
-              onClick={() => setState((s) => ({ ...s, arEnabled: true }))}
-              className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-            >
-              Enable Arabic
-            </button>
-          )}
         </div>
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <ContactIntroPane
-              locale="en"
-              copy={state.en}
-              labels={state.labelsEn}
-              onCopy={(k, v) => patchCopy('en', k, v)}
-              onLabel={(k, v) => patchLabel('en', k, v)}
-            />
-            {state.arEnabled ? (
-              <ContactIntroPane
-                locale="ar"
-                copy={state.ar}
-                labels={state.labelsAr}
-                onCopy={(k, v) => patchCopy('ar', k, v)}
-                onLabel={(k, v) => patchLabel('ar', k, v)}
-              />
-            ) : (
-              <div className="flex h-full min-h-[160px] items-center justify-center rounded-lg border border-dashed border-primary-100 bg-primary-50/30 p-6 text-center text-sm text-ink/50">
-                Arabic translation not yet provided.
-              </div>
-            )}
-          </div>
+          <ContactIntroPane
+            copy={state.en}
+            labels={state.labelsEn}
+            onCopy={patchCopy}
+            onLabel={patchLabel}
+          />
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -2150,7 +1931,7 @@ function ContactIntroCard() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -2163,19 +1944,16 @@ function ContactIntroCard() {
 }
 
 function ContactIntroPane({
-  locale,
   copy,
   labels,
   onCopy,
   onLabel,
 }: {
-  locale: 'en' | 'ar';
   copy: ContactIntroTranslations;
   labels: ContactIntroFormLabels;
   onCopy: (k: keyof ContactIntroTranslations, v: string) => void;
   onLabel: (k: keyof ContactIntroFormLabels, v: string) => void;
 }) {
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   const labelFields: Array<{ k: keyof ContactIntroFormLabels; l: string }> = [
     { k: 'name', l: 'Name field label' },
     { k: 'email', l: 'Email field label' },
@@ -2187,59 +1965,53 @@ function ContactIntroPane({
     { k: 'errorBody', l: 'Error body' },
   ];
   return (
-    <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-700">
-          {locale === 'en' ? 'English' : 'Arabic'}
-        </h3>
-        <span className="text-xs text-ink/40">{locale}</span>
-      </div>
+    <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
       <div className="space-y-3">
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Eyebrow (optional)</span>
+          <span className="text-ink/70 block text-xs font-medium">Eyebrow (optional)</span>
           <input
             type="text"
             value={copy.eyebrow ?? ''}
             onChange={(e) => onCopy('eyebrow', e.target.value)}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Title</span>
+          <span className="text-ink/70 block text-xs font-medium">Title</span>
           <input
             type="text"
             value={copy.title ?? ''}
             onChange={(e) => onCopy('title', e.target.value)}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Body</span>
+          <span className="text-ink/70 block text-xs font-medium">Body</span>
           <textarea
             value={copy.body ?? ''}
             onChange={(e) => onCopy('body', e.target.value)}
             rows={3}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
-        <div className="mt-4 border-t border-primary-100 pt-3">
-          <div className="mb-2 text-xs font-semibold uppercase text-ink/60">Form labels</div>
+        <div className="border-primary-100 mt-4 border-t pt-3">
+          <div className="text-ink/60 mb-2 text-xs font-semibold uppercase">Form labels</div>
           <div className="space-y-2">
             {labelFields.map((f) => (
               <label key={f.k} className="block">
-                <span className="block text-xs font-medium text-ink/70">{f.l}</span>
+                <span className="text-ink/70 block text-xs font-medium">{f.l}</span>
                 <input
                   type="text"
                   value={labels[f.k] ?? ''}
                   onChange={(e) => onLabel(f.k, e.target.value)}
-                  dir={dir}
-                  lang={locale}
+                  dir="ltr"
+                  lang="en"
                   className={inputCls}
                 />
               </label>
@@ -2268,8 +2040,6 @@ function NotFoundCard() {
   const defaults = DEFAULT_SITE_SETTINGS.find((d) => d.id === 'notFound');
 
   const [en, setEn] = useState<NotFoundTranslations>({ eyebrow: '', title: '', body: '' });
-  const [ar, setAr] = useState<NotFoundTranslations>({ eyebrow: '', title: '', body: '' });
-  const [arEnabled, setArEnabled] = useState(false);
   const [links, setLinks] = useState<NotFoundPopularLink[]>([]);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -2280,15 +2050,11 @@ function NotFoundCard() {
     const doc = query.data;
     const defTr = (defaults?.translations ?? {}) as {
       en?: NotFoundTranslations;
-      ar?: NotFoundTranslations;
     };
     const docTr = (doc?.translations ?? {}) as {
       en?: NotFoundTranslations;
-      ar?: NotFoundTranslations;
     };
     setEn({ eyebrow: '', title: '', body: '', ...defTr.en, ...docTr.en });
-    setAr({ eyebrow: '', title: '', body: '', ...defTr.ar, ...docTr.ar });
-    setArEnabled(Boolean(docTr.ar) || Boolean(defTr.ar));
     const data = (doc?.data ?? defaults?.data) as NotFoundData | undefined;
     setLinks(data?.popularLinks ?? []);
   }, [query.data, query.isLoading, defaults]);
@@ -2304,7 +2070,7 @@ function NotFoundCard() {
     setLinks(links.filter((_, idx) => idx !== i));
   }
   function addLink() {
-    setLinks([...links, { to: '/', labelEn: '', labelAr: '', hintEn: '', hintAr: '' }]);
+    setLinks([...links, { to: '/', labelEn: '', hintEn: '' }]);
   }
   function patchLink(i: number, key: keyof NotFoundPopularLink, value: string) {
     setLinks(links.map((l, idx) => (idx === i ? { ...l, [key]: value } : l)));
@@ -2314,19 +2080,13 @@ function NotFoundCard() {
     return {
       translations: {
         en,
-        ...(arEnabled ? { ar } : {}),
       },
       data: { popularLinks: links },
     };
   }
 
   function handlePreview() {
-    stageAndOpenPreview(
-      'siteSetting',
-      'notFound',
-      buildNotFoundPayload(),
-      '/__preview-404',
-    );
+    stageAndOpenPreview('siteSetting', 'notFound', buildNotFoundPayload(), '/__preview-404');
   }
 
   async function save() {
@@ -2345,12 +2105,13 @@ function NotFoundCard() {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">404 page</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">notFound</span> · Copy + popular links on the 404 page.
+          <h2 className="text-primary-700 font-serif text-xl">404 page</h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">notFound</span> · Copy + popular links
+            on the 404 page.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -2363,42 +2124,24 @@ function NotFoundCard() {
             <Eye className="h-3 w-3" />
             Preview
           </button>
-          {!arEnabled && (
-            <button
-              type="button"
-              onClick={() => setArEnabled(true)}
-              className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-            >
-              Enable Arabic
-            </button>
-          )}
         </div>
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="grid gap-5 md:grid-cols-2">
-            <NotFoundLocalePane locale="en" copy={en} onChange={setEn} />
-            {arEnabled ? (
-              <NotFoundLocalePane locale="ar" copy={ar} onChange={setAr} />
-            ) : (
-              <div className="flex h-full min-h-[160px] items-center justify-center rounded-lg border border-dashed border-primary-100 bg-primary-50/30 p-6 text-center text-sm text-ink/50">
-                Arabic translation not yet provided.
-              </div>
-            )}
-          </div>
+          <NotFoundLocalePane copy={en} onChange={setEn} />
 
-          <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
+          <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-700">
+              <h3 className="text-primary-700 text-sm font-semibold uppercase tracking-wide">
                 Popular links
               </h3>
               <button
                 type="button"
                 onClick={addLink}
-                className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+                className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
               >
                 <Plus className="h-3 w-3" />
                 Add link
@@ -2408,10 +2151,10 @@ function NotFoundCard() {
               {links.map((l, i) => (
                 <li
                   key={i}
-                  className="grid gap-2 rounded-md border border-primary-100 bg-white p-3 md:grid-cols-5"
+                  className="border-primary-100 grid gap-2 rounded-md border bg-white p-3 md:grid-cols-3"
                 >
                   <label className="block md:col-span-1">
-                    <span className="block text-xs text-ink/60">Path (to)</span>
+                    <span className="text-ink/60 block text-xs">Path (to)</span>
                     <input
                       type="text"
                       value={l.to}
@@ -2420,7 +2163,7 @@ function NotFoundCard() {
                     />
                   </label>
                   <label className="block md:col-span-1">
-                    <span className="block text-xs text-ink/60">Label (en)</span>
+                    <span className="text-ink/60 block text-xs">Label</span>
                     <input
                       type="text"
                       value={l.labelEn}
@@ -2429,17 +2172,7 @@ function NotFoundCard() {
                     />
                   </label>
                   <label className="block md:col-span-1">
-                    <span className="block text-xs text-ink/60">Label (ar)</span>
-                    <input
-                      type="text"
-                      value={l.labelAr}
-                      onChange={(e) => patchLink(i, 'labelAr', e.target.value)}
-                      dir="rtl"
-                      className={inputCls}
-                    />
-                  </label>
-                  <label className="block md:col-span-1">
-                    <span className="block text-xs text-ink/60">Hint (en)</span>
+                    <span className="text-ink/60 block text-xs">Hint</span>
                     <input
                       type="text"
                       value={l.hintEn}
@@ -2447,22 +2180,12 @@ function NotFoundCard() {
                       className={inputCls}
                     />
                   </label>
-                  <label className="block md:col-span-1">
-                    <span className="block text-xs text-ink/60">Hint (ar)</span>
-                    <input
-                      type="text"
-                      value={l.hintAr}
-                      onChange={(e) => patchLink(i, 'hintAr', e.target.value)}
-                      dir="rtl"
-                      className={inputCls}
-                    />
-                  </label>
-                  <div className="flex items-center gap-1 md:col-span-5 md:justify-end">
+                  <div className="flex items-center gap-1 md:col-span-3 md:justify-end">
                     <button
                       type="button"
                       onClick={() => moveLink(i, -1)}
                       disabled={i === 0}
-                      className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                      className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                       aria-label="Move up"
                     >
                       <ArrowUp className="h-4 w-4" />
@@ -2471,7 +2194,7 @@ function NotFoundCard() {
                       type="button"
                       onClick={() => moveLink(i, 1)}
                       disabled={i === links.length - 1}
-                      className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                      className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                       aria-label="Move down"
                     >
                       <ArrowDown className="h-4 w-4" />
@@ -2479,7 +2202,7 @@ function NotFoundCard() {
                     <button
                       type="button"
                       onClick={() => removeLink(i)}
-                      className="rounded p-1 text-sienna hover:bg-sienna/10"
+                      className="text-sienna hover:bg-sienna/10 rounded p-1"
                       aria-label="Remove"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -2488,20 +2211,20 @@ function NotFoundCard() {
                 </li>
               ))}
               {links.length === 0 && (
-                <li className="text-xs italic text-ink/50">No popular links yet.</li>
+                <li className="text-ink/50 text-xs italic">No popular links yet.</li>
               )}
             </ul>
           </div>
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -2509,7 +2232,7 @@ function NotFoundCard() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -2522,54 +2245,45 @@ function NotFoundCard() {
 }
 
 function NotFoundLocalePane({
-  locale,
   copy,
   onChange,
 }: {
-  locale: 'en' | 'ar';
   copy: NotFoundTranslations;
   onChange: (next: NotFoundTranslations) => void;
 }) {
-  const dir = locale === 'ar' ? 'rtl' : 'ltr';
   return (
-    <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-700">
-          {locale === 'en' ? 'English' : 'Arabic'}
-        </h3>
-        <span className="text-xs text-ink/40">{locale}</span>
-      </div>
+    <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
       <div className="space-y-3">
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Eyebrow</span>
+          <span className="text-ink/70 block text-xs font-medium">Eyebrow</span>
           <input
             type="text"
             value={copy.eyebrow}
             onChange={(e) => onChange({ ...copy, eyebrow: e.target.value })}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Title</span>
+          <span className="text-ink/70 block text-xs font-medium">Title</span>
           <input
             type="text"
             value={copy.title}
             onChange={(e) => onChange({ ...copy, title: e.target.value })}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
         <label className="block">
-          <span className="block text-xs font-medium text-ink/70">Body</span>
+          <span className="text-ink/70 block text-xs font-medium">Body</span>
           <textarea
             value={copy.body}
             onChange={(e) => onChange({ ...copy, body: e.target.value })}
             rows={3}
-            dir={dir}
-            lang={locale}
+            dir="ltr"
+            lang="en"
             className={inputCls}
           />
         </label>
@@ -2670,12 +2384,15 @@ function HomepageSectionsCard() {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">Homepage section order + visibility</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">homepageSections</span> · Reorder or hide each section.
+          <h2 className="text-primary-700 font-serif text-xl">
+            Homepage section order + visibility
+          </h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">homepageSections</span> · Reorder or
+            hide each section.
           </p>
         </div>
         <button
@@ -2690,34 +2407,30 @@ function HomepageSectionsCard() {
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
           <ul className="space-y-2">
             {sections.map((s, i) => (
               <li
                 key={s.id}
-                className="flex items-center justify-between gap-2 rounded-md border border-primary-100 bg-white px-3 py-2"
+                className="border-primary-100 flex items-center justify-between gap-2 rounded-md border bg-white px-3 py-2"
               >
                 <div className="flex items-center gap-3">
                   <label className="inline-flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={s.visible}
-                      onChange={() => toggle(i)}
-                    />
+                    <input type="checkbox" checked={s.visible} onChange={() => toggle(i)} />
                     <span className={s.visible ? 'text-ink' : 'text-ink/40 line-through'}>
                       {HOMEPAGE_SECTION_LABELS[s.id]}
                     </span>
                   </label>
-                  <span className="font-mono text-xs text-ink/40">{s.id}</span>
+                  <span className="text-ink/40 font-mono text-xs">{s.id}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => move(i, -1)}
                     disabled={i === 0}
-                    className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                    className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                     aria-label="Move up"
                   >
                     <ArrowUp className="h-4 w-4" />
@@ -2726,7 +2439,7 @@ function HomepageSectionsCard() {
                     type="button"
                     onClick={() => move(i, 1)}
                     disabled={i === sections.length - 1}
-                    className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-30"
+                    className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
                     aria-label="Move down"
                   >
                     <ArrowDown className="h-4 w-4" />
@@ -2737,14 +2450,14 @@ function HomepageSectionsCard() {
           </ul>
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -2752,7 +2465,7 @@ function HomepageSectionsCard() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -2815,12 +2528,13 @@ function FeaturedCard({ articles }: { articles: AdminArticleV2[] }) {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">Featured article</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">featured</span> · Choose the article shown in the Featured slot.
+          <h2 className="text-primary-700 font-serif text-xl">Featured article</h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">featured</span> · Choose the article
+            shown in the Featured slot.
           </p>
         </div>
         <button
@@ -2835,7 +2549,7 @@ function FeaturedCard({ articles }: { articles: AdminArticleV2[] }) {
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-4">
           <div className="space-y-2">
@@ -2861,7 +2575,7 @@ function FeaturedCard({ articles }: { articles: AdminArticleV2[] }) {
 
           {mode === 'manual' && (
             <label className="block">
-              <span className="block text-xs font-medium text-ink/70">Article</span>
+              <span className="text-ink/70 block text-xs font-medium">Article</span>
               <select
                 value={articleSlug}
                 onChange={(e) => setArticleSlug(e.target.value)}
@@ -2878,14 +2592,14 @@ function FeaturedCard({ articles }: { articles: AdminArticleV2[] }) {
           )}
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -2893,7 +2607,7 @@ function FeaturedCard({ articles }: { articles: AdminArticleV2[] }) {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}
@@ -2921,7 +2635,6 @@ function SeoCard() {
 
   const [titleSuffix, setTitleSuffix] = useState('');
   const [descEn, setDescEn] = useState('');
-  const [descAr, setDescAr] = useState('');
   const [ogImage, setOgImage] = useState('');
   const [routes, setRoutes] = useState<SeoRouteEntry[]>([]);
   const [saving, setSaving] = useState(false);
@@ -2934,20 +2647,17 @@ function SeoCard() {
     const d = data?.defaults;
     setTitleSuffix(d?.titleSuffix ?? 'The Straight Path');
     setDescEn(d?.defaultDescriptionEn ?? '');
-    setDescAr(d?.defaultDescriptionAr ?? '');
     setOgImage(d?.defaultOgImageUrl ?? '');
     const entries = Object.entries(data?.routes ?? {}).map(([path, v]) => ({
       path,
       titleEn: v.titleEn,
-      titleAr: v.titleAr,
       descriptionEn: v.descriptionEn,
-      descriptionAr: v.descriptionAr,
     }));
     setRoutes(entries);
   }, [query.data, query.isLoading, defaults]);
 
   function addRoute() {
-    setRoutes([...routes, { path: '/', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '' }]);
+    setRoutes([...routes, { path: '/', titleEn: '', descriptionEn: '' }]);
   }
   function removeRoute(i: number) {
     setRoutes(routes.filter((_, idx) => idx !== i));
@@ -2962,16 +2672,13 @@ function SeoCard() {
       if (!r.path) continue;
       const entry: SeoRouteOverride = {};
       if (r.titleEn) entry.titleEn = r.titleEn;
-      if (r.titleAr) entry.titleAr = r.titleAr;
       if (r.descriptionEn) entry.descriptionEn = r.descriptionEn;
-      if (r.descriptionAr) entry.descriptionAr = r.descriptionAr;
       routesMap[r.path] = entry;
     }
     const data: SeoData = {
       defaults: {
         titleSuffix,
         defaultDescriptionEn: descEn,
-        defaultDescriptionAr: descAr,
         defaultOgImageUrl: ogImage,
       },
       routes: routesMap,
@@ -3002,12 +2709,15 @@ function SeoCard() {
   }
 
   return (
-    <section className="rounded-xl border border-primary-100 bg-white p-6 shadow-sm">
+    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
       <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-serif text-xl text-primary-700">SEO defaults + per-route overrides</h2>
-          <p className="mt-0.5 text-sm text-ink/60">
-            <span className="font-mono text-xs text-ink/50">seo</span> · Site-wide SEO defaults and optional per-route overrides.
+          <h2 className="text-primary-700 font-serif text-xl">
+            SEO defaults + per-route overrides
+          </h2>
+          <p className="text-ink/60 mt-0.5 text-sm">
+            <span className="text-ink/50 font-mono text-xs">seo</span> · Site-wide SEO defaults and
+            optional per-route overrides.
           </p>
         </div>
         <button
@@ -3022,16 +2732,16 @@ function SeoCard() {
       </header>
 
       {query.isLoading ? (
-        <div className="text-sm text-ink/50">Loading…</div>
+        <div className="text-ink/50 text-sm">Loading…</div>
       ) : (
         <div className="space-y-5">
-          <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-primary-700">
+          <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
+            <h3 className="text-primary-700 mb-3 text-sm font-semibold uppercase tracking-wide">
               Defaults
             </h3>
             <div className="space-y-3">
               <label className="block">
-                <span className="block text-xs font-medium text-ink/70">Title suffix</span>
+                <span className="text-ink/70 block text-xs font-medium">Title suffix</span>
                 <input
                   type="text"
                   value={titleSuffix}
@@ -3040,7 +2750,7 @@ function SeoCard() {
                 />
               </label>
               <label className="block">
-                <span className="block text-xs font-medium text-ink/70">Default description (en)</span>
+                <span className="text-ink/70 block text-xs font-medium">Default description</span>
                 <textarea
                   value={descEn}
                   onChange={(e) => setDescEn(e.target.value)}
@@ -3049,17 +2759,7 @@ function SeoCard() {
                 />
               </label>
               <label className="block">
-                <span className="block text-xs font-medium text-ink/70">Default description (ar)</span>
-                <textarea
-                  value={descAr}
-                  onChange={(e) => setDescAr(e.target.value)}
-                  rows={2}
-                  dir="rtl"
-                  className={inputCls}
-                />
-              </label>
-              <label className="block">
-                <span className="block text-xs font-medium text-ink/70">Default OG image URL</span>
+                <span className="text-ink/70 block text-xs font-medium">Default OG image URL</span>
                 <input
                   type="url"
                   value={ogImage}
@@ -3070,15 +2770,15 @@ function SeoCard() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-primary-100 bg-paper/30 p-4">
+          <div className="border-primary-100 bg-paper/30 rounded-lg border p-4">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-700">
+              <h3 className="text-primary-700 text-sm font-semibold uppercase tracking-wide">
                 Per-route overrides
               </h3>
               <button
                 type="button"
                 onClick={addRoute}
-                className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
+                className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
               >
                 <Plus className="h-3 w-3" />
                 Add override
@@ -3088,10 +2788,10 @@ function SeoCard() {
               {routes.map((r, i) => (
                 <li
                   key={i}
-                  className="grid gap-2 rounded-md border border-primary-100 bg-white p-3"
+                  className="border-primary-100 grid gap-2 rounded-md border bg-white p-3"
                 >
                   <label className="block">
-                    <span className="block text-xs text-ink/60">Canonical path (e.g. /learn)</span>
+                    <span className="text-ink/60 block text-xs">Canonical path (e.g. /learn)</span>
                     <input
                       type="text"
                       value={r.path}
@@ -3101,7 +2801,7 @@ function SeoCard() {
                   </label>
                   <div className="grid gap-2 md:grid-cols-2">
                     <label className="block">
-                      <span className="block text-xs text-ink/60">Title (en)</span>
+                      <span className="text-ink/60 block text-xs">Title</span>
                       <input
                         type="text"
                         value={r.titleEn ?? ''}
@@ -3110,31 +2810,11 @@ function SeoCard() {
                       />
                     </label>
                     <label className="block">
-                      <span className="block text-xs text-ink/60">Title (ar)</span>
-                      <input
-                        type="text"
-                        value={r.titleAr ?? ''}
-                        onChange={(e) => patchRoute(i, 'titleAr', e.target.value)}
-                        dir="rtl"
-                        className={inputCls}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="block text-xs text-ink/60">Description (en)</span>
+                      <span className="text-ink/60 block text-xs">Description</span>
                       <textarea
                         value={r.descriptionEn ?? ''}
                         onChange={(e) => patchRoute(i, 'descriptionEn', e.target.value)}
                         rows={2}
-                        className={inputCls}
-                      />
-                    </label>
-                    <label className="block">
-                      <span className="block text-xs text-ink/60">Description (ar)</span>
-                      <textarea
-                        value={r.descriptionAr ?? ''}
-                        onChange={(e) => patchRoute(i, 'descriptionAr', e.target.value)}
-                        rows={2}
-                        dir="rtl"
                         className={inputCls}
                       />
                     </label>
@@ -3143,7 +2823,7 @@ function SeoCard() {
                     <button
                       type="button"
                       onClick={() => removeRoute(i)}
-                      className="rounded p-1 text-sienna hover:bg-sienna/10"
+                      className="text-sienna hover:bg-sienna/10 rounded p-1"
                       aria-label="Remove"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -3152,20 +2832,20 @@ function SeoCard() {
                 </li>
               ))}
               {routes.length === 0 && (
-                <li className="text-xs italic text-ink/50">No per-route overrides yet.</li>
+                <li className="text-ink/50 text-xs italic">No per-route overrides yet.</li>
               )}
             </ul>
           </div>
 
           {error && (
-            <div className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna">
+            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
               {error}
             </div>
           )}
 
           <div className="flex items-center justify-end gap-3">
             {savedAt && !saving && (
-              <span className="text-xs text-sage">
+              <span className="text-sage text-xs">
                 Saved {new Date(savedAt).toLocaleTimeString()}
               </span>
             )}
@@ -3173,7 +2853,7 @@ function SeoCard() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="inline-flex items-center gap-1 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 disabled:opacity-50"
+              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {saving ? 'Saving…' : 'Save'}

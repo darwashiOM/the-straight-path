@@ -94,7 +94,7 @@ export default function ArticleCover({
           }}
         />
         {label ? (
-          <span className="absolute bottom-3 start-3 rounded-full bg-white/85 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary-800 backdrop-blur-sm dark:bg-primary-900/70 dark:text-accent-200">
+          <span className="text-primary-800 dark:bg-primary-900/70 dark:text-accent-200 absolute bottom-3 start-3 rounded-full bg-white/85 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider backdrop-blur-sm">
             {label}
           </span>
         ) : null}
@@ -121,7 +121,7 @@ export default function ArticleCover({
         }}
       />
       {label ? (
-        <span className="absolute bottom-3 start-3 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-primary-800 backdrop-blur-sm dark:bg-primary-900/60 dark:text-accent-200">
+        <span className="text-primary-800 dark:bg-primary-900/60 dark:text-accent-200 absolute bottom-3 start-3 rounded-full bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider backdrop-blur-sm">
           {label}
         </span>
       ) : null}

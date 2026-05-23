@@ -38,13 +38,9 @@ interface SeoHeadProps {
 }
 
 const SITE_NAME = 'The Straight Path';
-const SITE_NAME_AR = 'الطريق المستقيم';
 const DEFAULT_TAGLINE_EN = 'A Clear Path to God';
-const DEFAULT_TAGLINE_AR = 'طريق واضح إلى الله';
 const DEFAULT_DESCRIPTION_EN =
   'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God.';
-const DEFAULT_DESCRIPTION_AR =
-  'مقدمة هادئة ورحيمة عن الإسلام. تعلّم الأساسيات، واقرأ القرآن، واستكشف طريقاً واضحاً إلى الله.';
 const DEFAULT_OG = `${SITE_ORIGIN}/og-default.png`;
 
 function absoluteOg(url: string): string {
@@ -67,30 +63,26 @@ export default function SeoHead({
   const { locale: urlLocale, canonicalPath } = useLocalizedPath();
   const locale: Locale = localeProp ?? urlLocale;
   const resolvedPath = alternatePath ?? canonicalPath ?? '/';
-  const siteName = locale === 'ar' ? SITE_NAME_AR : SITE_NAME;
-  const tagline = locale === 'ar' ? DEFAULT_TAGLINE_AR : DEFAULT_TAGLINE_EN;
-  const resolvedDescription =
-    description ?? (locale === 'ar' ? DEFAULT_DESCRIPTION_AR : DEFAULT_DESCRIPTION_EN);
+  const siteName = SITE_NAME;
+  const tagline = DEFAULT_TAGLINE_EN;
+  const resolvedDescription = description ?? DEFAULT_DESCRIPTION_EN;
   const fullTitle = title ? `${title} — ${siteName}` : `${siteName} — ${tagline}`;
   const ogImageUrl = absoluteOg(ogImage ?? DEFAULT_OG);
-  const ogLocale = locale === 'ar' ? 'ar_SA' : 'en_US';
-  const altLocale = locale === 'ar' ? 'en_US' : 'ar_SA';
+  const ogLocale = 'en_US';
 
   const canonicalUrl = canonical ?? canonicalFor(resolvedPath, locale);
   const enUrl = canonicalFor(resolvedPath, 'en');
-  const arUrl = canonicalFor(resolvedPath, 'ar');
 
   const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 
   return (
     <Helmet>
-      <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'} />
+      <html lang={locale} dir="ltr" />
       <title>{fullTitle}</title>
       <meta name="description" content={resolvedDescription} />
       {noindex ? <meta name="robots" content="noindex,nofollow" /> : null}
       <link rel="canonical" href={canonicalUrl} />
       <link rel="alternate" hrefLang="en" href={enUrl} />
-      <link rel="alternate" hrefLang="ar" href={arUrl} />
       <link rel="alternate" hrefLang="x-default" href={enUrl} />
 
       <meta property="og:site_name" content={siteName} />
@@ -99,7 +91,6 @@ export default function SeoHead({
       <meta property="og:type" content={type} />
       <meta property="og:image" content={ogImageUrl} />
       <meta property="og:locale" content={ogLocale} />
-      <meta property="og:locale:alternate" content={altLocale} />
       <meta property="og:url" content={canonicalUrl} />
 
       <meta name="twitter:card" content="summary_large_image" />

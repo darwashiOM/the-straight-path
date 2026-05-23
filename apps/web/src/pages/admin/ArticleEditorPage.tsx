@@ -1,18 +1,17 @@
 /**
- * ArticleEditorPage (V2) — side-by-side English + Arabic editor for the new
- * nested-translations article schema.
+ * ArticleEditorPage (V2) — English-only editor for the nested-translations
+ * article schema.
  *
  * Layout:
  *   - Left column (sticky): structured, non-translated fields — slug, status,
  *     dates, author, topic, series, tags, hero image, delete.
- *   - Right column: locale tabs (EN / AR). Each tab has title + excerpt +
- *     markdown body + live preview.
+ *   - Right column: title + excerpt + markdown body + live preview.
  *   - Bottom: sticky save bar (Save draft / Publish).
  */
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Copy, Eye, ImageIcon, Save, Send, Trash2 } from 'lucide-react';
+import { ArrowLeft, Eye, ImageIcon, Save, Send, Trash2 } from 'lucide-react';
 
 import MediaPicker from '@/components/admin/MediaPicker';
 
@@ -23,10 +22,9 @@ import {
   listTopics,
   saveArticleV2,
 } from '@/lib/admin-firestore';
-import type { ArticleDoc, ArticleStatus, Locale } from '@/lib/content-schema';
+import type { ArticleDoc, ArticleStatus } from '@/lib/content-schema';
 import { stagePreview } from '@/lib/preview';
 import { articles as mdxArticles } from '@/content/articles';
-import LocaleTabs from '@/components/admin/LocaleTabs';
 import MarkdownPreview from '@/components/admin/MarkdownPreview';
 import TagInput from '@/components/admin/TagInput';
 
@@ -43,8 +41,6 @@ interface FormState {
   series: string;
   heroImage: string;
   en: LocaleFields;
-  ar: LocaleFields;
-  arEnabled: boolean;
 }
 
 const EMPTY_LOCALE: LocaleFields = { title: '', excerpt: '', body: '' };
@@ -60,8 +56,6 @@ const EMPTY: FormState = {
   series: '',
   heroImage: '',
   en: { ...EMPTY_LOCALE },
-  ar: { ...EMPTY_LOCALE },
-  arEnabled: false,
 };
 
 function slugify(raw: string): string {
@@ -92,7 +86,6 @@ export default function ArticleEditorPage() {
 
   const [form, setForm] = useState<FormState>(EMPTY);
   const [slugDirty, setSlugDirty] = useState(false);
-  const [locale, setLocale] = useState<Locale>('en');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -120,14 +113,6 @@ export default function ArticleEditorPage() {
           excerpt: d.translations.en?.excerpt ?? '',
           body: d.translations.en?.body ?? '',
         },
-        ar: d.translations.ar
-          ? {
-              title: d.translations.ar.title ?? '',
-              excerpt: d.translations.ar.excerpt ?? '',
-              body: d.translations.ar.body ?? '',
-            }
-          : { ...EMPTY_LOCALE },
-        arEnabled: Boolean(d.translations.ar),
       });
       setSlugDirty(true);
     }
@@ -144,16 +129,8 @@ export default function ArticleEditorPage() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function patchLocale(which: Locale, fields: Partial<LocaleFields>) {
-    setForm((f) => ({ ...f, [which]: { ...f[which], ...fields } }));
-  }
-
-  function copyEnToAr(fields: Array<keyof LocaleFields>) {
-    setForm((f) => {
-      const next = { ...f.ar };
-      for (const field of fields) next[field] = f.en[field];
-      return { ...f, ar: next, arEnabled: true };
-    });
+  function patchEn(fields: Partial<LocaleFields>) {
+    setForm((f) => ({ ...f, en: { ...f.en, ...fields } }));
   }
 
   function buildPayload(status: ArticleStatus): ArticleDoc {
@@ -169,9 +146,6 @@ export default function ArticleEditorPage() {
       ...(form.heroImage ? { heroImage: form.heroImage } : {}),
       translations: {
         en: { ...form.en },
-        ...(form.arEnabled && (form.ar.title || form.ar.body || form.ar.excerpt)
-          ? { ar: { ...form.ar } }
-          : {}),
       },
       schemaVersion: 1,
     };
@@ -231,11 +205,10 @@ export default function ArticleEditorPage() {
   }
 
   if (!isNew && existing.isLoading) {
-    return <div className="text-sm text-ink/60">Loading…</div>;
+    return <div className="text-ink/60 text-sm">Loading…</div>;
   }
 
-  const active = form[locale];
-  const arMissing = !form.arEnabled || !(form.ar.title || form.ar.body);
+  const active = form.en;
 
   return (
     <form onSubmit={(e) => void submit(e)} className="space-y-4 pb-20">
@@ -251,37 +224,35 @@ export default function ArticleEditorPage() {
       <div className="flex items-center justify-between">
         <Link
           to="/admin/articles"
-          className="inline-flex items-center gap-1 text-sm text-ink/60 hover:text-primary-700"
+          className="text-ink/60 hover:text-primary-700 inline-flex items-center gap-1 text-sm"
         >
           <ArrowLeft className="h-4 w-4" />
           All articles
         </Link>
-        <div className="text-xs text-ink/50">
-          {isNew ? 'New article' : `Editing ${form.slug}`}
-        </div>
+        <div className="text-ink/50 text-xs">{isNew ? 'New article' : `Editing ${form.slug}`}</div>
       </div>
 
       {error && (
         <div
           role="alert"
-          className="rounded-lg border border-sienna/30 bg-sienna/5 px-3 py-2 text-sm text-sienna"
+          className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm"
         >
           {error}
         </div>
       )}
 
       {mdxConflict && (
-        <div className="rounded-lg border border-accent-300 bg-accent-50/60 px-3 py-2 text-sm text-accent-700">
-          This slug matches an MDX file in the repo. Saving will create a Firestore
-          override that takes priority on the public site.
+        <div className="border-accent-300 bg-accent-50/60 text-accent-700 rounded-lg border px-3 py-2 text-sm">
+          This slug matches an MDX file in the repo. Saving will create a Firestore override that
+          takes priority on the public site.
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
         {/* ---------- Left: structured fields (sticky) ---------- */}
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <div className="space-y-4 rounded-xl border border-primary-100 bg-white p-5 shadow-sm">
-            <h2 className="font-serif text-lg text-primary-700">Article fields</h2>
+          <div className="border-primary-100 space-y-4 rounded-xl border bg-white p-5 shadow-sm">
+            <h2 className="text-primary-700 font-serif text-lg">Article fields</h2>
 
             <Field label="Slug" hint="URL path: /learn/articles/<slug>">
               <input
@@ -388,7 +359,7 @@ export default function ArticleEditorPage() {
                 <button
                   type="button"
                   onClick={() => setPickerOpen(true)}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary-100 bg-white px-3 text-xs font-medium text-primary-700 hover:border-primary-300 hover:bg-primary-50"
+                  className="border-primary-100 text-primary-700 hover:border-primary-300 hover:bg-primary-50 inline-flex shrink-0 items-center gap-1 rounded-lg border bg-white px-3 text-xs font-medium"
                   title="Pick from library"
                 >
                   <ImageIcon className="h-3.5 w-3.5" />
@@ -396,12 +367,8 @@ export default function ArticleEditorPage() {
                 </button>
               </div>
               {form.heroImage ? (
-                <div className="mt-2 overflow-hidden rounded-md border border-primary-100">
-                  <img
-                    src={form.heroImage}
-                    alt=""
-                    className="aspect-video w-full object-cover"
-                  />
+                <div className="border-primary-100 mt-2 overflow-hidden rounded-md border">
+                  <img src={form.heroImage} alt="" className="aspect-video w-full object-cover" />
                 </div>
               ) : null}
             </Field>
@@ -410,7 +377,7 @@ export default function ArticleEditorPage() {
               <button
                 type="button"
                 onClick={() => void handleDelete()}
-                className="mt-2 inline-flex w-full items-center justify-center gap-1 rounded-lg border border-sienna/30 px-3 py-1.5 text-sm text-sienna hover:bg-sienna/5"
+                className="border-sienna/30 text-sienna hover:bg-sienna/5 mt-2 inline-flex w-full items-center justify-center gap-1 rounded-lg border px-3 py-1.5 text-sm"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete article
@@ -419,94 +386,53 @@ export default function ArticleEditorPage() {
           </div>
         </aside>
 
-        {/* ---------- Right: locale tabs + editor ---------- */}
+        {/* ---------- Right: editor ---------- */}
         <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <LocaleTabs
-              locale={locale}
-              onChange={setLocale}
-              arBadge={arMissing ? <span className="text-accent-700">missing</span> : null}
-            />
-            {locale === 'ar' && (
-              <div className="flex items-center gap-2">
-                {!form.arEnabled && (
-                  <button
-                    type="button"
-                    onClick={() => patch('arEnabled', true)}
-                    className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-                  >
-                    Enable Arabic
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => copyEnToAr(['title', 'excerpt'])}
-                  className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-                  title="Copy English title + excerpt into Arabic"
-                >
-                  <Copy className="h-3 w-3" />
-                  Copy EN → AR (title+excerpt)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => copyEnToAr(['title', 'excerpt', 'body'])}
-                  className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-xs text-primary-700 hover:bg-primary-50"
-                >
-                  <Copy className="h-3 w-3" />
-                  Copy all
-                </button>
-              </div>
-            )}
-          </div>
-
           <div className="grid gap-4 xl:grid-cols-2">
-            <div className="space-y-4 rounded-xl border border-primary-100 bg-white p-5 shadow-sm">
-              <Field label={`Title (${locale.toUpperCase()})`}>
+            <div className="border-primary-100 space-y-4 rounded-xl border bg-white p-5 shadow-sm">
+              <Field label="Title">
                 <input
                   type="text"
-                  required={locale === 'en'}
+                  required
                   value={active.title}
-                  onChange={(e) => patchLocale(locale, { title: e.target.value })}
+                  onChange={(e) => patchEn({ title: e.target.value })}
                   className={inputCls}
-                  dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                  lang={locale}
+                  lang="en"
                 />
               </Field>
 
               <Field label="Excerpt" hint="1–2 sentence summary used in listings and SEO.">
                 <textarea
                   value={active.excerpt}
-                  onChange={(e) => patchLocale(locale, { excerpt: e.target.value })}
+                  onChange={(e) => patchEn({ excerpt: e.target.value })}
                   rows={3}
                   className={inputCls}
-                  dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                  lang={locale}
+                  lang="en"
                 />
               </Field>
 
               <Field label="Body (Markdown)">
                 <textarea
                   value={active.body}
-                  onChange={(e) => patchLocale(locale, { body: e.target.value })}
+                  onChange={(e) => patchEn({ body: e.target.value })}
                   rows={24}
                   className={`${inputCls} font-mono text-xs leading-relaxed`}
                   placeholder="# Heading&#10;&#10;Your essay…"
-                  dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                  lang={locale}
+                  lang="en"
                 />
               </Field>
             </div>
 
-            <div className="rounded-xl border border-primary-100 bg-white p-5 shadow-sm">
+            <div className="border-primary-100 rounded-xl border bg-white p-5 shadow-sm">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-serif text-lg text-primary-700">Preview</h3>
-                <span className="text-xs text-ink/50">Live · {locale.toUpperCase()}</span>
+                <h3 className="text-primary-700 font-serif text-lg">Preview</h3>
+                <span className="text-ink/50 text-xs">Live</span>
               </div>
-              <div dir={locale === 'ar' ? 'rtl' : 'ltr'} lang={locale}>
+              <div lang="en">
                 {active.title && (
-                  <h1 className="mb-1 font-serif text-2xl text-primary-700">{active.title}</h1>
+                  <h1 className="text-primary-700 mb-1 font-serif text-2xl">{active.title}</h1>
                 )}
-                {active.excerpt && <p className="mb-4 text-sm text-ink/70">{active.excerpt}</p>}
+                {active.excerpt && <p className="text-ink/70 mb-4 text-sm">{active.excerpt}</p>}
                 <MarkdownPreview source={active.body} />
               </div>
             </div>
@@ -515,10 +441,10 @@ export default function ArticleEditorPage() {
       </div>
 
       {/* ---------- Sticky save bar ---------- */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-primary-100 bg-white/95 px-6 py-3 shadow-[0_-4px_16px_-8px_rgba(0,0,0,0.08)] backdrop-blur">
+      <div className="border-primary-100 fixed bottom-0 left-0 right-0 z-20 border-t bg-white/95 px-6 py-3 shadow-[0_-4px_16px_-8px_rgba(0,0,0,0.08)] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-end gap-2">
-          <span className="mr-auto text-xs text-ink/50">
-            Status: <span className="font-medium text-ink/80">{form.status}</span>
+          <span className="text-ink/50 mr-auto text-xs">
+            Status: <span className="text-ink/80 font-medium">{form.status}</span>
           </span>
           <button
             type="button"
@@ -534,7 +460,7 @@ export default function ArticleEditorPage() {
             type="button"
             onClick={() => void submit(null, 'draft')}
             disabled={saving}
-            className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-sm text-primary-700 hover:bg-primary-50 disabled:opacity-50"
+            className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             Save draft
@@ -543,7 +469,7 @@ export default function ArticleEditorPage() {
             type="button"
             onClick={() => void submit(null)}
             disabled={saving}
-            className="inline-flex items-center gap-1 rounded-lg border border-primary-200 px-3 py-1.5 text-sm text-primary-700 hover:bg-primary-50 disabled:opacity-50"
+            className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             Save
@@ -552,7 +478,7 @@ export default function ArticleEditorPage() {
             type="button"
             onClick={() => void submit(null, 'published')}
             disabled={saving}
-            className="btn bg-primary-500 px-4 py-2 text-white hover:bg-primary-600 disabled:opacity-50"
+            className="btn bg-primary-500 hover:bg-primary-600 px-4 py-2 text-white disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
             {saving ? 'Saving…' : 'Publish'}
@@ -577,9 +503,9 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium text-ink/80">{label}</span>
+      <span className="text-ink/80 block text-sm font-medium">{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-ink/50">{hint}</span>}
+      {hint && <span className="text-ink/50 mt-1 block text-xs">{hint}</span>}
     </label>
   );
 }

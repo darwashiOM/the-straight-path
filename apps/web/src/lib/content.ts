@@ -240,16 +240,22 @@ export function useSiteSetting<T = Record<string, string>>(id: SiteSettingId, lo
           };
         }
       }
-      return firestoreOr(async () => {
-        const snap = await getDoc(doc(getDb(), 'siteSettings', id));
-        if (!snap.exists()) return fallbackSiteSetting<T>(id, locale);
-        const data = snap.data() as { translations: { en: T; ar?: T }; data?: Record<string, unknown> };
-        return {
-          id,
-          value: pickLocale(data.translations, locale),
-          data: data.data,
-        };
-      }, fallbackSiteSetting<T>(id, locale));
+      return firestoreOr(
+        async () => {
+          const snap = await getDoc(doc(getDb(), 'siteSettings', id));
+          if (!snap.exists()) return fallbackSiteSetting<T>(id, locale);
+          const data = snap.data() as {
+            translations: { en: T; ar?: T };
+            data?: Record<string, unknown>;
+          };
+          return {
+            id,
+            value: pickLocale(data.translations, locale),
+            data: data.data,
+          };
+        },
+        fallbackSiteSetting<T>(id, locale),
+      );
     },
   });
 }
@@ -266,13 +272,16 @@ export function usePage(slug: 'about' | 'privacy' | 'terms', locale: Locale) {
           return { slug, title: tr.title, body: tr.body };
         }
       }
-      return firestoreOr(async () => {
-        const snap = await getDoc(doc(getDb(), 'pages', slug));
-        if (!snap.exists()) return fallbackPage(slug, locale);
-        const data = snap.data() as PageDoc;
-        const tr = pickLocale(data.translations, locale);
-        return { slug, title: tr.title, body: tr.body };
-      }, fallbackPage(slug, locale));
+      return firestoreOr(
+        async () => {
+          const snap = await getDoc(doc(getDb(), 'pages', slug));
+          if (!snap.exists()) return fallbackPage(slug, locale);
+          const data = snap.data() as PageDoc;
+          const tr = pickLocale(data.translations, locale);
+          return { slug, title: tr.title, body: tr.body };
+        },
+        fallbackPage(slug, locale),
+      );
     },
   });
 }
@@ -403,7 +412,7 @@ function fallbackSiteSetting<T>(id: SiteSettingId, locale: Locale): PublicSiteSe
   if (!def) return { id, value: {} as T, data: undefined };
   return {
     id,
-    value: (pickLocale(def.translations, locale) as unknown) as T,
+    value: pickLocale(def.translations, locale) as unknown as T,
     data: def.data,
   };
 }

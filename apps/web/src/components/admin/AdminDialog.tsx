@@ -24,7 +24,7 @@ export default function AdminDialog({ title, onClose, children, wide }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink/40 p-4"
+      className="bg-ink/40 fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -33,12 +33,12 @@ export default function AdminDialog({ title, onClose, children, wide }: Props) {
         className={`my-8 w-full rounded-xl bg-white p-6 shadow-lg ${wide ? 'max-w-4xl' : 'max-w-2xl'}`}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-serif text-lg text-primary-700">{title}</h3>
+          <h3 className="text-primary-700 font-serif text-lg">{title}</h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded p-1 text-ink/60 hover:bg-primary-50 hover:text-primary-700"
+            className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1"
           >
             <X className="h-4 w-4" />
           </button>

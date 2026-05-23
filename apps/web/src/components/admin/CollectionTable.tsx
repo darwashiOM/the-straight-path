@@ -29,9 +29,7 @@ export interface CollectionTableProps<T extends { id: string }> {
   empty?: string;
 }
 
-export default function CollectionTable<T extends { id: string }>(
-  props: CollectionTableProps<T>,
-) {
+export default function CollectionTable<T extends { id: string }>(props: CollectionTableProps<T>) {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({ queryKey: props.queryKey, queryFn: props.load });
 
@@ -53,20 +51,20 @@ export default function CollectionTable<T extends { id: string }>(
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-lg text-primary-700">{props.title}</h2>
+        <h2 className="text-primary-700 font-serif text-lg">{props.title}</h2>
         <button
           type="button"
           onClick={() => setEditing('new')}
-          className="btn bg-primary-500 text-white hover:bg-primary-600"
+          className="btn bg-primary-500 hover:bg-primary-600 text-white"
         >
           <Plus className="h-4 w-4" />
           New
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-primary-100 bg-white shadow-sm">
+      <div className="border-primary-100 overflow-hidden rounded-xl border bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="bg-primary-50 text-left text-xs uppercase tracking-wide text-primary-700">
+          <thead className="bg-primary-50 text-primary-700 text-left text-xs uppercase tracking-wide">
             <tr>
               {props.columns.map((c) => (
                 <th key={c.key} className="px-4 py-3">
@@ -76,12 +74,12 @@ export default function CollectionTable<T extends { id: string }>(
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-primary-100">
+          <tbody className="divide-primary-100 divide-y">
             {isLoading && (
               <tr>
                 <td
                   colSpan={props.columns.length + 1}
-                  className="px-4 py-6 text-center text-ink/50"
+                  className="text-ink/50 px-4 py-6 text-center"
                 >
                   Loading…
                 </td>
@@ -91,7 +89,7 @@ export default function CollectionTable<T extends { id: string }>(
               <tr>
                 <td
                   colSpan={props.columns.length + 1}
-                  className="px-4 py-6 text-center text-ink/50"
+                  className="text-ink/50 px-4 py-6 text-center"
                 >
                   {props.empty ?? 'Nothing here yet.'}
                 </td>
@@ -100,7 +98,7 @@ export default function CollectionTable<T extends { id: string }>(
             {(data ?? []).map((row) => (
               <tr key={row.id} className="hover:bg-primary-50/30">
                 {props.columns.map((c) => (
-                  <td key={c.key} className="px-4 py-3 align-top text-ink/80">
+                  <td key={c.key} className="text-ink/80 px-4 py-3 align-top">
                     {c.render
                       ? c.render(row)
                       : String((row as Record<string, unknown>)[c.key] ?? '')}
@@ -111,7 +109,7 @@ export default function CollectionTable<T extends { id: string }>(
                     <button
                       type="button"
                       onClick={() => setEditing(row)}
-                      className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700"
+                      className="text-primary-600 hover:text-primary-700 inline-flex items-center gap-1 text-xs"
                     >
                       <Pencil className="h-3 w-3" />
                       Edit
@@ -119,10 +117,9 @@ export default function CollectionTable<T extends { id: string }>(
                     <button
                       type="button"
                       onClick={() => {
-                        if (window.confirm('Delete this entry?'))
-                          deleteMut.mutate(row.id);
+                        if (window.confirm('Delete this entry?')) deleteMut.mutate(row.id);
                       }}
-                      className="inline-flex items-center gap-1 text-xs text-sienna hover:text-sienna/80"
+                      className="text-sienna hover:text-sienna/80 inline-flex items-center gap-1 text-xs"
                     >
                       <Trash2 className="h-3 w-3" />
                       Delete
@@ -172,7 +169,9 @@ function EditDialog<T extends { id: string }>({
 }: EditDialogProps<T>) {
   const [values, setValues] = useState<Record<string, unknown>>(() => {
     const base = { ...(defaults as Record<string, unknown>) };
-    if (initial) for (const k of Object.keys(base)) base[k] = (initial as Record<string, unknown>)[k] ?? base[k];
+    if (initial)
+      for (const k of Object.keys(base))
+        base[k] = (initial as Record<string, unknown>)[k] ?? base[k];
     return base;
   });
   const [submitting, setSubmitting] = useState(false);
@@ -187,24 +186,22 @@ function EditDialog<T extends { id: string }>({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+    <div className="bg-ink/40 fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
-        <h3 className="mb-4 font-serif text-lg text-primary-700">
+        <h3 className="text-primary-700 mb-4 font-serif text-lg">
           {initial ? 'Edit entry' : 'New entry'}
         </h3>
         <div className="space-y-3">
           {columns.map((c) => (
             <label key={c.key} className="block">
-              <span className="block text-sm font-medium text-ink/80">{c.label}</span>
+              <span className="text-ink/80 block text-sm font-medium">{c.label}</span>
               {c.type === 'textarea' ? (
                 <textarea
                   value={String(values[c.key] ?? '')}
-                  onChange={(e) =>
-                    setValues((v) => ({ ...v, [c.key]: e.target.value }))
-                  }
+                  onChange={(e) => setValues((v) => ({ ...v, [c.key]: e.target.value }))}
                   rows={4}
                   placeholder={c.placeholder}
-                  className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                  className="border-primary-100 focus:border-primary-400 focus:ring-primary-400 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
                 />
               ) : (
                 <input
@@ -219,7 +216,7 @@ function EditDialog<T extends { id: string }>({
                   }}
                   required={c.required}
                   placeholder={c.placeholder}
-                  className="mt-1 w-full rounded-lg border border-primary-100 bg-white px-3 py-2 text-sm focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                  className="border-primary-100 focus:border-primary-400 focus:ring-primary-400 mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
                 />
               )}
             </label>
@@ -229,7 +226,7 @@ function EditDialog<T extends { id: string }>({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-primary-100 px-3 py-1.5 text-sm text-ink/70 hover:bg-primary-50"
+            className="border-primary-100 text-ink/70 hover:bg-primary-50 rounded-lg border px-3 py-1.5 text-sm"
           >
             Cancel
           </button>
@@ -237,7 +234,7 @@ function EditDialog<T extends { id: string }>({
             type="button"
             onClick={() => void save()}
             disabled={submitting}
-            className="btn bg-primary-500 text-white hover:bg-primary-600"
+            className="btn bg-primary-500 hover:bg-primary-600 text-white"
           >
             {submitting ? 'Saving…' : 'Save'}
           </button>

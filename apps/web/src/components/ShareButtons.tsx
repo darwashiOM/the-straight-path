@@ -27,9 +27,7 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    setCanNativeShare(
-      typeof navigator !== 'undefined' && typeof navigator.share === 'function',
-    );
+    setCanNativeShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
     return () => {
       if (toastTimer.current) clearTimeout(toastTimer.current);
     };
@@ -73,8 +71,7 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
   };
 
   const twitterUrl =
-    'https://twitter.com/intent/tweet?' +
-    new URLSearchParams({ url, text: title }).toString();
+    'https://twitter.com/intent/tweet?' + new URLSearchParams({ url, text: title }).toString();
 
   const whatsappUrl =
     'https://wa.me/?' + new URLSearchParams({ text: `${title} ${url}` }).toString();
@@ -84,8 +81,8 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
   const copiedLabel = t('articlesPage.linkCopied', 'Link copied') as string;
 
   return (
-    <div className="mt-12 flex flex-wrap items-center gap-3 border-t border-primary-500/10 pt-8 dark:border-primary-700/40">
-      <span className="font-serif text-sm uppercase tracking-widest text-accent-500">
+    <div className="border-primary-500/10 dark:border-primary-700/40 mt-12 flex flex-wrap items-center gap-3 border-t pt-8">
+      <span className="text-accent-500 font-serif text-sm uppercase tracking-widest">
         {shareLabel}
       </span>
 
@@ -93,7 +90,7 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
         <button
           type="button"
           onClick={nativeShare}
-          className="inline-flex items-center gap-2 rounded-full border border-primary-500/20 bg-paper/60 px-4 py-2 text-sm text-primary-700 transition hover:border-accent-400 hover:text-primary-800 dark:border-primary-700/50 dark:bg-primary-800/40 dark:text-paper/80 dark:hover:text-accent-300"
+          className="border-primary-500/20 bg-paper/60 text-primary-700 hover:border-accent-400 hover:text-primary-800 dark:border-primary-700/50 dark:bg-primary-800/40 dark:text-paper/80 dark:hover:text-accent-300 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition"
         >
           <Share2 size={14} /> {shareLabel}
         </button>
@@ -103,17 +100,16 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
         type="button"
         onClick={copy}
         aria-live="polite"
-        className="inline-flex items-center gap-2 rounded-full border border-primary-500/20 bg-paper/60 px-4 py-2 text-sm text-primary-700 transition hover:border-accent-400 hover:text-primary-800 dark:border-primary-700/50 dark:bg-primary-800/40 dark:text-paper/80 dark:hover:text-accent-300"
+        className="border-primary-500/20 bg-paper/60 text-primary-700 hover:border-accent-400 hover:text-primary-800 dark:border-primary-700/50 dark:bg-primary-800/40 dark:text-paper/80 dark:hover:text-accent-300 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition"
       >
-        {copied ? <Check size={14} /> : <Link2 size={14} />}{' '}
-        {copied ? copiedLabel : copyLabel}
+        {copied ? <Check size={14} /> : <Link2 size={14} />} {copied ? copiedLabel : copyLabel}
       </button>
 
       <a
         href={twitterUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-full border border-primary-500/20 bg-paper/60 px-4 py-2 text-sm text-primary-700 transition hover:border-accent-400 hover:text-primary-800 dark:border-primary-700/50 dark:bg-primary-800/40 dark:text-paper/80 dark:hover:text-accent-300"
+        className="border-primary-500/20 bg-paper/60 text-primary-700 hover:border-accent-400 hover:text-primary-800 dark:border-primary-700/50 dark:bg-primary-800/40 dark:text-paper/80 dark:hover:text-accent-300 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition"
       >
         <Twitter size={14} /> X / Twitter
       </a>
@@ -122,7 +118,7 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-full border border-primary-500/20 bg-paper/60 px-4 py-2 text-sm text-primary-700 transition hover:border-accent-400 hover:text-primary-800 dark:border-primary-700/50 dark:bg-primary-800/40 dark:text-paper/80 dark:hover:text-accent-300"
+        className="border-primary-500/20 bg-paper/60 text-primary-700 hover:border-accent-400 hover:text-primary-800 dark:border-primary-700/50 dark:bg-primary-800/40 dark:text-paper/80 dark:hover:text-accent-300 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition"
       >
         <MessageCircle size={14} /> WhatsApp
       </a>
@@ -133,7 +129,7 @@ export default function ShareButtons({ url, title, description }: ShareButtonsPr
         role="status"
         aria-live="polite"
         className={
-          'pointer-events-none fixed bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-primary-700 px-4 py-2 text-sm text-paper shadow-lg transition-opacity duration-200 dark:bg-accent-500 dark:text-ink ' +
+          'bg-primary-700 text-paper dark:bg-accent-500 dark:text-ink pointer-events-none fixed bottom-6 left-1/2 -translate-x-1/2 rounded-full px-4 py-2 text-sm shadow-lg transition-opacity duration-200 ' +
           (copied ? 'opacity-100' : 'opacity-0')
         }
       >
