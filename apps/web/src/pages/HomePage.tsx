@@ -275,37 +275,36 @@ export default function HomePage() {
   }
 
   function renderQuranBanner() {
-    return (
-      <section key="quranBanner" className="bg-primary-700 text-paper dark:bg-primary-900 py-20">
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            {quranCopy ? (
-              <>
-                <p className="text-accent-300 font-serif text-sm uppercase tracking-widest">
-                  {quranCopy.eyebrow ?? t('home.sections.quran')}
-                </p>
-                <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
-                  {quranCopy.headline}
-                </h2>
-                <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
-                <a
-                  href={quranCtaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-accent mt-8"
-                >
-                  {quranCopy.cta} <ArrowRight size={16} />
-                </a>
-              </>
-            ) : (
-              <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
-            )}
-          </div>
-        </Container>
-      </section>
-    );
-  }
-
+  return (
+    <section key="quranBanner" className="bg-primary-700 text-paper dark:bg-primary-900 py-20">
+      <Container>
+        <div className="mx-auto max-w-3xl text-center">
+          {quranCopy ? (
+            <>
+              <p className="text-accent-300 font-serif text-sm uppercase tracking-widest">
+                {quranCopy.eyebrow ?? t('home.sections.quran')}
+              </p>
+              <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
+                {quranCopy.headline}
+              </h2>
+              <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
+              
+                href={quranCtaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-accent mt-8"
+              >
+                {quranCopy.cta} <ArrowRight size={16} />
+              </a>
+            </>
+          ) : (
+            <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
+          )}
+        </div>
+      </Container>
+    </section>
+  );
+}
   function renderQuickLinks() {
     return (
       <section key="quickLinks" className="py-20">
