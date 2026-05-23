@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -31,14 +32,6 @@ import { readingTimeMinutes } from '@/lib/reading-time';
 import { graph, organizationSchema, websiteSchema } from '@/lib/schema';
 import { formatDate } from '@/lib/utils';
 
-interface HeroCopy {
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  ctaPrimary: string;
-  ctaSecondary: string;
-}
-
 interface QuranBannerCopy {
   eyebrow: string;
   headline: string;
@@ -54,32 +47,25 @@ interface AboutPreviewCopy {
   cta: string;
 }
 
-function renderHero() {
+const HERO_PHRASES = ['Find Purpose and Inner Peace', 'Islam... the straight path'];
+
+function HeroSection() {
   const [textIndex, setTextIndex] = useState(0);
-  const phrases = [
-    'Find Purpose and Inner Peace',
-    'Islam... the straight path',
-  ];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTextIndex((prev) => (prev + 1) % phrases.length);
+    const interval = window.setInterval(() => {
+      setTextIndex((prev) => (prev + 1) % HERO_PHRASES.length);
     }, 3000);
-    return () => clearInterval(interval);
+
+    return () => window.clearInterval(interval);
   }, []);
 
   return (
     <section
       key="hero"
-      className="relative overflow-hidden"
+      className="relative flex h-[500px] items-center justify-center overflow-hidden bg-cover bg-center"
       style={{
-        backgroundImage: 'url(/Masjid Nabawi - Gemini- cropped.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        height: '500px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundImage: 'url("/Masjid Nabawi - Gemini- cropped.png")',
       }}
     >
       <div
@@ -107,7 +93,7 @@ function renderHero() {
             fontFamily: 'serif',
           }}
         >
-          {phrases[textIndex]}
+          {HERO_PHRASES[textIndex]}
         </p>
       </div>
 
@@ -167,7 +153,7 @@ function renderHeroButtons(localizePath: (path: string) => string) {
           display: 'inline-block',
         }}
       >
-        Read the Qur'an
+        Read the Qur&apos;an
       </Link>
     </div>
   );
@@ -179,7 +165,6 @@ export default function HomePage() {
   const dateLocale = 'en-US';
   const arrow = '→';
 
-  const hero = useSiteSetting<HeroCopy>('hero', locale);
   const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
   const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
   const quickLinks = useSiteSetting('quickLinks', locale);
@@ -199,6 +184,7 @@ export default function HomePage() {
   const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
     mode: 'newest' as const,
   };
+
   const manualFeatured = useArticle(
     featuredConfig.mode === 'manual' ? featuredConfig.articleSlug : undefined,
     locale,
@@ -209,7 +195,6 @@ export default function HomePage() {
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-  const heroCopy = hero.data?.value;
   const quranCopy = quranBanner.data?.value;
   const aboutCopy = aboutPreview.data?.value;
 
@@ -222,10 +207,10 @@ export default function HomePage() {
 
   const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
 
-  const renderers: Record<HomepageSectionId, () => React.ReactNode> = {
+  const renderers: Record<HomepageSectionId, () => ReactNode> = {
     hero: () => (
       <>
-        {renderHero()}
+        <HeroSection />
         {renderHeroButtons(localizePath)}
       </>
     ),
@@ -276,6 +261,7 @@ export default function HomePage() {
         </section>
       );
     }
+
     if (articlesQuery.isLoading) {
       return (
         <section key="featured" className="py-20">
@@ -285,6 +271,7 @@ export default function HomePage() {
         </section>
       );
     }
+
     return null;
   }
 
@@ -322,6 +309,7 @@ export default function HomePage() {
             <div className="grid gap-6 md:grid-cols-3">
               {articles.map((a) => {
                 const topicLabel = a.topic ? (t(`learn.topics.${a.topic}`) as string) : undefined;
+
                 return (
                   <Link
                     key={a.slug}
@@ -397,15 +385,14 @@ export default function HomePage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {quickLinkItems.map((item, idx) => {
               const Icon = QUICK_LINK_ICON_MAP[item.icon] ?? Users;
-              const label = item.labelEn;
-              const desc = item.descEn;
+
               return (
                 <FeatureLink
                   key={`${item.to}-${idx}`}
                   to={localizePath(item.to)}
                   icon={<Icon size={20} />}
-                  title={label}
-                  desc={desc}
+                  title={item.labelEn}
+                  desc={item.descEn}
                   exploreLabel={t('home.quickLinks.explore')}
                   arrow={arrow}
                 />
@@ -474,7 +461,7 @@ function FeatureLink({
   arrow,
 }: {
   to: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   desc: string;
   exploreLabel: string;
