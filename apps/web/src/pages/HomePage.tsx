@@ -372,7 +372,6 @@ export default function HomePage() {
                   {quranCopy.headline}
                 </h2>
                 <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
-                
                 <a
                   href={quranCtaUrl}
                   target="_blank"
