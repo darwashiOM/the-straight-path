@@ -150,33 +150,43 @@ export default function HomePage() {
         justifyContent: 'center'
       }}
     >
-      <div style={{
-        textAlign: 'center',
-        animation: 'fadeIn 0.5s ease-in-out'
-      }}>
-        <h1 style={{
-          fontSize: '48px',
-          fontWeight: 'bold',
-          color: '#1a3a3a',
-          marginBottom: '20px',
-          fontFamily: 'serif'
-        }}>
+      <div
+        style={{
+          textAlign: 'center',
+          animation: 'fadeIn 0.5s ease-in-out'
+        }}
+      >
+        <h1
+          style={{
+            fontSize: '48px',
+            fontWeight: 'bold',
+            color: '#1a3a3a',
+            marginBottom: '20px',
+            fontFamily: 'serif'
+          }}
+        >
           The Straight Path
         </h1>
-        <p style={{
-          fontSize: '24px',
-          color: '#666',
-          minHeight: '35px',
-          fontFamily: 'serif'
-        }}>
+        <p
+          style={{
+            fontSize: '24px',
+            color: '#666',
+            minHeight: '35px',
+            fontFamily: 'serif'
+          }}
+        >
           {phrases[textIndex]}
         </p>
       </div>
 
       <style>{`
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
       `}</style>
     </section>
