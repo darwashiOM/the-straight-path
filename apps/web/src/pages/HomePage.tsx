@@ -69,9 +69,19 @@ function HeroSection() {
   return (
     <section
       key="hero"
-      className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden bg-cover bg-center px-6 py-20 md:min-h-[600px]"
-      style={{ backgroundImage: 'url("/hero-masjid-nabawi.png")' }}
+      className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden px-6 py-20 md:min-h-[600px]"
     >
+      <img
+        src="/hero-masjid-nabawi.png"
+        alt=""
+        aria-hidden="true"
+        width={1920}
+        height={1080}
+        fetchPriority="high"
+        loading="eager"
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="relative z-10 text-center">
@@ -88,13 +98,13 @@ function HeroSection() {
       <div className="relative z-10 mt-10 flex flex-wrap items-center justify-center gap-4">
         <Link
           to={localizePath('/learn/articles')}
-          className="bg-primary-700 hover:bg-primary-600 inline-flex items-center gap-2 rounded-full px-8 py-3 font-medium text-white shadow-lg transition-colors"
+          className="bg-primary-700 hover:bg-primary-600 inline-flex min-h-12 items-center gap-2 rounded-full px-8 py-3 font-medium text-white shadow-lg transition-colors"
         >
           Learn More <ArrowRight size={16} />
         </Link>
         <Link
           to={localizePath('/quran')}
-          className="text-ink hover:bg-paper inline-flex items-center gap-2 rounded-full bg-white px-8 py-3 font-medium shadow-lg transition-colors"
+          className="text-ink hover:bg-paper inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-8 py-3 font-medium shadow-lg transition-colors"
         >
           Read the Qur&apos;an
         </Link>
@@ -102,6 +112,7 @@ function HeroSection() {
     </section>
   );
 }
+
 
 export default function HomePage() {
   const { t } = useTranslation();
