@@ -30,7 +30,7 @@ import type {
 } from '@/lib/content-schema';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { graph, organizationSchema, websiteSchema } from '@/lib/schema';
-import { formatDate } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 
 interface QuranBannerCopy {
   eyebrow: string;
@@ -50,112 +50,66 @@ interface AboutPreviewCopy {
 const HERO_PHRASES = ['Find Purpose and Inner Peace', 'Islam... the straight path'];
 
 function HeroSection() {
-  const [textIndex, setTextIndex] = useState(0);
+  const { localizePath } = useLocalizedPath();
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setTextIndex((prev) => (prev + 1) % HERO_PHRASES.length);
+    const fadeOutTimer = window.setTimeout(() => setVisible(false), 2700);
+    const swapTimer = window.setTimeout(() => {
+      setPhraseIndex(1);
+      setVisible(true);
     }, 3000);
-
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearTimeout(fadeOutTimer);
+      window.clearTimeout(swapTimer);
+    };
   }, []);
 
   return (
     <section
       key="hero"
-      className="relative flex h-[500px] items-center justify-center overflow-hidden bg-cover bg-center"
-      style={{
-        backgroundImage: 'url("/Masjid Nabawi - Gemini- cropped.png")',
-      }}
+      className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden px-6 py-20 md:min-h-[600px]"
     >
-      <div
-        style={{
-          textAlign: 'center',
-          animation: 'fadeIn 0.5s ease-in-out',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '48px',
-            fontWeight: 'bold',
-            color: '#1a3a3a',
-            marginBottom: '20px',
-            fontFamily: 'serif',
-          }}
-        >
-          The Straight Path
-        </h1>
+      <img
+        src="/hero-masjid-nabawi.jpg"
+        alt=""
+        aria-hidden="true"
+        width={1920}
+        height={1080}
+        fetchPriority="high"
+        loading="eager"
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+
+      <div className="relative z-10 text-center">
         <p
-          style={{
-            fontSize: '24px',
-            color: '#666',
-            minHeight: '35px',
-            fontFamily: 'serif',
-          }}
+          className={cn(
+            'font-serif text-4xl font-bold text-white drop-shadow-lg transition-opacity duration-300 md:text-6xl',
+            visible ? 'opacity-100' : 'opacity-0',
+          )}
         >
-          {HERO_PHRASES[textIndex]}
+          {HERO_PHRASES[phraseIndex]}
         </p>
       </div>
 
-      <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
+      <div className="relative z-10 mt-10 flex flex-wrap items-center justify-center gap-4">
+        <Link
+          to={localizePath('/learn/articles')}
+          className="bg-primary-700 hover:bg-primary-600 inline-flex min-h-12 items-center gap-2 rounded-full px-8 py-3 font-medium text-white shadow-lg transition-colors"
+        >
+          Explore Islam <ArrowRight size={16} />
+        </Link>
+        <Link
+          to={localizePath('/quran')}
+          className="text-ink hover:bg-paper inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-8 py-3 font-medium shadow-lg transition-colors"
+        >
+          Read the Qur&apos;an
+        </Link>
+      </div>
     </section>
-  );
-}
-
-function renderHeroButtons(localizePath: (path: string) => string) {
-  return (
-    <div
-      style={{
-        textAlign: 'center',
-        padding: '40px',
-        display: 'flex',
-        gap: '20px',
-        justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
-      }}
-    >
-      <Link
-        to={localizePath('/learn/articles')}
-        style={{
-          backgroundColor: '#2a5a5a',
-          color: 'white',
-          padding: '12px 30px',
-          border: 'none',
-          borderRadius: '25px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          textDecoration: 'none',
-          display: 'inline-block',
-        }}
-      >
-        Learn More →
-      </Link>
-      <Link
-        to={localizePath('/quran')}
-        style={{
-          backgroundColor: 'white',
-          color: '#333',
-          padding: '12px 30px',
-          border: '1px solid #ddd',
-          borderRadius: '25px',
-          fontSize: '16px',
-          cursor: 'pointer',
-          textDecoration: 'none',
-          display: 'inline-block',
-        }}
-      >
-        Read the Qur&apos;an
-      </Link>
-    </div>
   );
 }
 
@@ -208,12 +162,7 @@ export default function HomePage() {
   const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
 
   const renderers: Record<HomepageSectionId, () => ReactNode> = {
-    hero: () => (
-      <>
-        <HeroSection />
-        {renderHeroButtons(localizePath)}
-      </>
-    ),
+    hero: () => <HeroSection />,
     featured: () => renderFeatured(),
     learnRow: () => renderLearnRow(),
     quranBanner: () => renderQuranBanner(),
