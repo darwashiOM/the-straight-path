@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
-import type { ReactNode } from "react";
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -11,19 +11,15 @@ import {
   MessageSquare,
   Star,
   Users,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-import ArticleCover from "@/components/ArticleCover";
-import Container from "@/components/Container";
-import SeoHead from "@/components/SeoHead";
-import Skeleton from "@/components/Skeleton";
-import { useLocalizedPath } from "@/hooks/useLocalizedPath";
-import {
-  useArticle,
-  usePublishedArticles,
-  useSiteSetting,
-} from "@/lib/content";
+import ArticleCover from '@/components/ArticleCover';
+import Container from '@/components/Container';
+import SeoHead from '@/components/SeoHead';
+import Skeleton from '@/components/Skeleton';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useArticle, usePublishedArticles, useSiteSetting } from '@/lib/content';
 import type {
   FeaturedData,
   HomepageSection,
@@ -31,10 +27,10 @@ import type {
   HomepageSectionsData,
   QuickLinkIcon,
   QuickLinkItem,
-} from "@/lib/content-schema";
-import { readingTimeMinutes } from "@/lib/reading-time";
-import { graph, organizationSchema, websiteSchema } from "@/lib/schema";
-import { cn, formatDate } from "@/lib/utils";
+} from '@/lib/content-schema';
+import { readingTimeMinutes } from '@/lib/reading-time';
+import { graph, organizationSchema, websiteSchema } from '@/lib/schema';
+import { cn, formatDate } from '@/lib/utils';
 
 interface QuranBannerCopy {
   eyebrow: string;
@@ -79,14 +75,14 @@ function HeroSection() {
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="relative z-10 text-center">
-        <div className="inline-block" style={{ fontFamily: "Amiri, serif" }}>
+        <div className="inline-block" style={{ fontFamily: 'Amiri, serif' }}>
           <p className="text-5xl font-bold leading-tight text-white drop-shadow-lg md:text-7xl">
-            "Guide us to the straight path"
+            &ldquo;Guide us to the straight path&rdquo;
           </p>
           <p
             className={cn(
-              "mt-3 text-right text-base italic text-white/90 drop-shadow-md transition-opacity duration-700 md:text-lg",
-              showCitation ? "opacity-100" : "opacity-0",
+              'mt-3 text-right text-base italic text-white/90 drop-shadow-md transition-opacity duration-700 md:text-lg',
+              showCitation ? 'opacity-100' : 'opacity-0',
             )}
           >
             Quran 1:6
@@ -96,13 +92,13 @@ function HeroSection() {
 
       <div className="relative z-10 mt-10 flex flex-wrap items-center justify-center gap-4">
         <Link
-          to={localizePath("/learn/articles")}
+          to={localizePath('/learn/articles')}
           className="bg-primary-700 hover:bg-primary-600 inline-flex min-h-12 items-center gap-2 rounded-full px-8 py-3 font-medium text-white shadow-lg transition-colors"
         >
           Explore Islam <ArrowRight size={16} />
         </Link>
         <Link
-          to={localizePath("/quran")}
+          to={localizePath('/quran')}
           className="text-ink hover:bg-paper inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-8 py-3 font-medium shadow-lg transition-colors"
         >
           Read the Qur&apos;an
@@ -115,41 +111,35 @@ function HeroSection() {
 export default function HomePage() {
   const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
-  const dateLocale = "en-US";
-  const arrow = "→";
+  const dateLocale = 'en-US';
+  const arrow = '→';
 
-  const quranBanner = useSiteSetting<QuranBannerCopy>("quranBanner", locale);
-  const aboutPreview = useSiteSetting<AboutPreviewCopy>("aboutPreview", locale);
-  const quickLinks = useSiteSetting("quickLinks", locale);
-  const sectionsSetting = useSiteSetting("homepageSections", locale);
-  const featuredSetting = useSiteSetting("featured", locale);
+  const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
+  const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
+  const quickLinks = useSiteSetting('quickLinks', locale);
+  const sectionsSetting = useSiteSetting('homepageSections', locale);
+  const featuredSetting = useSiteSetting('featured', locale);
   const articlesQuery = usePublishedArticles(locale);
 
-  const sections = ((
-    sectionsSetting.data?.data as HomepageSectionsData | undefined
-  )?.sections ?? [
-    { id: "hero", visible: true, order: 0 },
-    { id: "featured", visible: true, order: 1 },
-    { id: "learnRow", visible: true, order: 2 },
-    { id: "quranBanner", visible: true, order: 3 },
-    { id: "quickLinks", visible: true, order: 4 },
-    { id: "aboutPreview", visible: true, order: 5 },
+  const sections = ((sectionsSetting.data?.data as HomepageSectionsData | undefined)?.sections ?? [
+    { id: 'hero', visible: true, order: 0 },
+    { id: 'featured', visible: true, order: 1 },
+    { id: 'learnRow', visible: true, order: 2 },
+    { id: 'quranBanner', visible: true, order: 3 },
+    { id: 'quickLinks', visible: true, order: 4 },
+    { id: 'aboutPreview', visible: true, order: 5 },
   ]) as HomepageSection[];
 
-  const featuredConfig = (featuredSetting.data?.data as
-    | FeaturedData
-    | undefined) ?? {
-    mode: "newest" as const,
+  const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
+    mode: 'newest' as const,
   };
 
   const manualFeatured = useArticle(
-    featuredConfig.mode === "manual" ? featuredConfig.articleSlug : undefined,
+    featuredConfig.mode === 'manual' ? featuredConfig.articleSlug : undefined,
     locale,
   );
 
-  const quickLinkItems = (
-    (quickLinks.data?.data?.items as QuickLinkItem[] | undefined) ?? []
-  )
+  const quickLinkItems = ((quickLinks.data?.data?.items as QuickLinkItem[] | undefined) ?? [])
     .filter((i) => i && i.visible !== false)
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
@@ -159,13 +149,12 @@ export default function HomePage() {
 
   const articles = (articlesQuery.data ?? []).slice(0, 3);
   const manualMatch =
-    featuredConfig.mode === "manual" &&
-    manualFeatured.data?.status === "published"
+    featuredConfig.mode === 'manual' && manualFeatured.data?.status === 'published'
       ? manualFeatured.data
       : undefined;
   const featured = manualMatch ?? articles[0];
 
-  const quranCtaUrl = quranCopy?.ctaUrl ?? "https://quran.com/";
+  const quranCtaUrl = quranCopy?.ctaUrl ?? 'https://quran.com/';
 
   const renderers: Record<HomepageSectionId, () => ReactNode> = {
     hero: () => <HeroSection />,
@@ -201,16 +190,14 @@ export default function HomePage() {
               </div>
               <div className="col-span-3 p-8 md:p-12">
                 <span className="text-accent-500 text-xs font-semibold uppercase tracking-wider">
-                  {t("home.featured.eyebrow")}
+                  {t('home.featured.eyebrow')}
                 </span>
                 <h2 className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 mt-3 font-serif text-3xl font-semibold md:text-4xl">
                   {featured.title}
                 </h2>
-                <p className="text-ink/70 dark:text-paper/70 mt-4">
-                  {featured.excerpt}
-                </p>
+                <p className="text-ink/70 dark:text-paper/70 mt-4">{featured.excerpt}</p>
                 <span className="text-primary-600 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold">
-                  {t("home.featured.readArticle")} <ArrowRight size={14} />
+                  {t('home.featured.readArticle')} <ArrowRight size={14} />
                 </span>
               </div>
             </Link>
@@ -239,21 +226,20 @@ export default function HomePage() {
           <div className="mb-10 flex items-end justify-between gap-4">
             <div>
               <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
-                <BookOpen size={14} className="mb-0.5 inline" />{" "}
-                {t("home.learnEyebrow")}
+                <BookOpen size={14} className="mb-0.5 inline" /> {t('home.learnEyebrow')}
               </p>
               <h2 className="text-primary-700 dark:text-accent-300 mt-2 font-serif text-3xl font-semibold md:text-4xl">
-                {t("home.sections.learn")}
+                {t('home.sections.learn')}
               </h2>
               <p className="text-ink/60 dark:text-paper/70 mt-3 max-w-xl text-sm">
-                {t("learn.description")}
+                {t('learn.description')}
               </p>
             </div>
             <Link
-              to={localizePath("/learn")}
+              to={localizePath('/learn')}
               className="text-primary-600 hover:text-primary-700 dark:text-accent-400 text-sm font-semibold"
             >
-              {t("home.sections.viewAll")} {arrow}
+              {t('home.sections.viewAll')} {arrow}
             </Link>
           </div>
 
@@ -266,9 +252,7 @@ export default function HomePage() {
           ) : (
             <div className="grid gap-6 md:grid-cols-3">
               {articles.map((a) => {
-                const topicLabel = a.topic
-                  ? (t(`learn.topics.${a.topic}`) as string)
-                  : undefined;
+                const topicLabel = a.topic ? (t(`learn.topics.${a.topic}`) as string) : undefined;
 
                 return (
                   <Link
@@ -292,9 +276,7 @@ export default function HomePage() {
                       <div className="text-ink/50 dark:text-paper/60 mt-5 flex items-center justify-between text-xs">
                         <span>{formatDate(a.publishedAt, dateLocale)}</span>
                         <span>
-                          {t("learn.readingTime", {
-                            minutes: readingTimeMinutes(a.body),
-                          })}
+                          {t('learn.readingTime', { minutes: readingTimeMinutes(a.body) })}
                         </span>
                       </div>
                     </div>
@@ -310,16 +292,13 @@ export default function HomePage() {
 
   function renderQuranBanner() {
     return (
-      <section
-        key="quranBanner"
-        className="bg-primary-700 text-paper dark:bg-primary-900 py-20"
-      >
+      <section key="quranBanner" className="bg-primary-700 text-paper dark:bg-primary-900 py-20">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {quranCopy ? (
               <>
                 <p className="text-accent-300 font-serif text-sm uppercase tracking-widest">
-                  {quranCopy.eyebrow ?? t("home.sections.quran")}
+                  {quranCopy.eyebrow ?? t('home.sections.quran')}
                 </p>
                 <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
                   {quranCopy.headline}
@@ -335,11 +314,7 @@ export default function HomePage() {
                 </a>
               </>
             ) : (
-              <Skeleton
-                variant="text-line"
-                lines={4}
-                className="mx-auto max-w-2xl"
-              />
+              <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
             )}
           </div>
         </Container>
@@ -362,7 +337,7 @@ export default function HomePage() {
                   icon={<Icon size={20} />}
                   title={item.labelEn}
                   desc={item.descEn}
-                  exploreLabel={t("home.quickLinks.explore")}
+                  exploreLabel={t('home.quickLinks.explore')}
                   arrow={arrow}
                 />
               );
@@ -375,10 +350,7 @@ export default function HomePage() {
 
   function renderAboutPreview() {
     return (
-      <section
-        key="aboutPreview"
-        className="bg-paper dark:bg-primary-900 py-20"
-      >
+      <section key="aboutPreview" className="bg-paper dark:bg-primary-900 py-20">
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {aboutCopy ? (
@@ -389,19 +361,13 @@ export default function HomePage() {
                 <h2 className="text-primary-700 dark:text-accent-300 mt-3 font-serif text-4xl font-semibold">
                   {aboutCopy.headline}
                 </h2>
-                <p className="text-ink/70 dark:text-paper/80 mt-6 text-lg">
-                  {aboutCopy.body}
-                </p>
-                <Link to={localizePath("/about")} className="btn-ghost mt-8">
+                <p className="text-ink/70 dark:text-paper/80 mt-6 text-lg">{aboutCopy.body}</p>
+                <Link to={localizePath('/about')} className="btn-ghost mt-8">
                   {aboutCopy.cta}
                 </Link>
               </>
             ) : (
-              <Skeleton
-                variant="text-line"
-                lines={4}
-                className="mx-auto max-w-2xl"
-              />
+              <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
             )}
           </div>
         </Container>
@@ -411,10 +377,7 @@ export default function HomePage() {
 
   return (
     <>
-      <SeoHead
-        alternatePath="/"
-        jsonLd={graph(websiteSchema(), organizationSchema())}
-      />
+      <SeoHead alternatePath="/" jsonLd={graph(websiteSchema(), organizationSchema())} />
       {orderedSections.map((s) => {
         const renderFn = renderers[s.id];
         return renderFn ? renderFn() : null;
@@ -449,10 +412,7 @@ function FeatureLink({
   arrow: string;
 }) {
   return (
-    <Link
-      to={to}
-      className="card group flex flex-col p-6 transition-all hover:-translate-y-0.5"
-    >
+    <Link to={to} className="card group flex flex-col p-6 transition-all hover:-translate-y-0.5">
       <div className="bg-primary-50 text-primary-700 dark:bg-primary-800 dark:text-accent-300 mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full">
         {icon}
       </div>
