@@ -72,7 +72,7 @@ function HeroSection() {
       className="relative flex min-h-[500px] flex-col items-center justify-center overflow-hidden px-6 py-20 md:min-h-[600px]"
     >
       <img
-        src="/hero-masjid-nabawi.png"
+        src="/hero-masjid-nabawi.jpg"
         alt=""
         aria-hidden="true"
         width={1920}
