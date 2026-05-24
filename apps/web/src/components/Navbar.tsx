@@ -9,7 +9,7 @@ import CommandK from './CommandK';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { cn } from '@/lib/utils';
 import { useSiteSetting } from '@/lib/content';
-import type { BrandData, BrandTranslations, NavItem, NavItemsData } from '@/lib/content-schema';
+import type { BrandTranslations, NavItem, NavItemsData } from '@/lib/content-schema';
 
 export default function Navbar() {
   const { t } = useTranslation();
@@ -20,7 +20,6 @@ export default function Navbar() {
   const navSetting = useSiteSetting<Record<string, string>>('navItems', locale);
 
   const siteName = brand.data?.value.siteName ?? t('site.name');
-  const logoUrl = ((brand.data?.data as BrandData | undefined)?.logoUrl ?? '').trim();
 
   // Navigation items come from Firestore; fall back to the defaults embedded
   // in the public loader if the doc is missing entirely. We filter hidden
@@ -39,25 +38,14 @@ export default function Navbar() {
     <header className="border-primary-500/10 bg-paper/80 dark:border-primary-700/30 dark:bg-primary-900/80 sticky top-0 z-40 border-b backdrop-blur-md">
       <Container>
         <div className="flex h-16 items-center justify-between gap-4">
-          <Link
-            to={localizePath('/')}
-            className="text-primary-700 dark:text-accent-300 flex items-center gap-2 font-serif text-xl font-semibold"
-          >
-            {logoUrl ? (
-              <img
-                src={logoUrl}
-                alt={siteName}
-                className="h-8 w-auto object-contain"
-                loading="eager"
-                decoding="async"
-              />
-            ) : (
-              <span
-                aria-hidden="true"
-                className="bg-accent-400 inline-block h-2 w-2 rounded-full"
-              />
-            )}
-            {siteName}
+          <Link to={localizePath('/')} className="flex items-center" aria-label={siteName}>
+            <img
+              src="/logo.png"
+              alt={siteName}
+              className="h-10 w-auto object-contain"
+              loading="eager"
+              decoding="async"
+            />
           </Link>
 
           <nav className="hidden items-center gap-6 xl:flex">
