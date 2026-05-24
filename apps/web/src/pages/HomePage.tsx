@@ -100,7 +100,7 @@ function HeroSection() {
           to={localizePath('/learn/articles')}
           className="bg-primary-700 hover:bg-primary-600 inline-flex min-h-12 items-center gap-2 rounded-full px-8 py-3 font-medium text-white shadow-lg transition-colors"
         >
-          Learn More <ArrowRight size={16} />
+          Explore Islam <ArrowRight size={16} />
         </Link>
         <Link
           to={localizePath('/quran')}
