@@ -47,23 +47,13 @@ interface AboutPreviewCopy {
   cta: string;
 }
 
-const HERO_PHRASES = ['Find Purpose and Inner Peace', 'Islam... the straight path'];
-
 function HeroSection() {
   const { localizePath } = useLocalizedPath();
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const [showCitation, setShowCitation] = useState(false);
 
   useEffect(() => {
-    const fadeOutTimer = window.setTimeout(() => setVisible(false), 2700);
-    const swapTimer = window.setTimeout(() => {
-      setPhraseIndex(1);
-      setVisible(true);
-    }, 3000);
-    return () => {
-      window.clearTimeout(fadeOutTimer);
-      window.clearTimeout(swapTimer);
-    };
+    const timer = window.setTimeout(() => setShowCitation(true), 1000);
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
@@ -85,14 +75,19 @@ function HeroSection() {
       <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
 
       <div className="relative z-10 text-center">
-        <p
-          className={cn(
-            'font-serif text-4xl font-bold text-white drop-shadow-lg transition-opacity duration-300 md:text-6xl',
-            visible ? 'opacity-100' : 'opacity-0',
-          )}
-        >
-          {HERO_PHRASES[phraseIndex]}
-        </p>
+        <div className="inline-block" style={{ fontFamily: 'Amiri, serif' }}>
+          <p className="text-5xl font-bold leading-tight text-white drop-shadow-lg md:text-7xl">
+            &ldquo;Guide us to the straight path&rdquo;
+          </p>
+          <p
+            className={cn(
+              'mt-3 text-right text-base italic text-white/90 drop-shadow-md transition-opacity duration-700 md:text-lg',
+              showCitation ? 'opacity-100' : 'opacity-0',
+            )}
+          >
+            Quran 1:6
+          </p>
+        </div>
       </div>
 
       <div className="relative z-10 mt-10 flex flex-wrap items-center justify-center gap-4">
