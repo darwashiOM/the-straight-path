@@ -113,7 +113,6 @@ function HeroSection() {
   );
 }
 
-
 export default function HomePage() {
   const { t } = useTranslation();
   const { localizePath, locale } = useLocalizedPath();
