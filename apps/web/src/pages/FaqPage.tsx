@@ -80,11 +80,9 @@ export default function FaqPage() {
                   />
                 </button>
                 {open === i ? (
-                                  <p
-                  className="animate-fade-in text-ink/70 dark:text-paper/70 pb-5 pe-10 whitespace-pre-line"
-                >
-                  {f.answer}
-                </p>
+                  <p className="animate-fade-in text-ink/70 dark:text-paper/70 whitespace-pre-line pb-5 pe-10">
+                    {f.answer}
+                  </p>
                 ) : null}
               </li>
             ))}
