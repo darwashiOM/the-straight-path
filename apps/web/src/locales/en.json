@@ -257,7 +257,29 @@
     },
     "send": "Send message",
     "sending": "Sending…",
-    "error": "Something went wrong. Please try again in a moment."
+    "error": "Something went wrong. Please try again in a moment.",
+    "support": {
+      "toggle": "I'm a new Muslim and would like support",
+      "intro": "Tell us what would help. Anything you share here is seen only by our small team.",
+      "whatLabel": "What would help?",
+      "options": {
+        "mentor": "A mentor to talk to",
+        "quran": "A copy of the Qur'an",
+        "hijab": "A hijab"
+      },
+      "details": "Details",
+      "detailsHint": "For example: a hijab style or colour you prefer, the language you'd like a Qur'an in, or what you're hoping for in a mentor.",
+      "phone": "Phone number",
+      "phoneHint": "Optional. Useful if we need to reach you about a delivery.",
+      "addressHeading": "Shipping address",
+      "addressHint": "We currently ship within the United States only.",
+      "street": "Street address",
+      "city": "City",
+      "state": "State",
+      "zip": "ZIP code",
+      "chooseOne": "Please choose at least one option.",
+      "successBody": "We've received your request and will be in touch soon, inshā'Allāh."
+    }
   },
   "notFound": {
     "seoTitle": "Page Not Found",

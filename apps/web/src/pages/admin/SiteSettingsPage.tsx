@@ -36,6 +36,8 @@ import type {
   SeoData,
   SeoRouteOverride,
   SiteSettingId,
+  SupportServiceKey,
+  SupportServicesData,
 } from '@/lib/content-schema';
 import {
   DEFAULT_BRAND_SETTING,
@@ -1797,7 +1799,21 @@ interface ContactIntroFormLabels {
 interface ContactIntroCardState {
   en: ContactIntroTranslations;
   labelsEn: ContactIntroFormLabels;
+  /** On/off switches for the new-Muslim support section of the form. */
+  services: SupportServicesData;
 }
+
+const DEFAULT_SERVICES: SupportServicesData = { mentor: false, quran: false, hijab: false };
+
+const SERVICE_ROWS: Array<{ k: SupportServiceKey; l: string; hint: string }> = [
+  { k: 'mentor', l: 'Mentor', hint: 'Visitor can ask to be paired with a mentor.' },
+  {
+    k: 'quran',
+    l: "Qur'an",
+    hint: 'Visitor can request a printed Qur’an (asks for a US address).',
+  },
+  { k: 'hijab', l: 'Hijab', hint: 'Visitor can request a hijab (asks for a US address).' },
+];
 
 const EMPTY_CONTACT_LABELS: ContactIntroFormLabels = {
   name: '',
@@ -1821,6 +1837,7 @@ function ContactIntroCard() {
   const [state, setState] = useState<ContactIntroCardState>({
     en: { eyebrow: '', title: '', body: '' },
     labelsEn: EMPTY_CONTACT_LABELS,
+    services: DEFAULT_SERVICES,
   });
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
@@ -1835,9 +1852,12 @@ function ContactIntroCard() {
     const docLabels = (doc?.data?.formLabels ?? {}) as Record<'en', ContactIntroFormLabels>;
     const defLabels = (defaults?.data?.formLabels ?? {}) as Record<'en', ContactIntroFormLabels>;
     const baseEn: ContactIntroTranslations = { title: '', body: '' };
+    const defServices = (defaults?.data?.supportServices ?? {}) as Partial<SupportServicesData>;
+    const docServices = (doc?.data?.supportServices ?? {}) as Partial<SupportServicesData>;
     setState({
       en: { ...baseEn, ...enDef, ...enDoc },
       labelsEn: { ...EMPTY_CONTACT_LABELS, ...defLabels.en, ...docLabels.en },
+      services: { ...DEFAULT_SERVICES, ...defServices, ...docServices },
     });
   }, [query.data, query.isLoading, defaults]);
 
@@ -1846,6 +1866,9 @@ function ContactIntroCard() {
   }
   function patchLabel(key: keyof ContactIntroFormLabels, value: string) {
     setState((s) => ({ ...s, labelsEn: { ...s.labelsEn, [key]: value } }));
+  }
+  function patchService(key: SupportServiceKey, value: boolean) {
+    setState((s) => ({ ...s, services: { ...s.services, [key]: value } }));
   }
 
   function buildContactPayload() {
@@ -1857,6 +1880,7 @@ function ContactIntroCard() {
         formLabels: {
           en: state.labelsEn,
         },
+        supportServices: state.services,
       },
     };
   }
@@ -1911,8 +1935,10 @@ function ContactIntroCard() {
           <ContactIntroPane
             copy={state.en}
             labels={state.labelsEn}
+            services={state.services}
             onCopy={patchCopy}
             onLabel={patchLabel}
+            onService={patchService}
           />
 
           {error && (
@@ -1946,13 +1972,17 @@ function ContactIntroCard() {
 function ContactIntroPane({
   copy,
   labels,
+  services,
   onCopy,
   onLabel,
+  onService,
 }: {
   copy: ContactIntroTranslations;
   labels: ContactIntroFormLabels;
+  services: SupportServicesData;
   onCopy: (k: keyof ContactIntroTranslations, v: string) => void;
   onLabel: (k: keyof ContactIntroFormLabels, v: string) => void;
+  onService: (k: SupportServiceKey, v: boolean) => void;
 }) {
   const labelFields: Array<{ k: keyof ContactIntroFormLabels; l: string }> = [
     { k: 'name', l: 'Name field label' },
@@ -2014,6 +2044,32 @@ function ContactIntroPane({
                   lang="en"
                   className={inputCls}
                 />
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="border-primary-100 mt-4 border-t pt-3">
+          <div className="text-ink/60 mb-1 text-xs font-semibold uppercase">
+            New-Muslim support requests
+          </div>
+          <p className="text-ink/60 mb-3 text-xs">
+            Switched-on services appear under an &ldquo;I&rsquo;m a new Muslim and would like
+            support&rdquo; checkbox on the form. Switch a service off to hide it; when all are off
+            the whole section is hidden.
+          </p>
+          <div className="space-y-2">
+            {SERVICE_ROWS.map((row) => (
+              <label key={row.k} className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={services[row.k]}
+                  onChange={(e) => onService(row.k, e.target.checked)}
+                  className="accent-primary-500 mt-0.5 h-4 w-4 cursor-pointer"
+                />
+                <span className="text-sm">
+                  <span className="text-ink/80 font-medium">{row.l}</span>
+                  <span className="text-ink/50 block text-xs">{row.hint}</span>
+                </span>
               </label>
             ))}
           </div>

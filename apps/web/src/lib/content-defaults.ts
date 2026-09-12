@@ -501,6 +501,13 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
           errorBody: 'Something went wrong. Please try again in a moment.',
         },
       },
+      // New-Muslim support services offered from the contact form. All off by
+      // default; switch them on from Admin → Site Settings → Contact.
+      supportServices: {
+        mentor: false,
+        quran: false,
+        hijab: false,
+      },
     },
   },
   {

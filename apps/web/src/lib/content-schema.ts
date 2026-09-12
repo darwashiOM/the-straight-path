@@ -221,6 +221,19 @@ export interface ContactFormLabels {
   errorBody: string;
 }
 
+// ---------- Contact form: new-Muslim support services ----------
+
+/** Services a visitor can request from the contact form. */
+export type SupportServiceKey = 'mentor' | 'quran' | 'hijab';
+
+/**
+ * Per-service on/off switches, stored in `contactIntro.data.supportServices`
+ * and edited from the admin Site Settings page. A service that is `false`
+ * is hidden from the public form entirely; when all are off, the whole
+ * "I'm a new Muslim" section disappears.
+ */
+export type SupportServicesData = Record<SupportServiceKey, boolean>;
+
 /**
  * Shape of the `brand` siteSetting's translations — site identity shown in
  * the navbar, footer, and Open-Graph defaults. `data.logoUrl` (if set) turns

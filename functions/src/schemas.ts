@@ -103,6 +103,29 @@ export interface Faq {
  * Writes are constrained by `firestore.rules`; Cloud Functions triggers
  * notify the admin team on creation (see `onContactSubmission`).
  */
+export type SupportServiceKey = 'mentor' | 'quran' | 'hijab';
+
+/** US-only shipping address collected when a Qur'an or hijab is requested. */
+export interface ShippingAddress {
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
+/** Optional new-Muslim support request attached to a contact submission. */
+export interface SupportRequest {
+  requests: SupportServiceKey[];
+  details?: string;
+  phone?: string;
+  address?: ShippingAddress;
+}
+
+/** Outcome of one notification channel, written by `onContactSubmission`. */
+export type NotificationOutcome =
+  | { ok: true; at: FirestoreTimestamp; id: string; url?: string }
+  | { ok: false; at: FirestoreTimestamp; error: string };
+
 export interface ContactSubmission {
   id: string;
   name: string;
@@ -110,6 +133,9 @@ export interface ContactSubmission {
   subject?: string;
   message: string;
   locale?: LocaleCode;
+  /** `question` (plain message) or `support` (new-Muslim support request). */
+  type?: 'question' | 'support';
+  support?: SupportRequest;
   /** IP, user-agent, etc. — populated server-side only; never trust client. */
   meta?: {
     userAgent?: string;
@@ -117,6 +143,11 @@ export interface ContactSubmission {
     referrer?: string;
   };
   status: 'new' | 'read' | 'replied' | 'archived' | 'spam';
+  /** Per-channel delivery results, written server-side after creation. */
+  notifications?: {
+    notion?: NotificationOutcome;
+    email?: NotificationOutcome;
+  };
   createdAt: FirestoreTimestamp;
   repliedAt?: FirestoreTimestamp;
 }

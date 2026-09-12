@@ -60,15 +60,45 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Write-only public, admin read
+    // Write-only public, admin read.
+    // The optional `support` block carries a new-Muslim support request
+    // (mentor / Qur'an / hijab) with an optional US shipping address.
     match /contact-submissions/{id} {
-      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message'])
+      function isShippingAddress(a) {
+        return a is map
+          && a.keys().hasOnly(['street', 'city', 'state', 'zip'])
+          && a.keys().hasAll(['street', 'city', 'state', 'zip'])
+          && a.street is string && a.street.size() <= 200
+          && a.city is string && a.city.size() <= 100
+          && a.state is string && a.state.size() <= 40
+          && a.zip is string && a.zip.size() <= 20;
+      }
+      function isSupportRequest(s) {
+        return s is map
+          && s.keys().hasOnly(['requests', 'details', 'phone', 'address'])
+          && s.keys().hasAll(['requests'])
+          && s.requests is list
+          && s.requests.size() >= 1
+          && s.requests.size() <= 3
+          && s.requests.hasOnly(['mentor', 'quran', 'hijab'])
+          && (!('details' in s) || (s.details is string && s.details.size() <= 2000))
+          && (!('phone' in s) || (s.phone is string && s.phone.size() <= 40))
+          && (!('address' in s) || isShippingAddress(s.address));
+      }
+      allow create: if request.resource.data.keys().hasOnly([
+          'name', 'email', 'message', 'createdAt', 'source', 'locale', 'type', 'support'
+        ])
+        && request.resource.data.keys().hasAll(['name', 'email', 'message'])
         && request.resource.data.name is string
         && request.resource.data.email is string
         && request.resource.data.message is string
         && request.resource.data.message.size() <= 5000
         && request.resource.data.name.size() <= 120
-        && request.resource.data.email.size() <= 200;
+        && request.resource.data.email.size() <= 200
+        && (!('type' in request.resource.data)
+            || request.resource.data.type in ['question', 'support'])
+        && (!('support' in request.resource.data)
+            || isSupportRequest(request.resource.data.support));
       allow read, update, delete: if isAdmin();
     }
 
