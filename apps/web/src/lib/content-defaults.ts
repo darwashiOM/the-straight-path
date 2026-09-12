@@ -485,7 +485,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       en: {
         eyebrow: '',
         title: 'Contact',
-        body: 'Have a question about Islam? A correction? A thought? We read every message.',
+        body: 'Have a Question? Need Support? We read every message.',
       },
     },
     data: {
