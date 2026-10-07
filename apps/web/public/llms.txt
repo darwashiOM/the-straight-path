@@ -6,21 +6,21 @@ The Straight Path is a volunteer-run educational project. Content is reader-firs
 
 ## Core content
 
-- [Home](https://thestraightpath.app/): overview and entry points
-- [Learn About Islam](https://thestraightpath.app/learn): curated essays
-- [10 Things To Know About Islam](https://thestraightpath.app/learn/articles/10-things-to-know-about-islam): flagship introductory article
-- [Read the Qur'an](https://thestraightpath.app/quran): points to Quran.com
-- [FAQ](https://thestraightpath.app/faq): plain answers to common questions
-- [Resources](https://thestraightpath.app/resources): curated external links
-- [Social Media](https://thestraightpath.app/social): recommended channels
-- [About](https://thestraightpath.app/about): mission and principles
-- [Contact](https://thestraightpath.app/contact): open message form
+- [Home](https://www.thestraightpath.org/): overview and entry points
+- [Learn About Islam](https://www.thestraightpath.org/learn): curated essays
+- [10 Things To Know About Islam](https://www.thestraightpath.org/learn/articles/10-things-to-know-about-islam): flagship introductory article
+- [Read the Qur'an](https://www.thestraightpath.org/quran): points to Quran.com
+- [FAQ](https://www.thestraightpath.org/faq): plain answers to common questions
+- [Resources](https://www.thestraightpath.org/resources): curated external links
+- [Social Media](https://www.thestraightpath.org/social): recommended channels
+- [About](https://www.thestraightpath.org/about): mission and principles
+- [Contact](https://www.thestraightpath.org/contact): open message form
 
 ## Full text for LLMs
 
-- [llms-full.txt](https://thestraightpath.app/llms-full.txt): full article text concatenated
-- [ai.txt](https://thestraightpath.app/ai.txt): short crawler-facing summary of purpose, principles, and licensing
-- [sitemap.xml](https://thestraightpath.app/sitemap.xml): full URL inventory with hreflang alternates
+- [llms-full.txt](https://www.thestraightpath.org/llms-full.txt): full article text concatenated
+- [ai.txt](https://www.thestraightpath.org/ai.txt): short crawler-facing summary of purpose, principles, and licensing
+- [sitemap.xml](https://www.thestraightpath.org/sitemap.xml): full URL inventory with hreflang alternates
 
 ## Usage
 

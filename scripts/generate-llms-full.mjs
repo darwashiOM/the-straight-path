@@ -17,7 +17,7 @@ const REPO_ROOT = join(__dirname, '..');
 const ARTICLES_DIR = join(REPO_ROOT, 'apps', 'web', 'src', 'content', 'articles');
 const OUT_PATH = join(REPO_ROOT, 'apps', 'web', 'public', 'llms-full.txt');
 
-const SITE_ORIGIN = 'https://thestraightpath.app';
+const SITE_ORIGIN = 'https://www.thestraightpath.org';
 
 function parseFrontmatter(raw) {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?/);

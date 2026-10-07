@@ -24,7 +24,7 @@ export interface RouteMeta {
   noindex?: boolean;
 }
 
-export const SITE_ORIGIN = 'https://thestraightpath.app';
+export const SITE_ORIGIN = 'https://www.thestraightpath.org';
 
 /** Canonical URL for a given route. The optional second arg is ignored
  *  (kept for back-compat with callers that used to pass a locale). */
@@ -94,7 +94,7 @@ export const routes: RouteMeta[] = [
     path: '/mobile-billboards',
     title: 'Mobile Billboards',
     description:
-      'Dawah bumper stickers with verses of the Qur’an and sayings of the Prophet. Download print-ready 11 × 3 in designs, or ask us to mail you a few.',
+      'Free Dawah bumper stickers with verses of the Qur’an and sayings of the Prophet. Download print-ready 11 × 3 in designs, or we’ll mail you some free.',
     priority: 0.6,
     changefreq: 'monthly',
   },

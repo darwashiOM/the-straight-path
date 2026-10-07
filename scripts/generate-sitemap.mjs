@@ -19,7 +19,7 @@ const ROUTES_TS = join(REPO_ROOT, 'apps', 'web', 'src', 'lib', 'routes.ts');
 const ARTICLES_DIR = join(REPO_ROOT, 'apps', 'web', 'src', 'content', 'articles');
 const OUT_PATH = join(REPO_ROOT, 'apps', 'web', 'public', 'sitemap.xml');
 
-const SITE_ORIGIN = 'https://thestraightpath.app';
+const SITE_ORIGIN = 'https://www.thestraightpath.org';
 
 function parseRoutes() {
   const src = readFileSync(ROUTES_TS, 'utf8');
