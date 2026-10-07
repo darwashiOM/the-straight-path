@@ -38,7 +38,7 @@ export const TYPE_LABELS: Record<SubmissionType, string> = {
   support: 'Support',
 };
 
-function str(value: unknown, max: number): string {
+export function str(value: unknown, max: number): string {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
 }
 
@@ -47,7 +47,7 @@ function optionalStr(value: unknown, max: number): string | undefined {
   return s.length > 0 ? s : undefined;
 }
 
-function parseAddress(value: unknown): ShippingAddress | undefined {
+export function parseAddress(value: unknown): ShippingAddress | undefined {
   if (!value || typeof value !== 'object') return undefined;
   const a = value as Record<string, unknown>;
   const address: ShippingAddress = {
@@ -76,7 +76,7 @@ function parseSupport(value: unknown): SupportRequest | undefined {
   };
 }
 
-function toDate(value: unknown): Date {
+export function toDate(value: unknown): Date {
   if (value && typeof value === 'object' && 'toDate' in value) {
     const d = (value as { toDate: () => Date }).toDate();
     if (d instanceof Date && !Number.isNaN(d.getTime())) return d;

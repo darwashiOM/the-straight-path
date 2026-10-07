@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import {
   ArrowRight,
   BookOpen,
+  Car,
   HelpCircle,
   Link2,
   Mail,
@@ -326,7 +327,12 @@ export default function HomePage() {
     return (
       <section key="quickLinks" className="py-20">
         <Container>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div
+            className={cn(
+              'grid gap-6 md:grid-cols-2',
+              quickLinkItems.length >= 5 ? 'lg:grid-cols-3 xl:grid-cols-5' : 'lg:grid-cols-4',
+            )}
+          >
             {quickLinkItems.map((item, idx) => {
               const Icon = QUICK_LINK_ICON_MAP[item.icon] ?? Users;
 
@@ -337,6 +343,7 @@ export default function HomePage() {
                   icon={<Icon size={20} />}
                   title={item.labelEn}
                   desc={item.descEn}
+                  image={item.image}
                   exploreLabel={t('home.quickLinks.explore')}
                   arrow={arrow}
                 />
@@ -394,6 +401,7 @@ const QUICK_LINK_ICON_MAP: Record<QuickLinkIcon, LucideIcon> = {
   book: BookOpen,
   star: Star,
   mail: Mail,
+  car: Car,
 };
 
 function FeatureLink({
@@ -401,6 +409,7 @@ function FeatureLink({
   icon,
   title,
   desc,
+  image,
   exploreLabel,
   arrow,
 }: {
@@ -408,6 +417,7 @@ function FeatureLink({
   icon: ReactNode;
   title: string;
   desc: string;
+  image?: string;
   exploreLabel: string;
   arrow: string;
 }) {
@@ -420,6 +430,15 @@ function FeatureLink({
         {title}
       </h3>
       <p className="text-ink/70 dark:text-paper/70 mt-2 text-sm">{desc}</p>
+      {image ? (
+        <img
+          src={image}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="mt-4 h-auto w-full rounded-md shadow-sm"
+        />
+      ) : null}
       <span className="text-primary-600 dark:text-accent-400 mt-4 text-xs font-semibold">
         {exploreLabel} {arrow}
       </span>

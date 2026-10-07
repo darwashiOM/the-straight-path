@@ -258,6 +258,13 @@ export const DEFAULT_NAV_ITEMS: NavItem[] = [
     order: 4,
   },
   { to: '/about', key: 'about', labelEn: 'About', visible: true, order: 5 },
+  {
+    to: '/mobile-billboards',
+    key: 'mobileBillboards',
+    labelEn: 'Mobile Billboards',
+    visible: true,
+    order: 6,
+  },
 ];
 
 /**
@@ -298,6 +305,15 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     labelEn: 'Get in touch',
     descEn: 'Have a question or want to say hello? Send us a note.',
   },
+  {
+    to: '/mobile-billboards',
+    icon: 'car',
+    visible: true,
+    order: 4,
+    labelEn: 'Mobile Billboards',
+    descEn: 'Dawah bumper stickers.',
+    image: '/mobile-billboards/01-god-forgave-adam.png',
+  },
 ];
 
 /**
@@ -324,6 +340,7 @@ export const DEFAULT_FOOTER_NAV: FooterNavColumn[] = [
       { to: '/resources', labelEn: 'Resources' },
       { to: '/faq', labelEn: 'FAQ' },
       { to: '/social', labelEn: 'On Social Media' },
+      { to: '/mobile-billboards', labelEn: 'Mobile Billboards' },
     ],
   },
   {
@@ -476,6 +493,16 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         title: 'Islam Explained on Social Media',
         description:
           'A small, curated list of channels that explain Islam with clarity and good character.',
+      },
+    },
+  },
+  {
+    id: 'billboardsHeader',
+    translations: {
+      en: {
+        title: 'Mobile Billboards',
+        description:
+          'Dawah bumper stickers, 11 × 3 inches. Download a design to print yourself, or ask us to mail you a few.',
       },
     },
   },

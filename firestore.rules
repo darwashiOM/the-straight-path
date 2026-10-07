@@ -7,6 +7,17 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // US-only shipping address (contact support requests, billboard orders).
+    function isShippingAddress(a) {
+      return a is map
+        && a.keys().hasOnly(['street', 'city', 'state', 'zip'])
+        && a.keys().hasAll(['street', 'city', 'state', 'zip'])
+        && a.street is string && a.street.size() <= 200
+        && a.city is string && a.city.size() <= 100
+        && a.state is string && a.state.size() <= 40
+        && a.zip is string && a.zip.size() <= 20;
+    }
+
     // Public read, admin write
     match /articles/{id} {
       allow read: if true;
@@ -64,15 +75,6 @@ service cloud.firestore {
     // The optional `support` block carries a new-Muslim support request
     // (mentor / Qur'an / hijab) with an optional US shipping address.
     match /contact-submissions/{id} {
-      function isShippingAddress(a) {
-        return a is map
-          && a.keys().hasOnly(['street', 'city', 'state', 'zip'])
-          && a.keys().hasAll(['street', 'city', 'state', 'zip'])
-          && a.street is string && a.street.size() <= 200
-          && a.city is string && a.city.size() <= 100
-          && a.state is string && a.state.size() <= 40
-          && a.zip is string && a.zip.size() <= 20;
-      }
       function isSupportRequest(s) {
         return s is map
           && s.keys().hasOnly(['requests', 'details', 'phone', 'address'])
@@ -99,6 +101,28 @@ service cloud.firestore {
             || request.resource.data.type in ['question', 'support'])
         && (!('support' in request.resource.data)
             || isSupportRequest(request.resource.data.support));
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Mobile-billboard sticker orders — write-only public, admin read.
+    // `items` maps a billboard id to a quantity. Rules can't add the
+    // quantities up, so the 7-sticker total and the ids are re-checked by
+    // the `onBillboardOrder` function, which rejects anything else.
+    match /billboard-orders/{id} {
+      allow create: if request.resource.data.keys().hasOnly([
+          'name', 'email', 'address', 'items', 'createdAt', 'source', 'locale'
+        ])
+        && request.resource.data.keys().hasAll(['name', 'email', 'address', 'items'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 200
+        && isShippingAddress(request.resource.data.address)
+        && request.resource.data.items is map
+        && request.resource.data.items.size() >= 1
+        && request.resource.data.items.size() <= 7
+        && request.resource.data.items.values().hasOnly([1, 2, 3, 4, 5, 6, 7]);
       allow read, update, delete: if isAdmin();
     }
 

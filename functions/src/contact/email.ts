@@ -7,6 +7,7 @@
  */
 import { Resend } from 'resend';
 
+import { escapeHtml } from '../shared/html';
 import {
   type ContactSubmissionInput,
   formatAddress,
@@ -30,14 +31,6 @@ export interface EmailResult {
 export function buildSubject(s: ContactSubmissionInput): string {
   const kind = s.type === 'support' ? 'Support request' : 'Message';
   return `${CONTACT_SUBJECT_PREFIX} ${kind} from ${s.name}`;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
 }
 
 interface Line {

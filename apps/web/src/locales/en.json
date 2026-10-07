@@ -12,6 +12,7 @@
     "resources": "Resources",
     "faq": "Ask Questions",
     "social": "On Social Media",
+    "mobileBillboards": "Mobile Billboards",
     "about": "About",
     "contact": "Contact",
     "privacy": "Privacy",
@@ -279,6 +280,54 @@
       "zip": "ZIP code",
       "chooseOne": "Please choose at least one option.",
       "successBody": "We've received your request and will be in touch soon, inshā'Allāh."
+    }
+  },
+  "billboardsPage": {
+    "title": "Mobile Billboards",
+    "description": "Dawah bumper stickers, 11 × 3 inches. Download a design to print yourself, or ask us to mail you a few.",
+    "how": {
+      "printTitle": "Print your own",
+      "printBody": "The PDF is print-ready at 11 × 3 in. Take it to a print shop or any online sticker printer. The PNG is for phones and social media.",
+      "mailTitle": "Have us mail them",
+      "mailBody": "Tap “Add to order” under the designs you want, up to {{max}} stickers in total, then add your address at the bottom of the page. US addresses only for now."
+    },
+    "number": "No. {{id}}",
+    "downloadPdf": "PDF",
+    "downloadPng": "PNG",
+    "downloadPdfLabel": "Download {{title}} as a print-ready PDF",
+    "downloadPngLabel": "Download {{title}} as a PNG image",
+    "addToOrder": "Add to order",
+    "quantityLabel": "Quantity of {{title}}",
+    "decrease": "One fewer {{title}}",
+    "increase": "One more {{title}}",
+    "remove": "Remove {{title}}",
+    "bar": {
+      "selected": "{{count}} of {{max}} stickers selected",
+      "limit": "That’s the limit for one order.",
+      "continue": "Continue to delivery"
+    },
+    "order": {
+      "title": "Have us mail them to you",
+      "intro": "Choose up to {{max}} stickers in total from the designs above and we’ll mail them to you. We currently ship within the United States only.",
+      "summary": "Your stickers",
+      "empty": "Nothing selected yet. Use “Add to order” under the designs above.",
+      "total": "Total: {{count}} of {{max}}",
+      "name": "Name",
+      "email": "Email",
+      "addressHeading": "Shipping address",
+      "street": "Street address",
+      "streetHint": "Include an apartment or unit number if you have one.",
+      "city": "City",
+      "state": "State",
+      "zip": "ZIP code",
+      "submit": "Place order",
+      "submitting": "Sending…",
+      "chooseOne": "Please choose at least one sticker above.",
+      "required": "Please fill in your name and full address.",
+      "error": "Something went wrong. Please try again in a moment.",
+      "successTitle": "Thank you — your order has been received.",
+      "successBody": "We’ll mail your stickers soon, inshā’Allāh.",
+      "orderAgain": "Place another order"
     }
   },
   "notFound": {

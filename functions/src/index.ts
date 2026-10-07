@@ -6,6 +6,9 @@ import { logger } from 'firebase-functions/v2';
 import { defineSecret, defineString } from 'firebase-functions/params';
 import { FieldValue } from 'firebase-admin/firestore';
 
+import { sendOrderEmail } from './billboards/email';
+import { createOrderPage } from './billboards/notion';
+import { parseOrder } from './billboards/order';
 import { sendContactEmail } from './contact/email';
 import { createNotionPage } from './contact/notion';
 import { parseSubmission } from './contact/types';
@@ -172,6 +175,126 @@ export const onContactSubmission = onDocumentCreated(
       await snap.ref.update({ status: 'new', notifications });
     } catch (err) {
       logger.error('Failed to stamp submission', { id: submission.id, error: errorMessage(err) });
+    }
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Mobile-billboard orders
+// ---------------------------------------------------------------------------
+
+const BILLBOARD_ORDERS_NOTION_DATABASE_ID = defineString('BILLBOARD_ORDERS_NOTION_DATABASE_ID', {
+  description: 'Notion "Mobile Billboard Orders" database that receives one row per order.',
+  default: '',
+});
+const BILLBOARD_ORDERS_NOTION_ASSIGNEE_ID = defineString('BILLBOARD_ORDERS_NOTION_ASSIGNEE_ID', {
+  description: 'Optional Notion user id to put in "Assigned To" on each new order.',
+  default: '',
+});
+
+/**
+ * Triggered when a `billboard-orders/{id}` document is created by the
+ * /mobile-billboards page.
+ *
+ * Re-checks the order (known billboard ids, at most 7 stickers in total —
+ * the security rules can't add quantities up), then fans it out like the
+ * contact form: a Notion row (the delivery queue) and an email to the
+ * contact inbox. A rejected order gets `status: 'rejected'` and no
+ * notifications. Uses the same Notion integration and Resend key as the
+ * contact form.
+ */
+export const onBillboardOrder = onDocumentCreated(
+  {
+    document: 'billboard-orders/{id}',
+    secrets: [RESEND_API_KEY, NOTION_API_KEY],
+    timeoutSeconds: 60,
+  },
+  async (event) => {
+    const snap = event.data;
+    if (!snap) return;
+
+    const parsed = parseOrder(event.params.id, snap.data());
+    if (!parsed.ok) {
+      logger.warn('Billboard order rejected', { id: event.params.id, reason: parsed.reason });
+      try {
+        await snap.ref.update({ status: 'rejected', rejectedReason: parsed.reason });
+      } catch (err) {
+        logger.error('Failed to stamp rejected order', {
+          id: event.params.id,
+          error: errorMessage(err),
+        });
+      }
+      return;
+    }
+
+    const order = parsed.order;
+    logger.info('New billboard order', { id: order.id, total: order.total });
+
+    const notifications: { notion?: Outcome & { mapped?: boolean }; email?: Outcome } = {};
+    let notionUrl: string | undefined;
+
+    // 1. Notion — first, so the email can link to the row.
+    const notionToken = NOTION_API_KEY.value();
+    const notionDb = BILLBOARD_ORDERS_NOTION_DATABASE_ID.value();
+    if (notionToken && notionDb) {
+      try {
+        const page = await createOrderPage(
+          {
+            token: notionToken,
+            databaseId: notionDb,
+            assigneeId: BILLBOARD_ORDERS_NOTION_ASSIGNEE_ID.value(),
+          },
+          order,
+        );
+        notionUrl = page.url || undefined;
+        notifications.notion = { ok: true, at: FieldValue.serverTimestamp(), ...page };
+        logger.info('Notion order row created', { id: order.id, pageId: page.id });
+      } catch (err) {
+        notifications.notion = {
+          ok: false,
+          at: FieldValue.serverTimestamp(),
+          error: errorMessage(err),
+        };
+        logger.error('Notion order row failed', { id: order.id, error: errorMessage(err) });
+      }
+    } else {
+      logger.warn(
+        'Notion not configured (NOTION_API_KEY / BILLBOARD_ORDERS_NOTION_DATABASE_ID); skipping',
+      );
+    }
+
+    // 2. Email.
+    const resendKey = RESEND_API_KEY.value();
+    const to = CONTACT_NOTIFY_EMAIL.value()
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (resendKey && to.length > 0) {
+      try {
+        const sent = await sendOrderEmail(
+          { apiKey: resendKey, from: CONTACT_FROM_EMAIL.value(), to },
+          order,
+          notionUrl,
+        );
+        notifications.email = { ok: true, at: FieldValue.serverTimestamp(), id: sent.id };
+        logger.info('Order email sent', { id: order.id, emailId: sent.id });
+      } catch (err) {
+        notifications.email = {
+          ok: false,
+          at: FieldValue.serverTimestamp(),
+          error: errorMessage(err),
+        };
+        logger.error('Order email failed', { id: order.id, error: errorMessage(err) });
+      }
+    } else {
+      logger.warn('Email not configured (RESEND_API_KEY / CONTACT_NOTIFY_EMAIL); skipping');
+    }
+
+    // 3. Record what happened on the document itself.
+    try {
+      await snap.ref.update({ status: 'new', total: order.total, notifications });
+    } catch (err) {
+      logger.error('Failed to stamp order', { id: order.id, error: errorMessage(err) });
     }
   },
 );

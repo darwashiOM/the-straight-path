@@ -86,8 +86,10 @@ export default defineConfig({
       workbox: {
         // Precache the hashed app-shell assets.
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,woff,woff2}'],
-        // Skip precaching gigantic source maps.
-        globIgnores: ['**/*.map', 'sw.js', 'workbox-*.js'],
+        // Skip precaching gigantic source maps, and the mobile-billboard
+        // images (~1.3 MB, only needed on /mobile-billboards; the runtime
+        // image cache below picks them up when viewed).
+        globIgnores: ['**/*.map', 'sw.js', 'workbox-*.js', 'mobile-billboards/**'],
         // SPA shell fallback: any same-origin navigation not matched by a
         // precached URL resolves to the React app shell so client-side routes
         // (including /ar/*) render correctly when served from the SW cache.

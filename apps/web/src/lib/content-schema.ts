@@ -147,6 +147,7 @@ export type SiteSettingId =
   | 'resourcesHeader'
   | 'faqHeader'
   | 'socialHeader'
+  | 'billboardsHeader'
   | 'contactIntro'
   | 'notFound'
   | 'seo'
@@ -271,9 +272,18 @@ export interface NavItemsData {
  * Shape of the `quickLinks` siteSetting's `data.items` — the four-card grid
  * at the bottom of the homepage. `to` is canonical (no locale prefix); the
  * renderer localizes it. `icon` maps to a lucide-react component in
- * HomePage.
+ * HomePage. `image` (optional) is shown under the description, e.g. a
+ * mobile-billboard thumbnail.
  */
-export type QuickLinkIcon = 'users' | 'link' | 'help' | 'message' | 'book' | 'star' | 'mail';
+export type QuickLinkIcon =
+  | 'users'
+  | 'link'
+  | 'help'
+  | 'message'
+  | 'book'
+  | 'star'
+  | 'mail'
+  | 'car';
 
 export interface QuickLinkItem {
   to: string;
@@ -282,6 +292,8 @@ export interface QuickLinkItem {
   order: number;
   labelEn: string;
   descEn: string;
+  /** Site path (`/mobile-billboards/…png`) or https URL. */
+  image?: string;
 }
 
 export interface QuickLinksData {
