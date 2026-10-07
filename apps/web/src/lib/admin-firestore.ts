@@ -538,12 +538,17 @@ export async function restoreSnapshot(
 
 // ---------- util ----------
 
-/** Recursively drop keys whose value is `undefined` — Firestore rejects them. */
+/**
+ * Recursively drop keys whose value is `undefined` — Firestore rejects them.
+ * Only plain objects and arrays are copied; anything else (serverTimestamp()
+ * sentinels, Timestamps, Dates) is passed through as-is, otherwise Firestore
+ * would store it as an ordinary map.
+ */
 function stripUndefined<T>(input: T): T {
   if (Array.isArray(input)) {
     return input.map((v) => stripUndefined(v)) as unknown as T;
   }
-  if (input !== null && typeof input === 'object') {
+  if (isPlainObject(input)) {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(input as Record<string, unknown>)) {
       if (v === undefined) continue;
@@ -552,4 +557,10 @@ function stripUndefined<T>(input: T): T {
     return out as T;
   }
   return input;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (value === null || typeof value !== 'object') return false;
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
 }
