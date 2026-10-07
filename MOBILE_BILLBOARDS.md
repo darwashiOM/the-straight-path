@@ -55,11 +55,29 @@ BILLBOARD_ORDERS_NOTION_ASSIGNEE_ID=        # optional Notion user id
 Alerts: in the database, ⚡ **Automations** → _Page added_ → _Send
 notification to_ → pick people.
 
-## Email
+## Emails
 
-Sent to `CONTACT_NOTIFY_EMAIL` from `CONTACT_FROM_EMAIL` (same as the contact
-form). Subject: `Straight Path Mobile Billboard Order from <name>`; reply-to is
-the customer.
+**To the team:** sent to `CONTACT_NOTIFY_EMAIL` from `CONTACT_FROM_EMAIL`
+(same as the contact form). Subject: `Straight Path Mobile Billboard Order from
+<name>`; reply-to is the customer.
+
+**To the customer** (from `CONTACT_FROM_EMAIL`):
+
+- **"We got your order"**: right after they order, listing their stickers
+  and address.
+- **"Your Mobile Billboards are on the way"**: when the team sets the Notion
+  row's **Order Status** to **Shipped**. The scheduled function
+  `notifyShippedBillboardOrders` checks Notion every 10 minutes, so the email
+  arrives within about 10 minutes. It uses the name, email, Items and Address
+  from the Notion row, so fix any typo there _before_ marking it Shipped. Each
+  row is emailed once (recorded in `billboard-shipped-emails/{notionPageId}`);
+  only rows changed in the last 3 days are checked.
+
+`contact@thestraightpath.org` can only send, not receive, so customer emails
+tell people to use the contact page for questions. To let them reply
+instead, set `BILLBOARD_ORDERS_REPLY_TO` in `functions/.env` to a real inbox
+and redeploy functions. The option name that means "mailed" is
+`BILLBOARD_ORDERS_SHIPPED_STATUS` (default `Shipped`).
 
 ## Adding a new design
 
@@ -81,7 +99,7 @@ cache images for a year.
 - Header link: Admin → Site Settings → **Navigation** → add `/mobile-billboards`.
 - Homepage card: Admin → Site Settings → **Quick links** → add a card with
   path `/mobile-billboards`, icon _Car_, and image
-  `/mobile-billboards/01-god-forgave-adam.png`.
+  `/mobile-billboards/07-this-is-the-straight-path.png`.
 
 ## Deploy
 
@@ -99,6 +117,9 @@ Hosting deploys automatically when `main` is updated.
 
 - Look at the order in Firestore (`billboard-orders/{id}`): `status`,
   `rejectedReason`, `notifications.notion` / `notifications.email`.
-- Logs: `firebase functions:log --only onBillboardOrder`.
+- Logs: `firebase functions:log --only onBillboardOrder` and
+  `firebase functions:log --only notifyShippedBillboardOrders`.
+- "On the way" email not sent: check `billboard-shipped-emails/{notionPageId}`
+  in Firestore (`ok`, `error`, `attempts`; it stops after 3 failures).
 - Column names are defined in `functions/src/billboards/notion.ts`
   (`ORDER_NOTION_PROPS`).

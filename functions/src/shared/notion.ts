@@ -111,6 +111,57 @@ export async function createPage(
   return { id: body.id, url: body.url ?? '' };
 }
 
+/** A database row as returned by the query endpoint. */
+export interface NotionPage {
+  id: string;
+  url?: string;
+  properties: Record<string, unknown>;
+}
+
+/** All rows matching `filter` (follows pagination). */
+export async function queryDatabase(
+  token: string,
+  databaseId: string,
+  filter: unknown,
+): Promise<NotionPage[]> {
+  const pages: NotionPage[] = [];
+  let cursor: string | undefined;
+  do {
+    const res = await fetch(`${NOTION_API}/databases/${databaseId}/query`, {
+      method: 'POST',
+      headers: headers(token),
+      body: JSON.stringify({ filter, page_size: 100, ...(cursor ? { start_cursor: cursor } : {}) }),
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!res.ok) throw await notionError(res);
+    const body = (await res.json()) as {
+      results?: NotionPage[];
+      has_more?: boolean;
+      next_cursor?: string | null;
+    };
+    pages.push(...(body.results ?? []));
+    cursor = body.has_more && body.next_cursor ? body.next_cursor : undefined;
+  } while (cursor);
+  return pages;
+}
+
+/** Plain text of a title / rich-text / email / multi-select / place value. */
+export function plainValue(prop: unknown): string {
+  if (!prop || typeof prop !== 'object') return '';
+  const p = prop as Record<string, unknown>;
+  const runs = (p.title ?? p.rich_text) as Array<{ plain_text?: string }> | undefined;
+  if (Array.isArray(runs)) return runs.map((r) => r.plain_text ?? '').join('');
+  if (typeof p.email === 'string') return p.email;
+  if (Array.isArray(p.multi_select)) {
+    return (p.multi_select as Array<{ name?: string }>).map((o) => o.name ?? '').join('\n');
+  }
+  if (p.place && typeof p.place === 'object') {
+    const place = p.place as { address?: string | null; name?: string | null };
+    return place.address || place.name || '';
+  }
+  return '';
+}
+
 // ---------- Schema discovery ----------
 
 const schemaCache = new Map<string, { at: number; props: SchemaProp[] }>();

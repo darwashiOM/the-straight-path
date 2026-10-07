@@ -312,7 +312,7 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     order: 4,
     labelEn: 'Mobile Billboards',
     descEn: 'Dawah bumper stickers.',
-    image: '/mobile-billboards/01-god-forgave-adam.png',
+    image: '/mobile-billboards/07-this-is-the-straight-path.png',
   },
 ];
 
@@ -502,7 +502,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       en: {
         title: 'Mobile Billboards',
         description:
-          'Dawah bumper stickers, 11 × 3 inches. Download a design to print yourself, or ask us to mail you a few.',
+          'Free Dawah bumper stickers, 11 × 3 inches. Download a design to print yourself, or ask us to mail you some at no cost.',
       },
     },
   },

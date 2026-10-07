@@ -10,6 +10,9 @@
  * column the address is geocoded first (Notion needs coordinates); when
  * that fails the map cell stays empty and a note in the page body says so.
  * The full address is always written to the page body as text.
+ *
+ * `listShippedOrders` reads rows back once the team sets Order Status to
+ * Shipped, for the customer "on the way" email.
  */
 import { logger } from 'firebase-functions/v2';
 
@@ -23,6 +26,8 @@ import {
   NotionApiError,
   type NotionPageRef,
   paragraph,
+  plainValue,
+  queryDatabase,
   resolveColumns,
   type SchemaProp,
   text,
@@ -217,4 +222,64 @@ export async function createOrderPage(
     );
     return { ...page, mapped: false };
   }
+}
+
+// ---------- Reading shipped orders back ----------
+
+/** The team's progress column; its "Shipped" option triggers the customer email. */
+export const STATUS_COLUMN = 'Order Status';
+
+export interface ShippedOrder {
+  pageId: string;
+  name: string;
+  email: string;
+  /** One line per design, e.g. `2 × 01. God Forgave Adam`. */
+  items: string[];
+  address: string;
+}
+
+/**
+ * Rows whose Order Status is `statusName` and that were edited on or after
+ * `since` (changing the status counts as an edit). Values come from Notion,
+ * so a typo the team fixes there is what the customer email uses.
+ */
+export async function listShippedOrders(
+  token: string,
+  databaseId: string,
+  statusName: string,
+  since: Date,
+): Promise<ShippedOrder[]> {
+  const schema = await fetchSchema(token, databaseId);
+  const named = findColumn(schema, STATUS_COLUMN);
+  const statusCols = schema.filter((c) => c.type === 'status');
+  const status =
+    named && (named.type === 'status' || named.type === 'select')
+      ? named
+      : statusCols.length === 1
+        ? statusCols[0]
+        : undefined;
+  if (!status) throw new Error(`Notion "${STATUS_COLUMN}" column not found`);
+
+  const col = resolveColumns(schema, ORDER_NOTION_PROPS, EXPECTED_TYPES, TYPE_FALLBACK);
+  const addressCol = findColumn(schema, ADDRESS_COLUMN)?.name;
+  const pages = await queryDatabase(token, databaseId, {
+    and: [
+      { property: status.name, [status.type]: { equals: statusName } },
+      { timestamp: 'last_edited_time', last_edited_time: { on_or_after: since.toISOString() } },
+    ],
+  });
+
+  return pages.map((page) => {
+    const get = (name?: string) => (name ? plainValue(page.properties[name]).trim() : '');
+    return {
+      pageId: page.id,
+      name: get(col.title),
+      email: get(col.email),
+      items: (get(col.items) || get(col.billboards))
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean),
+      address: get(addressCol),
+    };
+  });
 }

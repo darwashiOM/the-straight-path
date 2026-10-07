@@ -1353,7 +1353,7 @@ function QuickLinksCard() {
                         type="text"
                         value={it.image ?? ''}
                         onChange={(e) => patch(i, { image: e.target.value.trim() || undefined })}
-                        placeholder="/mobile-billboards/01-god-forgave-adam.png"
+                        placeholder="/mobile-billboards/07-this-is-the-straight-path.png"
                         className={inputCls + ' font-mono text-xs'}
                       />
                       <p className="text-ink/50 mt-1 text-xs">

@@ -176,8 +176,25 @@ export interface BillboardOrder {
   notifications?: {
     notion?: NotificationOutcome;
     email?: NotificationOutcome;
+    /** "We got your order" email to the customer. */
+    customer?: NotificationOutcome;
   };
   createdAt: FirestoreTimestamp;
+}
+
+/**
+ * `billboard-shipped-emails/{notionPageId}` — server-only record of the
+ * "Your Mobile Billboards are on the way" email, so each Notion row is
+ * emailed once (written by `notifyShippedBillboardOrders`).
+ */
+export interface BillboardShippedEmail {
+  ok: boolean;
+  /** Resend email id when `ok`. */
+  id?: string;
+  email?: string;
+  attempts?: number;
+  error?: string;
+  at: FirestoreTimestamp;
 }
 
 /**

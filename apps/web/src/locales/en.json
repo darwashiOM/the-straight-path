@@ -284,11 +284,11 @@
   },
   "billboardsPage": {
     "title": "Mobile Billboards",
-    "description": "Dawah bumper stickers, 11 × 3 inches. Download a design to print yourself, or ask us to mail you a few.",
+    "description": "Free Dawah bumper stickers, 11 × 3 inches. Download a design to print yourself, or ask us to mail you some at no cost.",
     "how": {
       "printTitle": "Print your own",
       "printBody": "The PDF is print-ready at 11 × 3 in. Take it to a print shop or any online sticker printer. The PNG is for phones and social media.",
-      "mailTitle": "Have us mail them",
+      "mailTitle": "Have us mail them, free",
       "mailBody": "Tap “Add to order” under the designs you want, up to {{max}} stickers in total, then add your address at the bottom of the page. US addresses only for now."
     },
     "number": "No. {{id}}",
@@ -307,8 +307,8 @@
       "continue": "Continue to delivery"
     },
     "order": {
-      "title": "Have us mail them to you",
-      "intro": "Choose up to {{max}} stickers in total from the designs above and we’ll mail them to you. We currently ship within the United States only.",
+      "title": "Have us mail them to you, free",
+      "intro": "Choose up to {{max}} stickers in total from the designs above and we’ll mail them to you for free, including shipping. We currently ship within the United States only.",
       "summary": "Your stickers",
       "empty": "Nothing selected yet. Use “Add to order” under the designs above.",
       "total": "Total: {{count}} of {{max}}",

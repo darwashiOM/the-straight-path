@@ -1,17 +1,26 @@
 import { setGlobalOptions } from 'firebase-functions/v2';
 import { onRequest } from 'firebase-functions/v2/https';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { initializeApp } from 'firebase-admin/app';
 import { logger } from 'firebase-functions/v2';
 import { defineSecret, defineString } from 'firebase-functions/params';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 
+import {
+  type CustomerEmailConfig,
+  RECEIVED_SUBJECT,
+  receivedBlocks,
+  sendCustomerEmail,
+  SHIPPED_SUBJECT,
+  shippedBlocks,
+} from './billboards/customer-email';
 import { sendOrderEmail } from './billboards/email';
-import { createOrderPage } from './billboards/notion';
+import { createOrderPage, listShippedOrders } from './billboards/notion';
 import { parseOrder } from './billboards/order';
 import { sendContactEmail } from './contact/email';
 import { createNotionPage } from './contact/notion';
-import { parseSubmission } from './contact/types';
+import { looksLikeEmail, parseSubmission } from './contact/types';
 
 // Re-export shared Firestore schemas for consumers (admin panel, scripts).
 export * as schemas from './schemas';
@@ -191,6 +200,22 @@ const BILLBOARD_ORDERS_NOTION_ASSIGNEE_ID = defineString('BILLBOARD_ORDERS_NOTIO
   description: 'Optional Notion user id to put in "Assigned To" on each new order.',
   default: '',
 });
+const BILLBOARD_ORDERS_SHIPPED_STATUS = defineString('BILLBOARD_ORDERS_SHIPPED_STATUS', {
+  description: 'Order Status option in Notion that sends the customer the "on the way" email.',
+  default: 'Shipped',
+});
+const BILLBOARD_ORDERS_REPLY_TO = defineString('BILLBOARD_ORDERS_REPLY_TO', {
+  description: 'Optional inbox for customer replies; empty → emails point to the contact page.',
+  default: '',
+});
+
+function customerEmailConfig(): CustomerEmailConfig {
+  return {
+    apiKey: RESEND_API_KEY.value(),
+    from: CONTACT_FROM_EMAIL.value(),
+    replyTo: BILLBOARD_ORDERS_REPLY_TO.value().trim() || undefined,
+  };
+}
 
 /**
  * Triggered when a `billboard-orders/{id}` document is created by the
@@ -199,9 +224,9 @@ const BILLBOARD_ORDERS_NOTION_ASSIGNEE_ID = defineString('BILLBOARD_ORDERS_NOTIO
  * Re-checks the order (known billboard ids, at most 7 stickers in total —
  * the security rules can't add quantities up), then fans it out like the
  * contact form: a Notion row (the delivery queue) and an email to the
- * contact inbox. A rejected order gets `status: 'rejected'` and no
- * notifications. Uses the same Notion integration and Resend key as the
- * contact form.
+ * contact inbox, plus a "We got your order" email to the customer. A
+ * rejected order gets `status: 'rejected'` and no notifications. Uses the
+ * same Notion integration and Resend key as the contact form.
  */
 export const onBillboardOrder = onDocumentCreated(
   {
@@ -230,7 +255,11 @@ export const onBillboardOrder = onDocumentCreated(
     const order = parsed.order;
     logger.info('New billboard order', { id: order.id, total: order.total });
 
-    const notifications: { notion?: Outcome & { mapped?: boolean }; email?: Outcome } = {};
+    const notifications: {
+      notion?: Outcome & { mapped?: boolean };
+      email?: Outcome;
+      customer?: Outcome;
+    } = {};
     let notionUrl: string | undefined;
 
     // 1. Notion — first, so the email can link to the row.
@@ -290,11 +319,118 @@ export const onBillboardOrder = onDocumentCreated(
       logger.warn('Email not configured (RESEND_API_KEY / CONTACT_NOTIFY_EMAIL); skipping');
     }
 
-    // 3. Record what happened on the document itself.
+    // 3. "We got your order" to the customer.
+    const customer = customerEmailConfig();
+    if (customer.apiKey && looksLikeEmail(order.email)) {
+      try {
+        const sent = await sendCustomerEmail(
+          customer,
+          order.email,
+          RECEIVED_SUBJECT,
+          receivedBlocks(customer, order),
+        );
+        notifications.customer = { ok: true, at: FieldValue.serverTimestamp(), id: sent.id };
+        logger.info('Customer confirmation sent', { id: order.id, emailId: sent.id });
+      } catch (err) {
+        notifications.customer = {
+          ok: false,
+          at: FieldValue.serverTimestamp(),
+          error: errorMessage(err),
+        };
+        logger.error('Customer confirmation failed', { id: order.id, error: errorMessage(err) });
+      }
+    }
+
+    // 4. Record what happened on the document itself.
     try {
       await snap.ref.update({ status: 'new', total: order.total, notifications });
     } catch (err) {
       logger.error('Failed to stamp order', { id: order.id, error: errorMessage(err) });
+    }
+  },
+);
+
+/** How far back to look for newly shipped rows (status edits). */
+const SHIPPED_LOOKBACK_MS = 3 * 24 * 60 * 60 * 1000;
+/** Give up on a customer's "on the way" email after this many failures. */
+const SHIPPED_MAX_ATTEMPTS = 3;
+
+/**
+ * Every 10 minutes: emails "Your Mobile Billboards are on the way" to each
+ * customer whose Notion row was set to Shipped (`BILLBOARD_ORDERS_SHIPPED_STATUS`)
+ * in the last few days. Name, email, stickers and address are read from the
+ * Notion row, so corrections made there are used.
+ *
+ * Each row is emailed once: `billboard-shipped-emails/{notionPageId}`
+ * records the result (server-only; clients can't read or write it). Setting
+ * a row back to Shipped later does not send a second email.
+ */
+export const notifyShippedBillboardOrders = onSchedule(
+  {
+    schedule: 'every 10 minutes',
+    secrets: [RESEND_API_KEY, NOTION_API_KEY],
+    timeoutSeconds: 120,
+    maxInstances: 1,
+  },
+  async () => {
+    const token = NOTION_API_KEY.value();
+    const databaseId = BILLBOARD_ORDERS_NOTION_DATABASE_ID.value();
+    const customer = customerEmailConfig();
+    if (!token || !databaseId || !customer.apiKey) return;
+
+    let shipped;
+    try {
+      shipped = await listShippedOrders(
+        token,
+        databaseId,
+        BILLBOARD_ORDERS_SHIPPED_STATUS.value(),
+        new Date(Date.now() - SHIPPED_LOOKBACK_MS),
+      );
+    } catch (err) {
+      logger.error('Could not read shipped orders from Notion', { error: errorMessage(err) });
+      return;
+    }
+
+    const sentLog = getFirestore().collection('billboard-shipped-emails');
+    for (const row of shipped) {
+      const ref = sentLog.doc(row.pageId);
+      const prev = (await ref.get()).data() as { ok?: boolean; attempts?: number } | undefined;
+      if (prev?.ok || (prev?.attempts ?? 0) >= SHIPPED_MAX_ATTEMPTS) continue;
+
+      if (!looksLikeEmail(row.email)) {
+        await ref.set({
+          ok: false,
+          attempts: SHIPPED_MAX_ATTEMPTS,
+          error: 'no valid email on the Notion row',
+          at: FieldValue.serverTimestamp(),
+        });
+        logger.warn('Shipped order has no valid email; not notified', { pageId: row.pageId });
+        continue;
+      }
+
+      try {
+        const sent = await sendCustomerEmail(
+          customer,
+          row.email,
+          SHIPPED_SUBJECT,
+          shippedBlocks(customer, row),
+        );
+        await ref.set({
+          ok: true,
+          id: sent.id,
+          email: row.email,
+          at: FieldValue.serverTimestamp(),
+        });
+        logger.info('Shipped email sent', { pageId: row.pageId, emailId: sent.id });
+      } catch (err) {
+        await ref.set({
+          ok: false,
+          attempts: (prev?.attempts ?? 0) + 1,
+          error: errorMessage(err),
+          at: FieldValue.serverTimestamp(),
+        });
+        logger.error('Shipped email failed', { pageId: row.pageId, error: errorMessage(err) });
+      }
     }
   },
 );
