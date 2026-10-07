@@ -24,7 +24,7 @@ export interface RouteMeta {
   noindex?: boolean;
 }
 
-export const SITE_ORIGIN = 'https://thestraightpath.app';
+export const SITE_ORIGIN = 'https://www.thestraightpath.org';
 
 /** Canonical URL for a given route. The optional second arg is ignored
  *  (kept for back-compat with callers that used to pass a locale). */
@@ -91,6 +91,14 @@ export const routes: RouteMeta[] = [
     changefreq: 'monthly',
   },
   {
+    path: '/mobile-billboards',
+    title: 'Mobile Billboards',
+    description:
+      'Free Dawah bumper stickers with verses of the Qur’an and sayings of the Prophet. Download print-ready 11 × 3 in designs, or we’ll mail you some free.',
+    priority: 0.6,
+    changefreq: 'monthly',
+  },
+  {
     path: '/about',
     title: 'About',
     description:
@@ -151,6 +159,7 @@ const BREADCRUMB_NODES: Record<string, BreadcrumbNode> = {
   '/resources': { path: '/resources', i18nKey: 'nav.resources' },
   '/faq': { path: '/faq', i18nKey: 'nav.faq' },
   '/social': { path: '/social', i18nKey: 'nav.social' },
+  '/mobile-billboards': { path: '/mobile-billboards', i18nKey: 'nav.mobileBillboards' },
   '/about': { path: '/about', i18nKey: 'nav.about' },
   '/contact': { path: '/contact', i18nKey: 'nav.contact' },
   '/privacy': { path: '/privacy', i18nKey: 'nav.privacy' },
@@ -165,6 +174,7 @@ const BREADCRUMB_PARENTS: Record<string, string | null> = {
   '/resources': '/',
   '/faq': '/',
   '/social': '/',
+  '/mobile-billboards': '/',
   '/about': '/',
   '/contact': '/',
   '/privacy': '/',

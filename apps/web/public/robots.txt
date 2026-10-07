@@ -23,4 +23,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://thestraightpath.app/sitemap.xml
+Sitemap: https://www.thestraightpath.org/sitemap.xml

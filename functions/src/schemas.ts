@@ -153,6 +153,51 @@ export interface ContactSubmission {
 }
 
 /**
+ * `billboard-orders/{id}` — a request to mail mobile-billboard (bumper
+ * sticker) designs, placed from /mobile-billboards.
+ *
+ * Writes are constrained by `firestore.rules`; `onBillboardOrder` re-checks
+ * the order, then notifies the team (Notion row + email).
+ */
+export interface BillboardOrder {
+  id: string;
+  name: string;
+  email: string;
+  address: ShippingAddress;
+  /** Billboard id (e.g. `"05"`) → number of stickers. At most 7 in total. */
+  items: Record<string, number>;
+  locale?: LocaleCode;
+  source?: string;
+  /** Set server-side: `rejected` when the order fails validation. */
+  status?: 'new' | 'rejected';
+  rejectedReason?: string;
+  /** Total stickers, set server-side once the order is accepted. */
+  total?: number;
+  notifications?: {
+    notion?: NotificationOutcome;
+    email?: NotificationOutcome;
+    /** "We got your order" email to the customer. */
+    customer?: NotificationOutcome;
+  };
+  createdAt: FirestoreTimestamp;
+}
+
+/**
+ * `billboard-shipped-emails/{notionPageId}` — server-only record of the
+ * "Your Mobile Billboards are on the way" email, so each Notion row is
+ * emailed once (written by `notifyShippedBillboardOrders`).
+ */
+export interface BillboardShippedEmail {
+  ok: boolean;
+  /** Resend email id when `ok`. */
+  id?: string;
+  email?: string;
+  attempts?: number;
+  error?: string;
+  at: FirestoreTimestamp;
+}
+
+/**
  * `admins/{uid}` — an authenticated user authorised to use the admin panel.
  */
 export interface Admin {

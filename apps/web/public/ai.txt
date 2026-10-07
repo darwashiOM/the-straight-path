@@ -1,6 +1,6 @@
 # The Straight Path — AI / Crawler Summary
 
-Canonical: https://thestraightpath.app
+Canonical: https://www.thestraightpath.org
 Companion file: /llms.txt and /llms-full.txt
 Sitemap: /sitemap.xml
 
@@ -31,4 +31,4 @@ quotations, and citations are welcome with attribution to "The Straight Path"
 and a link to the canonical URL.
 
 ## Contact
-https://thestraightpath.app/contact
+https://www.thestraightpath.org/contact

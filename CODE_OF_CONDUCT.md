@@ -41,7 +41,8 @@ representing the project in public.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the maintainers at **conduct@thestraightpath.app** or by
+reported to the maintainers through the contact form at
+<https://www.thestraightpath.org/contact> or by
 contacting [@darwashiOM](https://github.com/darwashiOM) directly. All
 complaints will be reviewed and investigated promptly and fairly.
 

@@ -228,6 +228,8 @@ function siteSettingPath(id: string): string {
       return '/learn/articles';
     case 'quranAbout':
       return '/quran';
+    case 'billboardsHeader':
+      return '/mobile-billboards';
     default:
       return '/';
   }

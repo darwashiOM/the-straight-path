@@ -2,29 +2,31 @@
  * Creates one row in the team's Notion "Contact submissions" database for
  * every contact-form submission.
  *
- * Talks to the public Notion API directly over `fetch` (Node 20 has it
- * built in), scoped by an *internal integration* token that only has access
- * to the one database shared with it. No SDK needed.
- *
- * Column names are resolved against the live database schema, so small
- * differences in spelling ("Submitted Date" vs "Submitted date") don't
- * matter: names are compared case- and whitespace-insensitively, and a few
- * unambiguous columns (title, the only date/email/phone column) are found
- * by type. A column that can't be found is skipped with a warning rather
- * than failing the whole row. The expected names live in `NOTION_PROPS`.
+ * The HTTP calls and the loose column matching live in `../shared/notion`;
+ * this file only decides what goes in each column. A column that can't be
+ * found is skipped with a warning rather than failing the whole row. The
+ * expected names live in `NOTION_PROPS`.
  */
 import { logger } from 'firebase-functions/v2';
 
+import {
+  bullet,
+  chunk,
+  createPage,
+  fetchSchema,
+  heading,
+  type NotionPageRef,
+  paragraph,
+  resolveColumns,
+  text,
+} from '../shared/notion';
 import { type ContactSubmissionInput, formatAddress, requestedLabels, TYPE_LABELS } from './types';
 
-const NOTION_API = 'https://api.notion.com/v1';
-const NOTION_VERSION = '2022-06-28';
-/** Notion rejects rich-text segments longer than 2000 characters. */
-const RICH_TEXT_LIMIT = 2000;
-const PREVIEW_LIMIT = 300;
-const SCHEMA_TTL_MS = 5 * 60 * 1000;
+export type { NotionPageRef };
 
-/** Expected column names (matched loosely — see file header). */
+const PREVIEW_LIMIT = 300;
+
+/** Expected column names (matched loosely — see `../shared/notion`). */
 export const NOTION_PROPS = {
   title: 'Name',
   email: 'Email',
@@ -59,114 +61,6 @@ export interface NotionConfig {
   databaseId: string;
   /** Optional Notion user id to set in "Assigned To" (triggers a notification). */
   assigneeId?: string;
-}
-
-export interface NotionPageRef {
-  id: string;
-  url: string;
-}
-
-interface SchemaProp {
-  name: string;
-  type: string;
-}
-
-type RichText = { type: 'text'; text: { content: string } };
-
-function text(content: string): RichText[] {
-  return [{ type: 'text', text: { content: content.slice(0, RICH_TEXT_LIMIT) } }];
-}
-
-function chunk(content: string, size = RICH_TEXT_LIMIT): string[] {
-  const out: string[] = [];
-  for (let i = 0; i < content.length; i += size) out.push(content.slice(i, i + size));
-  return out.length ? out : [''];
-}
-
-function paragraph(content: string) {
-  return { object: 'block', type: 'paragraph', paragraph: { rich_text: text(content) } };
-}
-
-function heading(content: string) {
-  return { object: 'block', type: 'heading_2', heading_2: { rich_text: text(content) } };
-}
-
-function bullet(content: string) {
-  return {
-    object: 'block',
-    type: 'bulleted_list_item',
-    bulleted_list_item: { rich_text: text(content) },
-  };
-}
-
-function headers(token: string): Record<string, string> {
-  return {
-    Authorization: `Bearer ${token}`,
-    'Notion-Version': NOTION_VERSION,
-    'Content-Type': 'application/json',
-  };
-}
-
-async function notionError(res: Response): Promise<Error> {
-  const body = (await res.json().catch(() => ({}))) as { message?: string; code?: string };
-  return new Error(
-    `Notion API ${res.status}${body.code ? ` (${body.code})` : ''}: ${body.message ?? 'unknown error'}`,
-  );
-}
-
-// ---------- Schema discovery ----------
-
-const schemaCache = new Map<string, { at: number; props: SchemaProp[] }>();
-
-async function fetchSchema(cfg: NotionConfig): Promise<SchemaProp[]> {
-  const cached = schemaCache.get(cfg.databaseId);
-  if (cached && Date.now() - cached.at < SCHEMA_TTL_MS) return cached.props;
-
-  const res = await fetch(`${NOTION_API}/databases/${cfg.databaseId}`, {
-    headers: headers(cfg.token),
-    signal: AbortSignal.timeout(15_000),
-  });
-  if (!res.ok) throw await notionError(res);
-  const body = (await res.json()) as { properties?: Record<string, { type?: string }> };
-  const props = Object.entries(body.properties ?? {}).map(([name, p]) => ({
-    name,
-    type: p?.type ?? '',
-  }));
-  schemaCache.set(cfg.databaseId, { at: Date.now(), props });
-  return props;
-}
-
-function normalise(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[’']/g, '')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
-}
-
-/**
- * Map each expected column to the real column name in the database.
- * Order of preference: exact name → loose name match with the right type →
- * the only column of that type (for types that are naturally unique).
- */
-function resolveColumns(schema: SchemaProp[]): Partial<Record<PropKey, string>> {
-  const resolved: Partial<Record<PropKey, string>> = {};
-  const byNorm = new Map(schema.map((p) => [normalise(p.name), p]));
-  const uniqueByType = new Map<string, SchemaProp>();
-  for (const p of schema) {
-    if (schema.filter((q) => q.type === p.type).length === 1) uniqueByType.set(p.type, p);
-  }
-
-  for (const key of Object.keys(NOTION_PROPS) as PropKey[]) {
-    const wanted = NOTION_PROPS[key];
-    const type = EXPECTED_TYPES[key];
-    const exact = schema.find((p) => p.name === wanted && p.type === type);
-    const loose = byNorm.get(normalise(wanted));
-    const candidate =
-      exact ?? (loose && loose.type === type ? loose : undefined) ?? uniqueByType.get(type);
-    if (candidate) resolved[key] = candidate.name;
-  }
-  return resolved;
 }
 
 // ---------- Payload ----------
@@ -243,7 +137,11 @@ export async function createNotionPage(
 ): Promise<NotionPageRef> {
   let columns: Partial<Record<PropKey, string>>;
   try {
-    columns = resolveColumns(await fetchSchema(cfg));
+    columns = resolveColumns(
+      await fetchSchema(cfg.token, cfg.databaseId),
+      NOTION_PROPS,
+      EXPECTED_TYPES,
+    );
   } catch (err) {
     // Reading the schema needs the integration's "Read content" capability.
     // Without it, fall back to the expected names verbatim.
@@ -253,19 +151,5 @@ export async function createNotionPage(
     columns = { ...NOTION_PROPS };
   }
 
-  const res = await fetch(`${NOTION_API}/pages`, {
-    method: 'POST',
-    headers: headers(cfg.token),
-    body: JSON.stringify({
-      parent: { database_id: cfg.databaseId },
-      properties: buildProperties(cfg, s, columns),
-      children: buildChildren(s),
-    }),
-    signal: AbortSignal.timeout(15_000),
-  });
-
-  if (!res.ok) throw await notionError(res);
-  const body = (await res.json()) as { id?: string; url?: string };
-  if (!body.id) throw new Error('Notion API: page created without an id');
-  return { id: body.id, url: body.url ?? '' };
+  return createPage(cfg.token, cfg.databaseId, buildProperties(cfg, s, columns), buildChildren(s));
 }

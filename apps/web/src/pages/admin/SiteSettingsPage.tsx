@@ -192,6 +192,16 @@ const SETTINGS: SettingSpec[] = [
       { key: 'description', label: 'Description', type: 'textarea' },
     ],
   },
+  {
+    id: 'billboardsHeader',
+    title: 'Mobile Billboards header',
+    description: 'Page header on /mobile-billboards.',
+    previewPath: '/mobile-billboards',
+    fields: [
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'description', label: 'Description', type: 'textarea' },
+    ],
+  },
 ];
 
 export default function SiteSettingsPage() {
@@ -1113,12 +1123,13 @@ const QUICK_LINK_ICON_OPTIONS: { value: QuickLinkIcon; label: string }[] = [
   { value: 'book', label: 'Book' },
   { value: 'star', label: 'Star' },
   { value: 'mail', label: 'Mail' },
+  { value: 'car', label: 'Car' },
 ];
 
 /**
- * `QuickLinksCard` — edits the homepage's four-card grid. Each row has EN/AR
- * label + description, an icon dropdown, canonical `to` path, visibility
- * toggle, and up/down reorder. Paths go through the same `validatePath`
+ * `QuickLinksCard` — edits the homepage's card grid. Each row has a label,
+ * description, icon dropdown, optional image, canonical `to` path,
+ * visibility toggle, and up/down reorder. Paths go through the same `validatePath`
  * guard as navItems so editors can't accidentally double-prefix locales.
  */
 function QuickLinksCard() {
@@ -1221,8 +1232,8 @@ function QuickLinksCard() {
         <div>
           <h2 className="text-primary-700 font-serif text-xl">Quick links</h2>
           <p className="text-ink/60 mt-0.5 text-sm">
-            <span className="text-ink/50 font-mono text-xs">quickLinks</span> · The four cards at
-            the bottom of the homepage.
+            <span className="text-ink/50 font-mono text-xs">quickLinks</span> · The cards near the
+            bottom of the homepage. Five cards sit in one row on wide screens.
           </p>
         </div>
         <button
@@ -1333,6 +1344,28 @@ function QuickLinksCard() {
                         }
                       />
                       {pathError && <p className="text-sienna mt-1 text-xs">{pathError}</p>}
+                    </label>
+                    <label className="block md:col-span-2">
+                      <span className="text-ink/70 block text-xs font-medium">
+                        Image (optional)
+                      </span>
+                      <input
+                        type="text"
+                        value={it.image ?? ''}
+                        onChange={(e) => patch(i, { image: e.target.value.trim() || undefined })}
+                        placeholder="/mobile-billboards/01-this-is-the-straight-path.png"
+                        className={inputCls + ' font-mono text-xs'}
+                      />
+                      <p className="text-ink/50 mt-1 text-xs">
+                        Shown under the description. A path on this site or an https:// URL.
+                      </p>
+                      {it.image ? (
+                        <img
+                          src={it.image}
+                          alt=""
+                          className="border-primary-100 mt-2 max-h-16 w-auto rounded border"
+                        />
+                      ) : null}
                     </label>
                     <label className="inline-flex items-center gap-2 md:col-span-2">
                       <input

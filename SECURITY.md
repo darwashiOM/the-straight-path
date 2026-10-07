@@ -13,9 +13,9 @@ If you discover a security vulnerability, **please do not open a public
 GitHub issue.** Instead, disclose it privately so we can investigate and
 release a fix before details become public.
 
-- **Email:** security@thestraightpath.app (or contact the maintainer,
+- **Contact form:** <https://www.thestraightpath.org/contact>, starting your
+  message with `[security] <brief description>` (or contact the maintainer,
   [@darwashiOM](https://github.com/darwashiOM), through GitHub)
-- **Subject line:** `[security] <brief description>`
 
 Please include:
 
