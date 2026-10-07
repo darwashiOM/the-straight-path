@@ -4,9 +4,9 @@
  *  - "Your Mobile Billboards are on the way" once the team sets Order Status
  *    to Shipped in Notion (`notifyShippedBillboardOrders`).
  *
- * Sent with the same verified Resend sender as the team notifications. That
- * sender isn't a real inbox, so unless `replyTo` is set the emails point
- * people to the contact page for questions.
+ * Sent through Resend from a no-reply address on thestraightpath.org (no
+ * inbox exists there), so unless `replyTo` is set the emails say replies
+ * aren't read and point people to the contact form.
  */
 import { Resend } from 'resend';
 
@@ -40,7 +40,7 @@ function closing(cfg: CustomerEmailConfig): Block[] {
     {
       text: cfg.replyTo
         ? 'Questions? Just reply to this email.'
-        : `Questions? Write to us at ${SITE}/contact`,
+        : `This is an automated message from a no-reply address, so replies aren’t read. To reach us, please use the contact form: ${SITE}/contact`,
     },
     { text: `The Straight Path\n${SITE}` },
   ];

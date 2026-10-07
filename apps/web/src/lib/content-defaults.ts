@@ -312,7 +312,7 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     order: 4,
     labelEn: 'Mobile Billboards',
     descEn: 'Dawah bumper stickers.',
-    image: '/mobile-billboards/07-this-is-the-straight-path.png',
+    image: '/mobile-billboards/01-this-is-the-straight-path.png',
   },
 ];
 

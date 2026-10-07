@@ -30,7 +30,7 @@
     "deploy": "pnpm build && firebase deploy",
     "deploy:hosting": "pnpm build && firebase deploy --only hosting",
     "deploy:functions": "firebase deploy --only functions",
-    "deploy:rules": "firebase deploy --only firestore:rules,storage:rules",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage",
     "size": "size-limit",
     "size:why": "size-limit --why"
   },

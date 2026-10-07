@@ -8,13 +8,13 @@
  * names can't contain commas.
  */
 export const BILLBOARD_LABELS: Readonly<Record<string, string>> = {
-  '01': '01. God Forgave Adam',
+  '01': '01. This Is the Straight Path',
   '02': '02. Make the Most of Your Youth (Navy)',
   '03': '03. Make the Most of Your Youth (Cream)',
-  '04': '04. My Lord Have Mercy on Them',
-  '05': '05. Repel Evil With Good',
-  '06': '06. Show Mercy to Those on Earth',
-  '07': '07. This Is the Straight Path',
+  '04': '04. God Forgave Adam',
+  '05': '05. My Lord Have Mercy on Them',
+  '06': '06. Repel Evil With Good',
+  '07': '07. Show Mercy to Those on Earth',
   '08': '08. Who Else Answers',
 };
 

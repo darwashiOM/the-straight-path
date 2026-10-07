@@ -61,7 +61,7 @@ notification to_ → pick people.
 (same as the contact form). Subject: `Straight Path Mobile Billboard Order from
 <name>`; reply-to is the customer.
 
-**To the customer** (from `CONTACT_FROM_EMAIL`):
+**To the customer:**
 
 - **"We got your order"**: right after they order, listing their stickers
   and address.
@@ -73,11 +73,13 @@ notification to_ → pick people.
   row is emailed once (recorded in `billboard-shipped-emails/{notionPageId}`);
   only rows changed in the last 3 days are checked.
 
-`contact@thestraightpath.org` can only send, not receive, so customer emails
-tell people to use the contact page for questions. To let them reply
-instead, set `BILLBOARD_ORDERS_REPLY_TO` in `functions/.env` to a real inbox
-and redeploy functions. The option name that means "mailed" is
-`BILLBOARD_ORDERS_SHIPPED_STATUS` (default `Shipped`).
+Customer emails come from `no-reply@thestraightpath.org`
+(`BILLBOARD_ORDERS_FROM_EMAIL`), sent by Resend like every other site email;
+no inbox exists at that address. They say replies aren't read and point to
+the contact form. To accept replies instead, set `BILLBOARD_ORDERS_REPLY_TO`
+in `functions/.env` to a real inbox and redeploy functions. The option name
+that means "mailed" is `BILLBOARD_ORDERS_SHIPPED_STATUS` (default `Shipped`).
+It doesn't matter who changes the status in Notion.
 
 ## Adding a new design
 
@@ -99,7 +101,7 @@ cache images for a year.
 - Header link: Admin → Site Settings → **Navigation** → add `/mobile-billboards`.
 - Homepage card: Admin → Site Settings → **Quick links** → add a card with
   path `/mobile-billboards`, icon _Car_, and image
-  `/mobile-billboards/07-this-is-the-straight-path.png`.
+  `/mobile-billboards/01-this-is-the-straight-path.png`.
 
 ## Deploy
 

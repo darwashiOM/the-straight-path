@@ -204,6 +204,11 @@ const BILLBOARD_ORDERS_SHIPPED_STATUS = defineString('BILLBOARD_ORDERS_SHIPPED_S
   description: 'Order Status option in Notion that sends the customer the "on the way" email.',
   default: 'Shipped',
 });
+const BILLBOARD_ORDERS_FROM_EMAIL = defineString('BILLBOARD_ORDERS_FROM_EMAIL', {
+  description:
+    'Sender of the emails to customers (a no-reply address on the Resend-verified domain).',
+  default: 'The Straight Path <no-reply@thestraightpath.org>',
+});
 const BILLBOARD_ORDERS_REPLY_TO = defineString('BILLBOARD_ORDERS_REPLY_TO', {
   description: 'Optional inbox for customer replies; empty → emails point to the contact page.',
   default: '',
@@ -212,7 +217,7 @@ const BILLBOARD_ORDERS_REPLY_TO = defineString('BILLBOARD_ORDERS_REPLY_TO', {
 function customerEmailConfig(): CustomerEmailConfig {
   return {
     apiKey: RESEND_API_KEY.value(),
-    from: CONTACT_FROM_EMAIL.value(),
+    from: BILLBOARD_ORDERS_FROM_EMAIL.value(),
     replyTo: BILLBOARD_ORDERS_REPLY_TO.value().trim() || undefined,
   };
 }
