@@ -251,7 +251,7 @@
     "title": "Contact",
     "description": "Have a question? Need support? We read every message.",
     "thankYou": "Thank you — your message has been received.",
-    "replySoon": "We'll reply soon, inshā'Allāh.",
+    "replySoon": "We'll reply soon, in shaa Allah.",
     "fields": {
       "name": "Name",
       "email": "Email",
@@ -280,7 +280,7 @@
       "state": "State",
       "zip": "ZIP code",
       "chooseOne": "Please choose at least one option.",
-      "successBody": "We've received your request and will be in touch soon, inshā'Allāh."
+      "successBody": "We've received your request and will be in touch soon, in shaa Allah."
     }
   },
   "billboardsPage": {
@@ -327,7 +327,7 @@
       "required": "Please fill in your name and full address.",
       "error": "Something went wrong. Please try again in a moment.",
       "successTitle": "Thank you — your order has been received.",
-      "successBody": "We’ll mail your stickers soon, inshā’Allāh.",
+      "successBody": "We’ll mail your stickers soon, in shaa Allah.",
       "orderAgain": "Place another order"
     }
   },
@@ -339,7 +339,7 @@
       "greetingMeaning": "May the peace, mercy, and blessings of Allah be upon you.",
       "p1": "We praise Allah for all His blessings, especially the blessing of guiding us to the straight path. We ask Him to keep our hearts firm upon the truth and to guide us throughout our journey.",
       "p2": "Islam gives you purpose, peace of mind, and clear direction. We hope this page will help you as you begin your journey as a new Muslim. There is a lot to learn, but you do not need to learn everything at once. Take your time, and move at a pace that does not overwhelm you. This is a lifelong journey of growing closer to Allah.",
-      "p3": "Please find below links to apps, websites, and resources we believe will be helpful, inshā’Allāh.",
+      "p3": "Please find below links to apps, websites, and resources we believe will be helpful, in shaa Allah.",
       "contact": "If you have questions or need additional help or resources, visit our <contactLink>Contact us</contactLink> page."
     },
     "links": {

@@ -59,10 +59,38 @@ const NAV_ITEMS_SEED = {
   data: {
     items: [
       { to: '/learn', key: 'learn', labelEn: 'Learn', labelAr: 'تعلّم', visible: true, order: 0 },
-      { to: '/quran', key: 'quran', labelEn: "Read the Qur'an", labelAr: 'اقرأ القرآن', visible: true, order: 1 },
-      { to: '/resources', key: 'resources', labelEn: 'Resources', labelAr: 'روابط مفيدة', visible: true, order: 2 },
-      { to: '/faq', key: 'faq', labelEn: 'Ask Questions', labelAr: 'اطرح سؤالاً', visible: true, order: 3 },
-      { to: '/social', key: 'social', labelEn: 'On Social Media', labelAr: 'على وسائل التواصل', visible: true, order: 4 },
+      {
+        to: '/quran',
+        key: 'quran',
+        labelEn: "Read the Qur'an",
+        labelAr: 'اقرأ القرآن',
+        visible: true,
+        order: 1,
+      },
+      {
+        to: '/resources',
+        key: 'resources',
+        labelEn: 'Resources',
+        labelAr: 'روابط مفيدة',
+        visible: true,
+        order: 2,
+      },
+      {
+        to: '/faq',
+        key: 'faq',
+        labelEn: 'Ask Questions',
+        labelAr: 'اطرح سؤالاً',
+        visible: true,
+        order: 3,
+      },
+      {
+        to: '/social',
+        key: 'social',
+        labelEn: 'On Social Media',
+        labelAr: 'على وسائل التواصل',
+        visible: true,
+        order: 4,
+      },
       { to: '/about', key: 'about', labelEn: 'About', labelAr: 'من نحن', visible: true, order: 5 },
     ],
   },
@@ -197,8 +225,7 @@ const FAQ_HEADER_SEED = {
   translations: {
     en: {
       title: 'Ask Questions',
-      description:
-        'Plain answers to common questions about Islam — and an open door for the rest.',
+      description: 'Plain answers to common questions about Islam — and an open door for the rest.',
     },
     ar: {
       title: 'اطرح سؤالاً',
@@ -247,7 +274,7 @@ const CONTACT_INTRO_SEED = {
         submit: 'Send message',
         submittingLabel: 'Sending…',
         successTitle: 'Thank you — your message has been received.',
-        successBody: "We'll reply soon, inshā'Allāh.",
+        successBody: "We'll reply soon, in shaa Allah.",
         errorBody: 'Something went wrong. Please try again in a moment.',
       },
       ar: {
@@ -271,24 +298,58 @@ const NOT_FOUND_SEED = {
     en: {
       eyebrow: 'Error 404',
       title: "We couldn't find that page.",
-      body:
-        "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
+      body: "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
     },
     ar: {
       eyebrow: 'خطأ 404',
       title: 'لم نجد هذه الصفحة.',
-      body:
-        'قد يكون الرابط معطوباً، أو نُقِلت الصفحة. إن ضِلّ بك الطريق فلا بأس — لنعد بك إلى المسار.',
+      body: 'قد يكون الرابط معطوباً، أو نُقِلت الصفحة. إن ضِلّ بك الطريق فلا بأس — لنعد بك إلى المسار.',
     },
   },
   data: {
     popularLinks: [
-      { to: '/learn', labelEn: 'Start learning', labelAr: 'ابدأ التعلّم', hintEn: 'A gentle on-ramp', hintAr: 'بداية هادئة' },
-      { to: '/learn/articles', labelEn: 'Articles', labelAr: 'المقالات', hintEn: 'Essays and explainers', hintAr: 'مقالات وشروحات' },
-      { to: '/faq', labelEn: 'FAQ', labelAr: 'أسئلة شائعة', hintEn: 'Common questions, honest answers', hintAr: 'أسئلة متكررة بإجابات صادقة' },
-      { to: '/quran', labelEn: "Read the Qur'ān", labelAr: 'اقرأ القرآن', hintEn: 'The words themselves', hintAr: 'الكلمات نفسها' },
-      { to: '/about', labelEn: 'About', labelAr: 'من نحن', hintEn: 'Who we are, why we built this', hintAr: 'من نحن، ولماذا بنينا هذا' },
-      { to: '/contact', labelEn: 'Contact', labelAr: 'تواصل معنا', hintEn: "We'll write back", hintAr: 'سنردّ عليك' },
+      {
+        to: '/learn',
+        labelEn: 'Start learning',
+        labelAr: 'ابدأ التعلّم',
+        hintEn: 'A gentle on-ramp',
+        hintAr: 'بداية هادئة',
+      },
+      {
+        to: '/learn/articles',
+        labelEn: 'Articles',
+        labelAr: 'المقالات',
+        hintEn: 'Essays and explainers',
+        hintAr: 'مقالات وشروحات',
+      },
+      {
+        to: '/faq',
+        labelEn: 'FAQ',
+        labelAr: 'أسئلة شائعة',
+        hintEn: 'Common questions, honest answers',
+        hintAr: 'أسئلة متكررة بإجابات صادقة',
+      },
+      {
+        to: '/quran',
+        labelEn: "Read the Qur'ān",
+        labelAr: 'اقرأ القرآن',
+        hintEn: 'The words themselves',
+        hintAr: 'الكلمات نفسها',
+      },
+      {
+        to: '/about',
+        labelEn: 'About',
+        labelAr: 'من نحن',
+        hintEn: 'Who we are, why we built this',
+        hintAr: 'من نحن، ولماذا بنينا هذا',
+      },
+      {
+        to: '/contact',
+        labelEn: 'Contact',
+        labelAr: 'تواصل معنا',
+        hintEn: "We'll write back",
+        hintAr: 'سنردّ عليك',
+      },
     ],
   },
 };
