@@ -333,7 +333,6 @@
   },
   "newMuslimPage": {
     "title": "New Muslim Resources",
-    "description": "A gentle starting point for your journey: trusted links, videos, and apps, and a way to reach us whenever you need help.",
     "welcome": {
       "arabic": "السلام عليكم ورحمة الله وبركاته",
       "greeting": "Assalamu alaikum wa rahmatullahi wa barakatuh, brother or sister.",
@@ -344,13 +343,7 @@
       "contact": "If you have questions or need additional help or resources, visit our <contactLink>Contact us</contactLink> page."
     },
     "links": {
-      "title": "Links for Resources",
-      "note": "Every link opens in a new tab.",
       "opensNewTab": "(opens in a new tab)"
-    },
-    "help": {
-      "title": "Have questions or need additional help or resources?",
-      "cta": "Contact us"
     }
   },
   "notFound": {

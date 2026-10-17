@@ -517,11 +517,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
   {
     id: 'newMuslimHeader',
     translations: {
-      en: {
-        title: 'New Muslim Resources',
-        description:
-          'A gentle starting point for your journey: trusted links, videos, and apps, and a way to reach us whenever you need help.',
-      },
+      en: { title: 'New Muslim Resources' },
     },
   },
   {

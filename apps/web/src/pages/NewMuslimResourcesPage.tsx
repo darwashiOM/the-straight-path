@@ -6,7 +6,6 @@ import {
   CirclePlay,
   ExternalLink,
   FileText,
-  HeartHandshake,
   ScrollText,
   Smartphone,
   type LucideIcon,
@@ -46,15 +45,14 @@ export default function NewMuslimResourcesPage() {
   const { locale, localizePath } = useLocalizedPath();
   const meta = getRouteMeta(PATH)!;
 
-  const header = useSiteSetting<{ title: string; description: string }>('newMuslimHeader', locale);
+  const header = useSiteSetting<{ title: string }>('newMuslimHeader', locale);
   const title = header.data?.value.title || t('newMuslimPage.title');
-  const description = header.data?.value.description || t('newMuslimPage.description');
 
   return (
     <>
       <SeoHead
         title={title}
-        description={description || (locale === 'en' ? meta.description : undefined)}
+        description={locale === 'en' ? meta.description : undefined}
         canonical={canonicalFor(PATH, locale)}
         alternatePath={PATH}
         jsonLd={breadcrumbSchema([
@@ -73,40 +71,28 @@ export default function NewMuslimResourcesPage() {
           <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
             {title}
           </h1>
-          <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">{description}</p>
 
           <WelcomeNote />
 
-          <section id="links" aria-labelledby="links-title" className="mt-14 scroll-mt-24">
-            <h2
-              id="links-title"
-              className="text-primary-700 dark:text-accent-300 font-serif text-3xl font-semibold"
-            >
-              {t('newMuslimPage.links.title')}
-            </h2>
-            <p className="text-ink/70 dark:text-paper/70 mt-2 text-sm">
-              {t('newMuslimPage.links.note')}
-            </p>
-
-            <div className="mt-8 space-y-10">
-              {NEW_MUSLIM_LINK_GROUPS.map((group) => (
-                <div key={group.id}>
-                  <h3 className="text-accent-500 text-xs font-semibold uppercase tracking-wider">
-                    {group.title}
-                  </h3>
-                  <ul className="mt-3 space-y-3">
-                    {group.links.map((link) => (
-                      <li key={link.id}>
-                        <ResourceRow link={link} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <HelpCard />
+          <div id="links" className="mt-14 scroll-mt-24 space-y-10">
+            {NEW_MUSLIM_LINK_GROUPS.map((group) => (
+              <section key={group.id} aria-labelledby={`group-${group.id}`}>
+                <h2
+                  id={`group-${group.id}`}
+                  className="text-accent-500 text-xs font-semibold uppercase tracking-wider"
+                >
+                  {group.title}
+                </h2>
+                <ul className="mt-3 space-y-3">
+                  {group.links.map((link) => (
+                    <li key={link.id}>
+                      <ResourceRow link={link} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
         </div>
       </Container>
     </>
@@ -205,32 +191,5 @@ function ResourceRow({ link }: { link: NewMuslimLink }) {
       />
       <span className="sr-only">{t('newMuslimPage.links.opensNewTab')}</span>
     </a>
-  );
-}
-
-function HelpCard() {
-  const { t } = useTranslation();
-  const { localizePath } = useLocalizedPath();
-
-  return (
-    <section
-      aria-labelledby="help-title"
-      className="card mt-14 flex flex-col gap-5 p-6 hover:shadow-sm sm:flex-row sm:items-center sm:p-8"
-    >
-      <div className="bg-accent-50 text-accent-600 dark:bg-primary-900 dark:text-accent-300 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
-        <HeartHandshake size={22} aria-hidden="true" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <h2
-          id="help-title"
-          className="text-primary-700 dark:text-accent-300 font-serif text-2xl font-semibold"
-        >
-          {t('newMuslimPage.help.title')}
-        </h2>
-      </div>
-      <Link to={localizePath(CONTACT_SUPPORT_PATH)} className="btn-primary shrink-0">
-        {t('newMuslimPage.help.cta')}
-      </Link>
-    </section>
   );
 }

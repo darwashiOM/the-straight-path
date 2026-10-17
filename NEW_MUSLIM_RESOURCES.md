@@ -1,10 +1,13 @@
 # New Muslim Resources
 
-`/new-muslim-resources` welcomes new Muslims with a short note, lists trusted
-links under **Links for Resources**, and points to the contact form for
-anyone who has questions or needs more help. The page itself never names the
-support services (mentor, Qur'an, hijab), since those are switched on and off
-in Admin and come and go.
+`/new-muslim-resources` welcomes new Muslims with a short note that ends with
+a link to the contact form, then lists trusted links in four groups (links and
+documents, videos, iOS apps, Android apps). The page never names the support
+services (mentor, Qur'an, hijab), since those are switched on and off in Admin
+and come and go.
+
+All visible text on the page came from the site owner; see CLAUDE.md before
+adding any copy.
 
 ## Editing
 
@@ -19,8 +22,8 @@ in Admin and come and go.
   a square WebP there and point the link's `image` at it.
 - **Welcome note and other copy:** the `newMuslimPage` block in
   `apps/web/src/locales/en.json`.
-- **Page title and subtitle:** Admin → Site Settings → _New Muslim Resources
-  header_ (`newMuslimHeader`), like the other page headers.
+- **Page title:** Admin → Site Settings → _New Muslim Resources header_
+  (`newMuslimHeader`), like the other page headers.
 
 ## Going live
 

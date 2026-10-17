@@ -205,12 +205,9 @@ const SETTINGS: SettingSpec[] = [
   {
     id: 'newMuslimHeader',
     title: 'New Muslim Resources header',
-    description: 'Page header on /new-muslim-resources.',
+    description: 'Page title on /new-muslim-resources.',
     previewPath: '/new-muslim-resources',
-    fields: [
-      { key: 'title', label: 'Title', type: 'text' },
-      { key: 'description', label: 'Description', type: 'textarea' },
-    ],
+    fields: [{ key: 'title', label: 'Title', type: 'text' }],
   },
 ];
 
