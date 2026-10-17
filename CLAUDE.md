@@ -19,8 +19,8 @@ search engine can index:
 
 Use the owner's words as given. If a label is genuinely needed and none was
 supplied, propose the exact wording and wait for a yes before it ships.
-Small mechanical edits (typos, punctuation, the site's standard
-transliterations) are fine, but mention them.
+Small mechanical edits (typos, punctuation) are fine, but mention them. Do
+not "normalise" the owner's spelling of Arabic phrases (see House style).
 
 ## Design rule
 
@@ -28,6 +28,17 @@ Be creative with layout and visual design, but if a design is clearly
 different from one the owner proposed (a screenshot, a sketch, a described
 layout), show it and get a yes first. Mirroring a provided reference is the
 default; departures are proposals, not decisions.
+
+## House style
+
+- Write **in shaa Allah** exactly like that, three words with no diacritics,
+  in every UI string, email, and document. Never inshā’Allāh, insha'Allah,
+  or inshallah.
+- Link lists show the thumbnail and the title only. No note, source line,
+  or "opens in a new tab" text under a link.
+- A page that needs no search description of its own leaves
+  `description: ''` in `apps/web/src/lib/routes.ts` and passes none to
+  `<SeoHead>`, which then uses the site-wide default.
 
 ## Workflow
 
@@ -39,7 +50,8 @@ default; departures are proposals, not decisions.
   `firebase deploy`.
 - Run `pnpm --filter @tsp/web typecheck` and `pnpm build` before pushing;
   CI also runs `pnpm format:check`.
-- Navbar, footer, homepage cards, and page headers are read from Firestore
-  and edited in Admin → Site Settings; defaults in
-  `apps/web/src/lib/content-defaults.ts` are only a fallback. New pages
-  need their links added in Admin after the deploy.
+- Navbar, footer, homepage cards, page headers, and the contact form's
+  labels are read from Firestore and edited in Admin → Site Settings;
+  defaults in `apps/web/src/lib/content-defaults.ts` are only a fallback.
+  New pages need their links added in Admin after the deploy, and a copy
+  change to a Firestore-held string needs the owner to edit it in Admin too.

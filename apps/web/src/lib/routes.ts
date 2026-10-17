@@ -101,8 +101,9 @@ export const routes: RouteMeta[] = [
   {
     path: '/new-muslim-resources',
     title: 'New Muslim Resources',
-    description:
-      'A gentle starting point for new Muslims: trusted links to the Qur’an and Sunnah, a prayer guide, videos, and apps, plus a way to ask us for help.',
+    // Empty on purpose (owner's decision): the page falls back to the
+    // site-wide default description in <SeoHead>.
+    description: '',
     priority: 0.7,
     changefreq: 'monthly',
   },

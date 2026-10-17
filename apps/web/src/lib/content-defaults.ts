@@ -538,7 +538,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
           submit: 'Send message',
           submittingLabel: 'Sending…',
           successTitle: 'Thank you — your message has been received.',
-          successBody: "We'll reply soon, inshā'Allāh.",
+          successBody: "We'll reply soon, in shaa Allah.",
           errorBody: 'Something went wrong. Please try again in a moment.',
         },
       },

@@ -21,7 +21,7 @@ import {
   type NewMuslimLink,
   type NewMuslimLinkIcon,
 } from '@/lib/new-muslim-resources';
-import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
+import { buildBreadcrumbs, canonicalFor } from '@/lib/routes';
 import { breadcrumbSchema } from '@/lib/schema';
 
 const PATH = '/new-muslim-resources';
@@ -43,7 +43,6 @@ const ICONS: Record<NewMuslimLinkIcon, LucideIcon> = {
 export default function NewMuslimResourcesPage() {
   const { t } = useTranslation();
   const { locale, localizePath } = useLocalizedPath();
-  const meta = getRouteMeta(PATH)!;
 
   const header = useSiteSetting<{ title: string }>('newMuslimHeader', locale);
   const title = header.data?.value.title || t('newMuslimPage.title');
@@ -52,7 +51,6 @@ export default function NewMuslimResourcesPage() {
     <>
       <SeoHead
         title={title}
-        description={locale === 'en' ? meta.description : undefined}
         canonical={canonicalFor(PATH, locale)}
         alternatePath={PATH}
         jsonLd={breadcrumbSchema([
@@ -178,11 +176,8 @@ function ResourceRow({ link }: { link: NewMuslimLink }) {
           />
         )}
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 block font-semibold">
-          {link.title}
-        </span>
-        <span className="text-ink/60 dark:text-paper/60 mt-0.5 block text-xs">{link.note}</span>
+      <span className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 min-w-0 flex-1 font-semibold">
+        {link.title}
       </span>
       <ExternalLink
         size={16}

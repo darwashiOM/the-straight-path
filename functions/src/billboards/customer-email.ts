@@ -50,7 +50,7 @@ export function receivedBlocks(cfg: CustomerEmailConfig, o: BillboardOrderInput)
   return [
     { text: `Hi ${o.name},` },
     {
-      text: 'Thank you for ordering free Mobile Billboards (Dawah bumper stickers) from The Straight Path. We’ve received your order and will mail it soon, inshā’Allāh.',
+      text: 'Thank you for ordering free Mobile Billboards (Dawah bumper stickers) from The Straight Path. We’ve received your order and will mail it soon, in shaa Allah.',
     },
     { text: 'Your stickers:' },
     { list: o.lines.map((l) => customerItem(lineText(l))) },
