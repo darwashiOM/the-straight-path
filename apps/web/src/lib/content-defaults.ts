@@ -265,6 +265,13 @@ export const DEFAULT_NAV_ITEMS: NavItem[] = [
     visible: true,
     order: 6,
   },
+  {
+    to: '/new-muslim-resources',
+    key: 'newMuslimResources',
+    labelEn: 'New Muslim Resources',
+    visible: true,
+    order: 7,
+  },
 ];
 
 /**
@@ -341,6 +348,7 @@ export const DEFAULT_FOOTER_NAV: FooterNavColumn[] = [
       { to: '/faq', labelEn: 'FAQ' },
       { to: '/social', labelEn: 'On Social Media' },
       { to: '/mobile-billboards', labelEn: 'Mobile Billboards' },
+      { to: '/new-muslim-resources', labelEn: 'New Muslim Resources' },
     ],
   },
   {
@@ -503,6 +511,16 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         title: 'Mobile Billboards',
         description:
           'Free Dawah bumper stickers, 11 × 3 inches. Download a design to print yourself, or ask us to mail you some at no cost.',
+      },
+    },
+  },
+  {
+    id: 'newMuslimHeader',
+    translations: {
+      en: {
+        title: 'New Muslim Resources',
+        description:
+          'A gentle starting point for your journey: trusted links, videos, and apps, and a way to reach us whenever you need help.',
       },
     },
   },

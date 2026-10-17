@@ -99,6 +99,14 @@ export const routes: RouteMeta[] = [
     changefreq: 'monthly',
   },
   {
+    path: '/new-muslim-resources',
+    title: 'New Muslim Resources',
+    description:
+      'A gentle starting point for new Muslims: trusted links to the Qur’an and Sunnah, a prayer guide, videos, and apps, plus a way to ask us for help.',
+    priority: 0.7,
+    changefreq: 'monthly',
+  },
+  {
     path: '/about',
     title: 'About',
     description:
@@ -160,6 +168,7 @@ const BREADCRUMB_NODES: Record<string, BreadcrumbNode> = {
   '/faq': { path: '/faq', i18nKey: 'nav.faq' },
   '/social': { path: '/social', i18nKey: 'nav.social' },
   '/mobile-billboards': { path: '/mobile-billboards', i18nKey: 'nav.mobileBillboards' },
+  '/new-muslim-resources': { path: '/new-muslim-resources', i18nKey: 'nav.newMuslimResources' },
   '/about': { path: '/about', i18nKey: 'nav.about' },
   '/contact': { path: '/contact', i18nKey: 'nav.contact' },
   '/privacy': { path: '/privacy', i18nKey: 'nav.privacy' },
@@ -175,6 +184,7 @@ const BREADCRUMB_PARENTS: Record<string, string | null> = {
   '/faq': '/',
   '/social': '/',
   '/mobile-billboards': '/',
+  '/new-muslim-resources': '/',
   '/about': '/',
   '/contact': '/',
   '/privacy': '/',

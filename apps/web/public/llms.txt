@@ -12,6 +12,7 @@ The Straight Path is a volunteer-run educational project. Content is reader-firs
 - [Read the Qur'an](https://www.thestraightpath.org/quran): points to Quran.com
 - [FAQ](https://www.thestraightpath.org/faq): plain answers to common questions
 - [Resources](https://www.thestraightpath.org/resources): curated external links
+- [New Muslim Resources](https://www.thestraightpath.org/new-muslim-resources): a welcome note plus curated links, videos, and apps for new Muslims
 - [Social Media](https://www.thestraightpath.org/social): recommended channels
 - [About](https://www.thestraightpath.org/about): mission and principles
 - [Contact](https://www.thestraightpath.org/contact): open message form

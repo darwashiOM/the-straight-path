@@ -202,6 +202,16 @@ const SETTINGS: SettingSpec[] = [
       { key: 'description', label: 'Description', type: 'textarea' },
     ],
   },
+  {
+    id: 'newMuslimHeader',
+    title: 'New Muslim Resources header',
+    description: 'Page header on /new-muslim-resources.',
+    previewPath: '/new-muslim-resources',
+    fields: [
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'description', label: 'Description', type: 'textarea' },
+    ],
+  },
 ];
 
 export default function SiteSettingsPage() {

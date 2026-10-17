@@ -13,6 +13,7 @@ const ResourcesPage = lazy(() => import('@/pages/ResourcesPage'));
 const FaqPage = lazy(() => import('@/pages/FaqPage'));
 const SocialPage = lazy(() => import('@/pages/SocialPage'));
 const MobileBillboardsPage = lazy(() => import('@/pages/MobileBillboardsPage'));
+const NewMuslimResourcesPage = lazy(() => import('@/pages/NewMuslimResourcesPage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="faq" element={<FaqPage />} />
           <Route path="social" element={<SocialPage />} />
           <Route path="mobile-billboards" element={<MobileBillboardsPage />} />
+          <Route path="new-muslim-resources" element={<NewMuslimResourcesPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="privacy" element={<PrivacyPage />} />

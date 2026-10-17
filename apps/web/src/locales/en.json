@@ -13,6 +13,7 @@
     "faq": "Ask Questions",
     "social": "On Social Media",
     "mobileBillboards": "Mobile Billboards",
+    "newMuslimResources": "New Muslim Resources",
     "about": "About",
     "contact": "Contact",
     "privacy": "Privacy",
@@ -328,6 +329,29 @@
       "successTitle": "Thank you — your order has been received.",
       "successBody": "We’ll mail your stickers soon, inshā’Allāh.",
       "orderAgain": "Place another order"
+    }
+  },
+  "newMuslimPage": {
+    "title": "New Muslim Resources",
+    "description": "A gentle starting point for your journey: trusted links, videos, and apps, and a way to reach us whenever you need help.",
+    "welcome": {
+      "arabic": "السلام عليكم ورحمة الله وبركاته",
+      "greeting": "Assalamu alaikum wa rahmatullahi wa barakatuh, brother or sister.",
+      "greetingMeaning": "May the peace, mercy, and blessings of Allah be upon you.",
+      "p1": "We praise Allah for all His blessings, especially the blessing of guiding us to the straight path. We ask Him to keep our hearts firm upon the truth and to guide us throughout our journey.",
+      "p2": "Islam gives you purpose, peace of mind, and clear direction. We hope this page will help you as you begin your journey as a new Muslim. There is a lot to learn, but you do not need to learn everything at once. Take your time, and move at a pace that does not overwhelm you. This is a lifelong journey of growing closer to Allah.",
+      "p3": "Please find below links to apps, websites, and resources we believe will be helpful, inshā’Allāh.",
+      "contact": "If you have questions or need additional help or resources, visit our <contactLink>Contact us</contactLink> page."
+    },
+    "links": {
+      "title": "Links for Resources",
+      "note": "Every link opens in a new tab.",
+      "opensNewTab": "(opens in a new tab)"
+    },
+    "help": {
+      "title": "Need a mentor, a Qur'an, or other support?",
+      "body": "Our small team is happy to help. Tell us what would help on the contact page, and we will reply with care, inshā’Allāh.",
+      "cta": "Contact us"
     }
   },
   "notFound": {
