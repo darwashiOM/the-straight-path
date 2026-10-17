@@ -1,7 +1,7 @@
-import { Laptop, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { useTheme, type ThemeMode } from '@/lib/theme';
+import { useTheme } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 
 interface DarkModeToggleProps {
@@ -9,31 +9,26 @@ interface DarkModeToggleProps {
 }
 
 /**
- * `<DarkModeToggle>` — a three-state color-scheme cycle button
- * (light → dark → system → light …).
+ * `<DarkModeToggle>` — a two-state light/dark switch.
  *
- * Renders the icon of the *current* mode so the user sees their selection;
- * the tooltip / aria-label describes the *next* action for clarity. The
+ * Shows the icon of the theme currently on screen (sun in light mode, moon in
+ * dark mode); the tooltip / aria-label names the *next* action. A visitor who
+ * has never pressed it follows their OS theme until the first press. The
  * button wraps a visually-hidden polite live region so screen readers
  * announce the new mode on each press.
  */
 export default function DarkModeToggle({ className }: DarkModeToggleProps) {
   const { t } = useTranslation();
-  const { mode, cycle } = useTheme();
+  const { resolved, cycle } = useTheme();
 
-  const Icon = mode === 'light' ? Sun : mode === 'dark' ? Moon : Laptop;
-  const nextMode: ThemeMode = mode === 'light' ? 'dark' : mode === 'dark' ? 'system' : 'light';
+  const Icon = resolved === 'dark' ? Moon : Sun;
+  const nextMode = resolved === 'dark' ? 'light' : 'dark';
 
-  const label = t(`theme.current.${mode}`, {
-    defaultValue: mode === 'light' ? 'Light mode' : mode === 'dark' ? 'Dark mode' : 'System theme',
+  const label = t(`theme.current.${resolved}`, {
+    defaultValue: resolved === 'dark' ? 'Dark mode' : 'Light mode',
   }) as string;
   const nextLabel = t(`theme.switchTo.${nextMode}`, {
-    defaultValue:
-      nextMode === 'light'
-        ? 'Switch to light mode'
-        : nextMode === 'dark'
-          ? 'Switch to dark mode'
-          : 'Use system theme',
+    defaultValue: nextMode === 'dark' ? 'Switch to dark mode' : 'Switch to light mode',
   }) as string;
 
   return (

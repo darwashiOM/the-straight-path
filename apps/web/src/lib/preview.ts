@@ -230,6 +230,8 @@ function siteSettingPath(id: string): string {
       return '/quran';
     case 'billboardsHeader':
       return '/mobile-billboards';
+    case 'newMuslimHeader':
+      return '/new-muslim-resources';
     default:
       return '/';
   }

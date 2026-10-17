@@ -13,6 +13,7 @@
     "faq": "Ask Questions",
     "social": "On Social Media",
     "mobileBillboards": "Mobile Billboards",
+    "newMuslimResources": "New Muslim Resources",
     "about": "About",
     "contact": "Contact",
     "privacy": "Privacy",
@@ -330,6 +331,21 @@
       "orderAgain": "Place another order"
     }
   },
+  "newMuslimPage": {
+    "title": "New Muslim Resources",
+    "welcome": {
+      "arabic": "السلام عليكم ورحمة الله وبركاته",
+      "greeting": "Assalamu alaikum wa rahmatullahi wa barakatuh, brother or sister.",
+      "greetingMeaning": "May the peace, mercy, and blessings of Allah be upon you.",
+      "p1": "We praise Allah for all His blessings, especially the blessing of guiding us to the straight path. We ask Him to keep our hearts firm upon the truth and to guide us throughout our journey.",
+      "p2": "Islam gives you purpose, peace of mind, and clear direction. We hope this page will help you as you begin your journey as a new Muslim. There is a lot to learn, but you do not need to learn everything at once. Take your time, and move at a pace that does not overwhelm you. This is a lifelong journey of growing closer to Allah.",
+      "p3": "Please find below links to apps, websites, and resources we believe will be helpful, inshā’Allāh.",
+      "contact": "If you have questions or need additional help or resources, visit our <contactLink>Contact us</contactLink> page."
+    },
+    "links": {
+      "opensNewTab": "(opens in a new tab)"
+    }
+  },
   "notFound": {
     "seoTitle": "Page Not Found",
     "seoDescription": "The page you're looking for isn't here. Try the home page, the articles index, the Qur'an, or send us a message.",
@@ -451,13 +467,11 @@
   "theme": {
     "current": {
       "light": "Light mode",
-      "dark": "Dark mode",
-      "system": "System theme"
+      "dark": "Dark mode"
     },
     "switchTo": {
       "light": "Switch to light mode",
-      "dark": "Switch to dark mode",
-      "system": "Use system theme"
+      "dark": "Switch to dark mode"
     }
   },
   "breadcrumbs": {

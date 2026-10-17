@@ -148,6 +148,7 @@ export type SiteSettingId =
   | 'faqHeader'
   | 'socialHeader'
   | 'billboardsHeader'
+  | 'newMuslimHeader'
   | 'contactIntro'
   | 'notFound'
   | 'seo'

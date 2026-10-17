@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
@@ -69,6 +70,12 @@ export default function ContactPage() {
   const [support, setSupport] = useState<SupportState>(EMPTY_SUPPORT);
   const meta = getRouteMeta('/contact')!;
 
+  // `/contact?support=1` (linked from New Muslim Resources) opens the support
+  // section and scrolls to it once the service switches have loaded.
+  const [searchParams] = useSearchParams();
+  const supportRequested = searchParams.get('support') === '1';
+  const supportCardRef = useRef<HTMLDivElement>(null);
+
   const intro = useSiteSetting<ContactIntroCopy>('contactIntro', locale);
   const introCopy = intro.data?.value;
   const formLabelsByLocale = intro.data?.data?.formLabels as
@@ -95,6 +102,15 @@ export default function ContactPage() {
   const supportActive = supportAvailable && support.wanted;
   const selectedServices = enabledServices.filter((k) => support.requests[k]);
   const needsAddress = selectedServices.some((k) => SHIPPED_SERVICES.includes(k));
+
+  useEffect(() => {
+    if (!supportRequested || !supportAvailable) return;
+    setSupport((s) => (s.wanted ? s : { ...s, wanted: true }));
+    const timer = window.setTimeout(() => {
+      supportCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [supportRequested, supportAvailable]);
 
   function patchSupport<K extends keyof SupportState>(key: K, value: SupportState[K]) {
     setSupport((s) => ({ ...s, [key]: value }));
@@ -238,7 +254,7 @@ export default function ContactPage() {
               </Field>
 
               {supportAvailable ? (
-                <div className="card p-5">
+                <div ref={supportCardRef} className="card scroll-mt-24 p-5">
                   <Checkbox
                     checked={support.wanted}
                     onChange={() => patchSupport('wanted', !support.wanted)}
