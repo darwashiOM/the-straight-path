@@ -1,11 +1,12 @@
 /**
  * Theme library — a tiny Zustand store and `useTheme` hook that manages the
- * three-state color mode (light / dark / system) and keeps the `class="dark"`
- * attribute on `<html>` in sync.
+ * color mode and keeps the `class="dark"` attribute on `<html>` in sync.
  *
+ * The toggle offers two states, light and dark. `"system"` is only the
+ * starting point for a visitor who has never chosen (and the legacy value
+ * older visitors may still have stored): it follows `prefers-color-scheme`
+ * and subscribes to its changes so the page flips live with the OS setting.
  * The store persists the user's choice to localStorage under `tsp:theme`.
- * When the stored value is `"system"` we follow `prefers-color-scheme` and
- * subscribe to its changes so the page flips live with the OS setting.
  */
 import { useEffect } from 'react';
 import { create } from 'zustand';
@@ -63,10 +64,9 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     set({ mode });
   },
   cycle: () => {
-    const order: ThemeMode[] = ['light', 'dark', 'system'];
-    const current = get().mode;
-    const next = order[(order.indexOf(current) + 1) % order.length] ?? 'system';
-    get().setMode(next);
+    // Two states only: flip whatever is on screen. A visitor who has never
+    // chosen (mode "system") goes to the opposite of their OS theme.
+    get().setMode(resolveTheme(get().mode) === 'dark' ? 'light' : 'dark');
   },
 }));
 

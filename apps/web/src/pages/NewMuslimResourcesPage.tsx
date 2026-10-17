@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
@@ -28,6 +29,9 @@ const PATH = '/new-muslim-resources';
 
 /** The contact page opens its new-Muslim support section when `support=1` is set. */
 const CONTACT_SUPPORT_PATH = '/contact?support=1';
+
+/** Thumbnails in public/new-muslim-resources are square at this size. */
+const THUMB_SIZE = 160;
 
 const ICONS: Record<NewMuslimLinkIcon, LucideIcon> = {
   book: BookOpen,
@@ -162,6 +166,7 @@ function WelcomeNote() {
 
 function ResourceRow({ link }: { link: NewMuslimLink }) {
   const { t } = useTranslation();
+  const [thumbBroken, setThumbBroken] = useState(false);
   const Icon = ICONS[link.icon];
 
   return (
@@ -171,8 +176,21 @@ function ResourceRow({ link }: { link: NewMuslimLink }) {
       rel="noopener noreferrer"
       className="card group flex items-center gap-4 px-4 py-3.5 sm:px-5"
     >
-      <span className="bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-accent-300 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full">
-        <Icon size={20} aria-hidden="true" />
+      <span className="ring-primary-500/10 text-primary-700 dark:ring-primary-700/60 dark:text-accent-300 inline-flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white ring-1">
+        {thumbBroken ? (
+          <Icon size={20} aria-hidden="true" />
+        ) : (
+          <img
+            src={link.image}
+            alt=""
+            width={THUMB_SIZE}
+            height={THUMB_SIZE}
+            loading="lazy"
+            decoding="async"
+            onError={() => setThumbBroken(true)}
+            className="h-full w-full object-cover"
+          />
+        )}
       </span>
       <span className="min-w-0 flex-1">
         <span className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 block font-semibold">
@@ -209,9 +227,6 @@ function HelpCard() {
         >
           {t('newMuslimPage.help.title')}
         </h2>
-        <p className="text-ink/70 dark:text-paper/70 mt-2 text-sm">
-          {t('newMuslimPage.help.body')}
-        </p>
       </div>
       <Link to={localizePath(CONTACT_SUPPORT_PATH)} className="btn-primary shrink-0">
         {t('newMuslimPage.help.cta')}

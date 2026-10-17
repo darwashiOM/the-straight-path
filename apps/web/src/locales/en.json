@@ -349,8 +349,7 @@
       "opensNewTab": "(opens in a new tab)"
     },
     "help": {
-      "title": "Need a mentor, a Qur'an, or other support?",
-      "body": "Our small team is happy to help. Tell us what would help on the contact page, and we will reply with care, inshā’Allāh.",
+      "title": "Have questions or need additional help or resources?",
       "cta": "Contact us"
     }
   },
@@ -475,13 +474,11 @@
   "theme": {
     "current": {
       "light": "Light mode",
-      "dark": "Dark mode",
-      "system": "System theme"
+      "dark": "Dark mode"
     },
     "switchTo": {
       "light": "Switch to light mode",
-      "dark": "Switch to dark mode",
-      "system": "Use system theme"
+      "dark": "Switch to dark mode"
     }
   },
   "breadcrumbs": {
