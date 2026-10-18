@@ -1,15 +1,15 @@
 {
   "site": {
     "name": "The Straight Path",
-    "description": "A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur'an, and explore a clear path to God."
+    "description": "A pastoral, accessible introduction to Islam. Learn the essentials, read the Quran, and explore a clear path to God."
   },
   "nav": {
     "home": "Home",
     "learn": "Learn",
     "articles": "Articles",
-    "quran": "Read the Qur'an",
+    "quran": "Read the Quran",
     "resources": "Further Learning",
-    "faq": "Ask Questions",
+    "faq": "Frequently Asked Questions",
     "social": "On Social Media",
     "mobileBillboards": "Mobile Billboards",
     "newMuslimResources": "New Muslim Resources",
@@ -30,7 +30,7 @@
       "title": "A Clear Path to God",
       "subtitle": "A pastoral, accessible introduction to Islam — organized around learning, scripture, and reflection.",
       "ctaPrimary": "Start Learning",
-      "ctaSecondary": "Read the Qur'an"
+      "ctaSecondary": "Read the Quran"
     },
     "featured": {
       "eyebrow": "Featured · Foundations",
@@ -38,8 +38,8 @@
     },
     "sections": {
       "learn": "Learn About Islam",
-      "quran": "Read the Qur'an",
-      "social": "Islam Explained on Social Media",
+      "quran": "Read the Quran",
+      "social": "Helpful Social Media Channels",
       "resources": "Further Learning",
       "faq": "Frequently Asked Questions",
       "about": "About Us",
@@ -47,8 +47,8 @@
     },
     "learnEyebrow": "Learn",
     "quranBanner": {
-      "headline": "Read the Qur'ān — the word of God, preserved for over 1400 years.",
-      "body": "Quran.com offers the Qur'ān in many languages with a simple, clear interface.",
+      "headline": "Read the Quran — the word of God, preserved for over 1400 years.",
+      "body": "Quran.com offers the Quran in many languages with a simple, clear interface.",
       "cta": "Open Quran.com"
     },
     "quickLinks": {
@@ -80,7 +80,7 @@
       "all": "All",
       "foundations": "Foundations",
       "creed": "Creed",
-      "quran": "Qur'an",
+      "quran": "Quran",
       "prophet": "Prophet",
       "character": "Character",
       "practice": "Practice",
@@ -109,26 +109,25 @@
   },
   "articlesPage": {
     "title": "Articles",
-    "description": "Essays on the foundations of Islam — the creed, the Prophet, the Qur'an, and the path.",
+    "description": "Essays on the foundations of Islam — the creed, the Prophet, the Quran, and the path.",
     "draft": "Draft",
     "backToArticles": "All articles",
     "notFound": "Article not found",
     "backBtn": "Back to articles"
   },
   "quranPage": {
-    "eyebrow": "The Noble Qur'ān",
+    "eyebrow": "The Noble Quran",
     "headline": "Read the word of God, preserved for over 1400 years.",
-    "body": "We recommend Quran.com — a trusted, free resource that offers the Qur'ān in many languages with a simple and beautiful interface.",
+    "body": "We recommend Quran.com — a trusted, free resource that offers the Quran in many languages with a simple and beautiful interface.",
     "cta": "Open Quran.com",
-    "aboutTitle": "About the Qur'ān",
-    "aboutBody1": "The Qur'ān is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.",
+    "aboutTitle": "About the Quran",
+    "aboutBody1": "The Quran is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.",
     "aboutBody2": "It is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good."
   },
   "resourcesPage": {
     "title": "Further Learning",
-    "description": "Trusted resources for further study — chosen for their accuracy, accessibility, and tone.",
     "categories": {
-      "quran": "Qur'an",
+      "quran": "Quran",
       "hadith": "Hadith",
       "research": "Research",
       "study": "Study"
@@ -136,7 +135,7 @@
     "items": {
       "quranCom": {
         "title": "Quran.com",
-        "description": "The Noble Qur'an with translations in many languages."
+        "description": "The Noble Quran with translations in many languages."
       },
       "sunnahCom": {
         "title": "Sunnah.com",
@@ -148,17 +147,16 @@
       },
       "bayyinah": {
         "title": "Bayyinah TV",
-        "description": "Arabic and Qur'an studies taught by Nouman Ali Khan and the Bayyinah team."
+        "description": "Arabic and Quran studies taught by Nouman Ali Khan and the Bayyinah team."
       },
       "islamicAwareness": {
         "title": "Islamic Awareness",
-        "description": "Scholarly articles on the Qur'an, early Islam, and comparative religion."
+        "description": "Scholarly articles on the Quran, early Islam, and comparative religion."
       }
     }
   },
   "faqPage": {
-    "title": "Ask Questions",
-    "description": "Plain answers to common questions about Islam — and an open door for the rest.",
+    "title": "Frequently Asked Questions",
     "items": [
       {
         "q": "What is Islam, in one sentence?",
@@ -170,7 +168,7 @@
       },
       {
         "q": "Do I have to learn Arabic to be Muslim?",
-        "a": "No. A Muslim can be of any language. Arabic is the language of the Qur'ān, so many Muslims learn some Arabic for prayer and reading scripture, but full translations are widely available."
+        "a": "No. A Muslim can be of any language. Arabic is the language of the Quran, so many Muslims learn some Arabic for prayer and reading scripture, but full translations are widely available."
       },
       {
         "q": "What are the five pillars of Islam?",
@@ -187,8 +185,7 @@
     ]
   },
   "socialPage": {
-    "title": "Islam Explained on Social Media",
-    "description": "A small, curated list of channels that explain Islam with clarity and good character.",
+    "title": "Helpful Social Media Channels",
     "visitChannel": "Visit channel",
     "channels": {
       "efdawah": {
@@ -216,7 +213,7 @@
       },
       {
         "label": "Source everything.",
-        "body": "Qur'anic verses and authenticated hadith, cited and graded."
+        "body": "Quranic verses and authenticated hadith, cited and graded."
       },
       {
         "label": "Non-sectarian.",
@@ -253,11 +250,11 @@
       "whatLabel": "What would help?",
       "options": {
         "mentor": "A mentor to talk to",
-        "quran": "A copy of the Qur'an",
+        "quran": "A copy of the Quran",
         "hijab": "A hijab"
       },
       "details": "Details",
-      "detailsHint": "For example: a hijab style or colour you prefer, the language you'd like a Qur'an in, or what you're hoping for in a mentor.",
+      "detailsHint": "For example: a hijab style or colour you prefer, the language you'd like a Quran in, or what you're hoping for in a mentor.",
       "phone": "Phone number",
       "phoneHint": "Optional. Useful if we need to reach you about a delivery.",
       "addressHeading": "Shipping address",
@@ -335,7 +332,7 @@
   },
   "notFound": {
     "seoTitle": "Page Not Found",
-    "seoDescription": "The page you're looking for isn't here. Try the home page, the articles index, the Qur'an, or send us a message.",
+    "seoDescription": "The page you're looking for isn't here. Try the home page, the articles index, the Quran, or send us a message.",
     "eyebrow": "Error 404",
     "title": "We couldn't find that page.",
     "description": "The link may be broken, or the page may have moved. If you've wandered off the path, that's alright — let's find your way back.",
@@ -345,14 +342,14 @@
     "popularHeading": "Popular places to go",
     "home": "Home",
     "articles": "Articles",
-    "quran": "Read the Qur'ān",
+    "quran": "Read the Quran",
     "contact": "Contact",
     "contactHint": "Tell us what you were looking for",
     "links": {
       "learn": { "label": "Start learning", "hint": "A gentle on-ramp" },
       "articles": { "label": "Articles", "hint": "Essays and explainers" },
       "faq": { "label": "FAQ", "hint": "Common questions, honest answers" },
-      "quran": { "label": "Read the Qur'ān", "hint": "The words themselves" },
+      "quran": { "label": "Read the Quran", "hint": "The words themselves" },
       "about": { "label": "About", "hint": "Who we are, why we built this" },
       "contact": { "label": "Contact", "hint": "We'll write back" }
     }
@@ -407,7 +404,7 @@
     },
     "why-did-god-create-you": {
       "title": "Why Did God Create You?",
-      "excerpt": "The Qur'an's answer to the oldest question — and what it means for how we live."
+      "excerpt": "The Quran's answer to the oldest question — and what it means for how we live."
     },
     "what-is-islam": {
       "title": "What is Islam?",
@@ -418,8 +415,8 @@
       "excerpt": "The five acts of worship that shape a Muslim's life — and the quiet logic behind each one."
     },
     "understanding-the-quran": {
-      "title": "Understanding the Qur'an",
-      "excerpt": "How the Qur'an was revealed, preserved, and read — and how to approach it for the first time."
+      "title": "Understanding the Quran",
+      "excerpt": "How the Quran was revealed, preserved, and read — and how to approach it for the first time."
     },
     "the-prophets-character": {
       "title": "The Prophet's Character",

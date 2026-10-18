@@ -22,11 +22,11 @@ under `notifications` (`ok: true/false`, with the error text if any).
 - **Always:** name, email, message.
 - **Optionally** (when at least one support service is switched on in admin):
   an "I'm a new Muslim and would like support" checkbox that reveals
-  - which services are wanted: Mentor / Qur'an / Hijab (one or more),
-  - a free-text details box (hijab style, Qur'an language, mentor hopes…),
+  - which services are wanted: Mentor / Quran / Hijab (one or more),
+  - a free-text details box (hijab style, Quran language, mentor hopes…),
   - an optional phone number,
   - a US shipping address (street, city, state, ZIP) — required only when a
-    Qur'an or hijab is requested. Shipping is US-only.
+    Quran or hijab is requested. Shipping is US-only.
 
 ## Switching support services on / off
 

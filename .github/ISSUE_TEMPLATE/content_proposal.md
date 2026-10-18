@@ -16,7 +16,7 @@ Who is this for, and what question does it answer?
 
 ## Sources & references
 
-Qur'ān verses, hadith, scholarly works, or other trustworthy sources that
+Quran verses, hadith, scholarly works, or other trustworthy sources that
 ground the content.
 
 ## Tone & audience

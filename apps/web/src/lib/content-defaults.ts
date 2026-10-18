@@ -26,7 +26,7 @@ type Id<T> = T & { id: string };
 export const DEFAULT_TOPICS: Id<TopicDoc>[] = [
   t('foundations', 0, 'Foundations'),
   t('creed', 1, 'Creed'),
-  t('quran', 2, "Qur'an"),
+  t('quran', 2, 'Quran'),
   t('prophet', 3, 'Prophet'),
   t('character', 4, 'Character'),
   t('practice', 5, 'Practice'),
@@ -73,7 +73,7 @@ export const DEFAULT_RESOURCES: Id<ResourceDoc>[] = [
   r('quranCom', 0, 'https://quran.com/', 'quran', {
     en: {
       title: 'Quran.com',
-      description: "The Noble Qur'an with translations in many languages.",
+      description: 'The Noble Quran with translations in many languages.',
     },
   }),
   r('sunnahCom', 1, 'https://sunnah.com/', 'hadith', {
@@ -91,13 +91,13 @@ export const DEFAULT_RESOURCES: Id<ResourceDoc>[] = [
   r('bayyinah', 3, 'https://bayyinah.tv/', 'study', {
     en: {
       title: 'Bayyinah TV',
-      description: "Arabic and Qur'an studies taught by Nouman Ali Khan and the Bayyinah team.",
+      description: 'Arabic and Quran studies taught by Nouman Ali Khan and the Bayyinah team.',
     },
   }),
   r('islamicAwareness', 4, 'https://www.islamic-awareness.org/', 'research', {
     en: {
       title: 'Islamic Awareness',
-      description: "Scholarly articles on the Qur'an, early Islam, and comparative religion.",
+      description: 'Scholarly articles on the Quran, early Islam, and comparative religion.',
     },
   }),
 ];
@@ -133,7 +133,7 @@ export const DEFAULT_FAQS: Id<FaqDoc>[] = [
     en: {
       question: 'Do I have to learn Arabic to be Muslim?',
       answer:
-        "No. A Muslim can be of any language. Arabic is the language of the Qur'ān, so many Muslims learn some Arabic for prayer and reading scripture, but full translations are widely available.",
+        'No. A Muslim can be of any language. Arabic is the language of the Quran, so many Muslims learn some Arabic for prayer and reading scripture, but full translations are widely available.',
     },
   }),
   f('f4', 3, {
@@ -228,7 +228,7 @@ export const DEFAULT_BRAND_SETTING: SiteSettingDefault<{
  */
 export const DEFAULT_NAV_ITEMS: NavItem[] = [
   { to: '/learn', key: 'learn', labelEn: 'Learn about Islam', visible: true, order: 0 },
-  { to: '/quran', key: 'quran', labelEn: "Read the Qur'an", visible: true, order: 1 },
+  { to: '/quran', key: 'quran', labelEn: 'Read the Quran', visible: true, order: 1 },
   {
     to: '/new-muslim-resources',
     key: 'newMuslimResources',
@@ -283,7 +283,7 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     visible: true,
     order: 1,
     labelEn: 'Further Learning',
-    descEn: "Qur'an, hadith, research — a small, carefully-picked list.",
+    descEn: 'Quran, hadith, research — a small, carefully-picked list.',
   },
   {
     to: '/faq',
@@ -328,7 +328,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         subtitle:
           'A pastoral, accessible introduction to Islam — organized around learning, scripture, and reflection.',
         ctaPrimary: 'Start Learning',
-        ctaSecondary: "Read the Qur'an",
+        ctaSecondary: 'Read the Quran',
       },
     },
   },
@@ -336,9 +336,9 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     id: 'quranBanner',
     translations: {
       en: {
-        eyebrow: "Read the Qur'an",
-        headline: "Read the Qur'ān — the word of God, preserved for over 1400 years.",
-        body: "Quran.com offers the Qur'ān in many languages with a simple, clear interface.",
+        eyebrow: 'Read the Quran',
+        headline: 'Read the Quran — the word of God, preserved for over 1400 years.',
+        body: 'Quran.com offers the Quran in many languages with a simple, clear interface.',
         cta: 'Open Quran.com',
         ctaUrl: 'https://quran.com/',
       },
@@ -373,7 +373,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       en: {
         title: 'Articles',
         description:
-          "Essays on the foundations of Islam — the creed, the Prophet, the Qur'an, and the path.",
+          'Essays on the foundations of Islam — the creed, the Prophet, the Quran, and the path.',
       },
     },
   },
@@ -381,8 +381,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     id: 'quranAbout',
     translations: {
       en: {
-        title: "About the Qur'ān",
-        body: "The Qur'ān is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.\n\nIt is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good.",
+        title: 'About the Quran',
+        body: 'The Quran is the final revelation from God (Allāh), revealed through the angel Gabriel to the Prophet Muḥammad ﷺ over 23 years. It has been preserved — word for word, in its original Arabic — through both written transmission and continuous memorization across generations.\n\nIt is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good.',
       },
     },
   },
@@ -404,8 +404,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     translations: {
       en: {
         title: 'Further Learning',
-        description:
-          'Trusted resources for further study — chosen for their accuracy, accessibility, and tone.',
+        description: '',
       },
     },
   },
@@ -413,9 +412,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     id: 'faqHeader',
     translations: {
       en: {
-        title: 'Ask Questions',
-        description:
-          'Plain answers to common questions about Islam — and an open door for the rest.',
+        title: 'Frequently Asked Questions',
+        description: '',
       },
     },
   },
@@ -423,9 +421,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     id: 'socialHeader',
     translations: {
       en: {
-        title: 'Islam Explained on Social Media',
-        description:
-          'A small, curated list of channels that explain Islam with clarity and good character.',
+        title: 'Helpful Social Media Channels',
+        description: '',
       },
     },
   },
@@ -504,7 +501,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         },
         {
           to: '/quran',
-          labelEn: "Read the Qur'ān",
+          labelEn: 'Read the Quran',
           hintEn: 'The words themselves',
         },
         {
@@ -527,7 +524,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
       defaults: {
         titleSuffix: 'The Straight Path',
         defaultDescriptionEn:
-          'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God.',
+          'A pastoral, accessible introduction to Islam. Learn the essentials, read the Quran, and explore a clear path to God.',
         defaultOgImageUrl: '/og-default.png',
       },
       routes: {},
@@ -569,7 +566,7 @@ export const DEFAULT_PAGES: Omit<Id<PageDoc>, 'createdAt' | 'updatedAt' | 'updat
 ## Our principles
 
 - **Pastoral, not polemical.** We write as if speaking to a thoughtful stranger over coffee.
-- **Source everything.** Qur'anic verses and authenticated hadith, cited and graded.
+- **Source everything.** Quranic verses and authenticated hadith, cited and graded.
 - **Non-sectarian.** We teach core Islam and leave sectarian debates at the door.
 - **Plain language.** Arabic terms are defined on first use and transliterated consistently.
 - **Reader-first.** Every sentence earns its place.

@@ -37,7 +37,9 @@ const config: Config = {
         sienna: '#B24A3E',
       },
       fontFamily: {
-        serif: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
+        // Heading font. The key keeps its old name so every `font-serif` class
+        // still applies it; only 400 and 700 are loaded, so headings render Bold.
+        serif: ['Montserrat', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         sans: [
           'Inter',
           'ui-sans-serif',

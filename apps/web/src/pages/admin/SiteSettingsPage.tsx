@@ -85,7 +85,7 @@ const SETTINGS: SettingSpec[] = [
   },
   {
     id: 'quranBanner',
-    title: 'Qur’an banner',
+    title: 'Quran banner',
     description:
       'Homepage banner linking to Quran.com. The CTA label and URL are also the button on /quran.',
     previewPath: '/',
@@ -131,7 +131,7 @@ const SETTINGS: SettingSpec[] = [
   },
   {
     id: 'quranAbout',
-    title: 'Qur’an page — about',
+    title: 'Quran page — about',
     description: 'The /quran page: the title shows as the gold eyebrow, then the body (markdown).',
     previewPath: '/quran',
     fields: [
@@ -1454,8 +1454,8 @@ const SERVICE_ROWS: Array<{ k: SupportServiceKey; l: string; hint: string }> = [
   { k: 'mentor', l: 'Mentor', hint: 'Visitor can ask to be paired with a mentor.' },
   {
     k: 'quran',
-    l: "Qur'an",
-    hint: 'Visitor can request a printed Qur’an (asks for a US address).',
+    l: 'Quran',
+    hint: 'Visitor can request a printed Quran (asks for a US address).',
   },
   { k: 'hijab', l: 'Hijab', hint: 'Visitor can request a hijab (asks for a US address).' },
 ];
@@ -1999,7 +1999,7 @@ const HOMEPAGE_SECTION_LABELS: Record<HomepageSectionId, string> = {
   hero: 'Hero',
   featured: 'Featured article',
   learnRow: 'Learn row',
-  quranBanner: "Qur'an banner",
+  quranBanner: 'Quran banner',
   quickLinks: 'Quick links',
 };
 

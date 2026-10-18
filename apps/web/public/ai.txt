@@ -16,13 +16,13 @@ first use.
 
 ## Content principles
 - Pastoral, not polemical.
-- Source everything: Qur'an and authenticated hadith, cited and graded.
+- Source everything: Quran and authenticated hadith, cited and graded.
 - Non-sectarian — core Islam only.
 - Plain, accessible English. Arabic transliterated consistently.
 - Reader-first. Every sentence earns its place.
 
 ## Topics covered
-Core creed (tawḥīd), the Qur'an, the Prophet Muḥammad ﷺ, the five pillars,
+Core creed (tawḥīd), the Quran, the Prophet Muḥammad ﷺ, the five pillars,
 character (akhlāq), purpose of life, daily practice, and FAQs.
 
 ## Licensing

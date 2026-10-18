@@ -33,7 +33,7 @@ export const BILLBOARDS: Billboard[] = [
     id: '01',
     title: 'This Is the Straight Path',
     text: 'God is my Lord and your Lord, so worship Him. This is the straight path.',
-    source: 'Jesus (Qur’an 3:51)',
+    source: 'Jesus (Quran 3:51)',
     file: '01-this-is-the-straight-path',
   },
   {
@@ -60,14 +60,14 @@ export const BILLBOARDS: Billboard[] = [
     id: '05',
     title: 'My Lord, Have Mercy on Them',
     text: 'My Lord, have mercy on them, as they cared for me when I was little.',
-    source: 'Qur’an 17:24',
+    source: 'Quran 17:24',
     file: '05-my-lord-have-mercy-on-them',
   },
   {
     id: '06',
     title: 'Repel Evil With Good',
     text: 'Repel evil with good, and your enemy will become your dearest friend.',
-    source: 'Qur’an 41:34',
+    source: 'Quran 41:34',
     file: '06-repel-evil-with-good',
   },
   {
@@ -81,7 +81,7 @@ export const BILLBOARDS: Billboard[] = [
     id: '08',
     title: 'Who Else Answers',
     text: 'Who else answers the desperate when they cry out to Him?',
-    source: 'Qur’an 27:62',
+    source: 'Quran 27:62',
     file: '08-who-else-answers',
   },
 ];

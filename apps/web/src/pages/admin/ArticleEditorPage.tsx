@@ -343,7 +343,7 @@ export default function ArticleEditorPage() {
               <TagInput
                 value={form.tags}
                 onChange={(tags) => patch('tags', tags)}
-                placeholder="e.g. creed, qur'an"
+                placeholder="e.g. creed, quran"
               />
             </Field>
 

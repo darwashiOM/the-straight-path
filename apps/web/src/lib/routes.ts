@@ -38,7 +38,7 @@ export const routes: RouteMeta[] = [
     path: '/',
     title: 'A Clear Path to God',
     description:
-      'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God — written for seekers of any background.',
+      'A pastoral, accessible introduction to Islam. Learn the essentials, read the Quran, and explore a clear path to God — written for seekers of any background.',
     priority: 1.0,
     changefreq: 'weekly',
   },
@@ -54,15 +54,15 @@ export const routes: RouteMeta[] = [
     path: '/learn/articles',
     title: 'Articles',
     description:
-      'Browse every essay on The Straight Path — reflections on the creed, the Prophet Muḥammad ﷺ, the Qur’an, character, and the path of sincere submission to God.',
+      'Browse every essay on The Straight Path — reflections on the creed, the Prophet Muḥammad ﷺ, the Quran, character, and the path of sincere submission to God.',
     priority: 0.9,
     changefreq: 'weekly',
   },
   {
     path: '/quran',
-    title: 'Read the Qur’an',
+    title: 'Read the Quran',
     description:
-      'Read the Qur’an — the word of God, preserved word-for-word for over 1,400 years. We point to Quran.com for a trusted, free, multilingual reading experience.',
+      'Read the Quran — the word of God, preserved word-for-word for over 1,400 years. We point to Quran.com for a trusted, free, multilingual reading experience.',
     priority: 0.8,
     changefreq: 'monthly',
   },
@@ -78,13 +78,13 @@ export const routes: RouteMeta[] = [
     path: '/resources',
     title: 'Further Learning',
     description:
-      'Trusted external sites for further study of the Qur’an, hadith, and Islamic thought — hand-picked for accuracy, accessibility, and a reader-first tone.',
+      'Trusted external sites for further study of the Quran, hadith, and Islamic thought — hand-picked for accuracy, accessibility, and a reader-first tone.',
     priority: 0.6,
     changefreq: 'monthly',
   },
   {
     path: '/social',
-    title: 'Islam Explained on Social Media',
+    title: 'Helpful Social Media Channels',
     description:
       'A small, curated list of video channels that explain Islam with clarity and good character — short reminders, long dialogues, and research-driven explainers.',
     priority: 0.6,
@@ -94,7 +94,7 @@ export const routes: RouteMeta[] = [
     path: '/mobile-billboards',
     title: 'Mobile Billboards',
     description:
-      'Free Dawah bumper stickers with verses of the Qur’an and sayings of the Prophet. Download print-ready 11 × 3 in designs, or we’ll mail you some free.',
+      'Free Dawah bumper stickers with verses of the Quran and sayings of the Prophet. Download print-ready 11 × 3 in designs, or we’ll mail you some free.',
     priority: 0.6,
     changefreq: 'monthly',
   },

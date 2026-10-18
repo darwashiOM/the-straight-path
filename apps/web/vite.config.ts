@@ -61,9 +61,9 @@ export default defineConfig({
         ],
         shortcuts: [
           {
-            name: "Read the Qur'an",
-            short_name: "Qur'an",
-            description: "Open the Qur'an reader",
+            name: 'Read the Quran',
+            short_name: 'Quran',
+            description: 'Open the Quran reader',
             url: '/quran',
             icons: [{ src: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
           },
@@ -110,7 +110,7 @@ export default defineConfig({
         skipWaiting: true,
         runtimeCaching: [
           {
-            // Qur'an API — prefer fresh data, fall back to cache when offline.
+            // Quran API — prefer fresh data, fall back to cache when offline.
             urlPattern: ({ url }) => url.origin === 'https://quran.com',
             handler: 'NetworkFirst',
             options: {

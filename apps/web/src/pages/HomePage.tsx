@@ -95,7 +95,7 @@ function HeroSection() {
           to={localizePath('/quran')}
           className="text-ink hover:bg-paper inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-8 py-3 font-medium shadow-lg transition-colors"
         >
-          Read the Qur&apos;an
+          Read the Quran
         </Link>
       </div>
     </section>

@@ -18,7 +18,8 @@ export default function ResourcesPage() {
   const { data: resources = [], isLoading } = useResources(locale);
   const header = useSiteSetting<{ title: string; description: string }>('resourcesHeader', locale);
   const headerTitle = header.data?.value.title || t('resourcesPage.title');
-  const headerDescription = header.data?.value.description || t('resourcesPage.description');
+  // A subtitle shows only when one is typed in Admin (resourcesHeader → Description).
+  const headerDescription = header.data?.value.description?.trim() ?? '';
 
   return (
     <>
@@ -42,9 +43,11 @@ export default function ResourcesPage() {
         <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
           {headerTitle}
         </h1>
-        <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
-          {headerDescription}
-        </p>
+        {headerDescription ? (
+          <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
+            {headerDescription}
+          </p>
+        ) : null}
         {isLoading && resources.length === 0 ? (
           <ul className="mt-12 grid gap-4 md:grid-cols-2">
             {[0, 1, 2, 3].map((i) => (

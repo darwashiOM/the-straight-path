@@ -62,7 +62,7 @@ const NAV_ITEMS_SEED = {
       {
         to: '/quran',
         key: 'quran',
-        labelEn: "Read the Qur'an",
+        labelEn: "Read the Quran",
         labelAr: 'اقرأ القرآن',
         visible: true,
         order: 1,
@@ -119,7 +119,7 @@ const QUICK_LINKS_SEED = {
         order: 1,
         labelEn: 'Useful External Links',
         labelAr: 'روابط خارجية مفيدة',
-        descEn: "Qur'an, hadith, research — a small, carefully-picked list.",
+        descEn: "Quran, hadith, research — a small, carefully-picked list.",
         descAr: 'القرآن، الحديث، البحث — قائمة صغيرة مختارة بعناية.',
       },
       {
@@ -160,7 +160,7 @@ const FOOTER_NAV_SEED = {
         links: [
           { to: '/learn', labelEn: 'Learn', labelAr: 'تعلّم' },
           { to: '/learn/articles', labelEn: 'Articles', labelAr: 'مقالات' },
-          { to: '/quran', labelEn: "Read the Qur'an", labelAr: 'اقرأ القرآن' },
+          { to: '/quran', labelEn: "Read the Quran", labelAr: 'اقرأ القرآن' },
         ],
       },
       {
@@ -331,7 +331,7 @@ const NOT_FOUND_SEED = {
       },
       {
         to: '/quran',
-        labelEn: "Read the Qur'ān",
+        labelEn: "Read the Quran",
         labelAr: 'اقرأ القرآن',
         hintEn: 'The words themselves',
         hintAr: 'الكلمات نفسها',
@@ -362,7 +362,7 @@ const SEO_SEED = {
     defaults: {
       titleSuffix: 'The Straight Path',
       defaultDescriptionEn:
-        'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God.',
+        'A pastoral, accessible introduction to Islam. Learn the essentials, read the Quran, and explore a clear path to God.',
       defaultDescriptionAr:
         'مقدمة هادئة ورحيمة عن الإسلام. تعلّم الأساسيات، واقرأ القرآن، واستكشف طريقاً واضحاً إلى الله.',
       defaultOgImageUrl: '/og-default.png',

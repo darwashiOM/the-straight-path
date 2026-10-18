@@ -2,14 +2,14 @@
 
 > A pastoral, accessible introduction to Islam. Built for readers of any background who want a calm, clear, non-polemical explanation of the religion.
 
-The Straight Path is a volunteer-run educational project. Content is reader-first, non-sectarian, and sourced from the Qur'an and authenticated hadith. Original text is licensed CC BY 4.0.
+The Straight Path is a volunteer-run educational project. Content is reader-first, non-sectarian, and sourced from the Quran and authenticated hadith. Original text is licensed CC BY 4.0.
 
 ## Core content
 
 - [Home](https://www.thestraightpath.org/): overview and entry points
 - [Learn About Islam](https://www.thestraightpath.org/learn): curated essays
 - [10 Things To Know About Islam](https://www.thestraightpath.org/learn/articles/10-things-to-know-about-islam): flagship introductory article
-- [Read the Qur'an](https://www.thestraightpath.org/quran): points to Quran.com
+- [Read the Quran](https://www.thestraightpath.org/quran): points to Quran.com
 - [FAQ](https://www.thestraightpath.org/faq): plain answers to common questions
 - [Resources](https://www.thestraightpath.org/resources): curated external links
 - [New Muslim Resources](https://www.thestraightpath.org/new-muslim-resources): a welcome note plus curated links, videos, and apps for new Muslims

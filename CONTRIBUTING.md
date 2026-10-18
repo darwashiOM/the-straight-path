@@ -7,9 +7,9 @@ Thank you for your interest in contributing. This project is community-driven an
 The Straight Path is pastoral, not polemical. We invite, we do not attack.
 
 1. **Pastoral tone.** Write as if speaking to a thoughtful, curious stranger over coffee.
-2. **Source everything.** Cite Qur'anic verses and authenticated hadith with grading.
+2. **Source everything.** Cite Quranic verses and authenticated hadith with grading.
 3. **Non-sectarian.** Teach core Islam. Avoid madhab-specific jurisprudence in foundational content.
-4. **Plain language.** Define Arabic terms on first use. Transliterate consistently (Allāh, Qur'ān, Muḥammad).
+4. **Plain language.** Define Arabic terms on first use. Transliterate consistently (Allāh, Quran, Muḥammad).
 5. **Accessibility first.** Assume a thoughtful non-Muslim reader who has no prior familiarity with Islam.
 6. **Concision.** Short paragraphs. No filler. Every sentence earns its place.
 

@@ -105,7 +105,7 @@ export interface Faq {
  */
 export type SupportServiceKey = 'mentor' | 'quran' | 'hijab';
 
-/** US-only shipping address collected when a Qur'an or hijab is requested. */
+/** US-only shipping address collected when a Quran or hijab is requested. */
 export interface ShippingAddress {
   street: string;
   city: string;
