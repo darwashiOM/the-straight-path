@@ -76,7 +76,7 @@ export const routes: RouteMeta[] = [
   },
   {
     path: '/resources',
-    title: 'Useful External Links',
+    title: 'Further Learning',
     description:
       'Trusted external sites for further study of the Qur’an, hadith, and Islamic thought — hand-picked for accuracy, accessibility, and a reader-first tone.',
     priority: 0.6,

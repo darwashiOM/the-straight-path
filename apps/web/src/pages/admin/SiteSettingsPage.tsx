@@ -20,14 +20,13 @@ import {
 import type {
   BrandData,
   BrandTranslations,
-  FooterNavColumn,
-  FooterNavData,
   HomepageSection,
   HomepageSectionId,
   HomepageSectionsData,
   FeaturedData,
   NavItem,
   NavItemsData,
+  NavPlacement,
   NotFoundData,
   NotFoundPopularLink,
   QuickLinkIcon,
@@ -41,7 +40,6 @@ import type {
 } from '@/lib/content-schema';
 import {
   DEFAULT_BRAND_SETTING,
-  DEFAULT_FOOTER_NAV,
   DEFAULT_NAV_ITEMS,
   DEFAULT_QUICK_LINKS,
   DEFAULT_SITE_SETTINGS,
@@ -100,18 +98,6 @@ const SETTINGS: SettingSpec[] = [
     ],
   },
   {
-    id: 'aboutPreview',
-    title: 'About preview',
-    description: 'Homepage "about" teaser block.',
-    previewPath: '/',
-    fields: [
-      { key: 'eyebrow', label: 'Eyebrow', type: 'text' },
-      { key: 'headline', label: 'Headline', type: 'text' },
-      { key: 'body', label: 'Body', type: 'textarea' },
-      { key: 'cta', label: 'CTA label', type: 'text' },
-    ],
-  },
-  {
     id: 'startHere',
     title: 'Start-here block',
     description: 'Homepage curated reading list.',
@@ -156,12 +142,9 @@ const SETTINGS: SettingSpec[] = [
   {
     id: 'footer',
     title: 'Footer',
-    description: 'Site-wide footer.',
+    description: 'Site-wide footer, shown as "© year <copyright line> · CC BY 4.0".',
     previewPath: '/',
-    fields: [
-      { key: 'copyright', label: 'Copyright line', type: 'text' },
-      { key: 'madeWith', label: '"Made with" line', type: 'text' },
-    ],
+    fields: [{ key: 'copyright', label: 'Copyright line', type: 'text' }],
   },
   {
     id: 'resourcesHeader',
@@ -229,7 +212,6 @@ export default function SiteSettingsPage() {
         <BrandCard />
         <NavItemsCard />
         <QuickLinksCard />
-        <FooterNavCard />
         {SETTINGS.map((spec) => (
           <SettingCard key={spec.id} spec={spec} articles={articles.data ?? []} />
         ))}
@@ -957,7 +939,7 @@ function NavItemsCard() {
           <h2 className="text-primary-700 font-serif text-xl">Navigation items</h2>
           <p className="text-ink/60 mt-0.5 text-sm">
             <span className="text-ink/50 font-mono text-xs">navItems</span> · Reorder, rename, or
-            hide the navbar links.
+            hide the navbar links. Items set to "More" sit in the More menu, in this order.
           </p>
         </div>
         <button
@@ -982,6 +964,7 @@ function NavItemsCard() {
                   <th className="px-2 py-2 font-medium">Order</th>
                   <th className="px-2 py-2 font-medium">Label</th>
                   <th className="px-2 py-2 font-medium">Path</th>
+                  <th className="px-2 py-2 font-medium">Menu</th>
                   <th className="px-2 py-2 font-medium">Visible</th>
                   <th className="px-2 py-2 font-medium" />
                 </tr>
@@ -1036,6 +1019,17 @@ function NavItemsCard() {
                         {pathError && <p className="text-sienna mt-1 text-xs">{pathError}</p>}
                       </td>
                       <td className="px-2 py-2 align-top">
+                        <select
+                          value={it.placement ?? 'main'}
+                          onChange={(e) => patch(i, { placement: e.target.value as NavPlacement })}
+                          className={inputCls + ' mt-0'}
+                          aria-label="Menu"
+                        >
+                          <option value="main">Main bar</option>
+                          <option value="more">More</option>
+                        </select>
+                      </td>
+                      <td className="px-2 py-2 align-top">
                         <label className="inline-flex items-center gap-2">
                           <input
                             type="checkbox"
@@ -1062,7 +1056,7 @@ function NavItemsCard() {
                 })}
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="text-ink/50 px-2 py-4 text-center text-xs italic">
+                    <td colSpan={6} className="text-ink/50 px-2 py-4 text-center text-xs italic">
                       No items. Click "Add item" to create one.
                     </td>
                   </tr>
@@ -1399,396 +1393,6 @@ function QuickLinksCard() {
             >
               <Plus className="h-3 w-3" />
               Add card
-            </button>
-          </div>
-
-          {error && (
-            <div className="border-sienna/30 bg-sienna/5 text-sienna rounded-lg border px-3 py-2 text-sm">
-              {error}
-            </div>
-          )}
-
-          <div className="flex items-center justify-end gap-3">
-            {savedAt && !saving && (
-              <span className="text-sage text-xs">
-                Saved {new Date(savedAt).toLocaleTimeString()}
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={() => void save()}
-              disabled={saving}
-              className="bg-primary-500 hover:bg-primary-600 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-            >
-              <Save className="h-4 w-4" />
-              {saving ? 'Saving…' : 'Save'}
-            </button>
-          </div>
-        </div>
-      )}
-    </section>
-  );
-}
-
-// ---------- Footer-nav card ----------
-
-/**
- * `FooterNavCard` — edits the footer's four navigation columns. Each column
- * has EN/AR titles and an ordered list of links; each link has EN/AR labels,
- * a `to` path, and an `external` checkbox that flips the renderer from
- * `<Link>` to a new-tab `<a>`. Columns and links both reorder; external
- * links skip the canonical-path validator because they're full URLs.
- */
-function FooterNavCard() {
-  const qc = useQueryClient();
-  const query = useQuery({
-    queryKey: ['admin', 'siteSetting', 'footerNav'],
-    queryFn: () => getSiteSetting('footerNav'),
-  });
-
-  const [columns, setColumns] = useState<FooterNavColumn[]>([]);
-  const [saving, setSaving] = useState(false);
-  const [savedAt, setSavedAt] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (query.isLoading) return;
-    const doc = query.data;
-    const docCols = (doc?.data as FooterNavData | undefined)?.columns;
-    const seed = docCols && docCols.length > 0 ? docCols : DEFAULT_FOOTER_NAV;
-    const sorted = [...seed].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    setColumns(sorted.map((c, i) => ({ ...c, order: i })));
-  }, [query.data, query.isLoading]);
-
-  function patchColumn(ci: number, next: Partial<FooterNavColumn>) {
-    setColumns((prev) => prev.map((c, i) => (i === ci ? { ...c, ...next } : c)));
-  }
-
-  function moveColumn(ci: number, dir: -1 | 1) {
-    const j = ci + dir;
-    if (j < 0 || j >= columns.length) return;
-    const next = [...columns];
-    const a = next[ci];
-    const b = next[j];
-    if (!a || !b) return;
-    next[ci] = b;
-    next[j] = a;
-    setColumns(next.map((c, i) => ({ ...c, order: i })));
-  }
-
-  function removeColumn(ci: number) {
-    setColumns((prev) => prev.filter((_, i) => i !== ci).map((c, i) => ({ ...c, order: i })));
-  }
-
-  function addColumn() {
-    setColumns((prev) => [
-      ...prev,
-      {
-        id: `col-${prev.length + 1}`,
-        titleEn: 'New column',
-        titleAr: '',
-        order: prev.length,
-        links: [],
-      },
-    ]);
-  }
-
-  function patchLink(ci: number, li: number, next: Partial<FooterNavColumn['links'][number]>) {
-    setColumns((prev) =>
-      prev.map((c, i) =>
-        i === ci ? { ...c, links: c.links.map((l, j) => (j === li ? { ...l, ...next } : l)) } : c,
-      ),
-    );
-  }
-
-  function moveLink(ci: number, li: number, dir: -1 | 1) {
-    setColumns((prev) =>
-      prev.map((c, i) => {
-        if (i !== ci) return c;
-        const j = li + dir;
-        if (j < 0 || j >= c.links.length) return c;
-        const links = [...c.links];
-        const a = links[li];
-        const b = links[j];
-        if (!a || !b) return c;
-        links[li] = b;
-        links[j] = a;
-        return { ...c, links };
-      }),
-    );
-  }
-
-  function removeLink(ci: number, li: number) {
-    setColumns((prev) =>
-      prev.map((c, i) => (i === ci ? { ...c, links: c.links.filter((_, j) => j !== li) } : c)),
-    );
-  }
-
-  function addLink(ci: number) {
-    setColumns((prev) =>
-      prev.map((c, i) =>
-        i === ci
-          ? {
-              ...c,
-              links: [...c.links, { to: '/', labelEn: 'New link', external: false }],
-            }
-          : c,
-      ),
-    );
-  }
-
-  function buildFooterPayload() {
-    return {
-      translations: { en: {} },
-      data: {
-        columns: columns.map((c, i) => ({
-          ...c,
-          order: i,
-          links: c.links.map((l) => ({
-            to: l.to,
-            labelEn: l.labelEn,
-
-            ...(l.external ? { external: true } : {}),
-          })),
-        })),
-      },
-    };
-  }
-
-  function handlePreview() {
-    stageAndOpenPreview('siteSetting', 'footerNav', buildFooterPayload(), '/');
-  }
-
-  async function save() {
-    setError(null);
-    for (const c of columns) {
-      for (const l of c.links) {
-        if (l.external) continue; // external URLs are not locale-prefixed paths
-        const err = validatePath(l.to);
-        if (err) {
-          setError(`"${c.titleEn || c.id}" → "${l.labelEn || l.to}" → ${err}`);
-          return;
-        }
-      }
-    }
-    setSaving(true);
-    try {
-      await saveSiteSetting('footerNav', {
-        translations: { en: {} },
-        data: {
-          columns: columns.map((c, i) => ({
-            ...c,
-            order: i,
-            links: c.links.map((l) => ({
-              to: l.to,
-              labelEn: l.labelEn,
-
-              ...(l.external ? { external: true } : {}),
-            })),
-          })),
-        },
-      });
-      await qc.invalidateQueries({ queryKey: ['admin', 'siteSetting', 'footerNav'] });
-      await qc.invalidateQueries({ queryKey: ['content', 'siteSettings', 'footerNav'] });
-      setSavedAt(Date.now());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Save failed');
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <section className="border-primary-100 rounded-xl border bg-white p-6 shadow-sm">
-      <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-primary-700 font-serif text-xl">Footer navigation</h2>
-          <p className="text-ink/60 mt-0.5 text-sm">
-            <span className="text-ink/50 font-mono text-xs">footerNav</span> · The link columns in
-            the site footer.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={handlePreview}
-          className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-800 hover:bg-amber-100"
-          title="Open the public page with unsaved changes"
-        >
-          <Eye className="h-3 w-3" />
-          Preview
-        </button>
-      </header>
-
-      {query.isLoading ? (
-        <div className="text-ink/50 text-sm">Loading…</div>
-      ) : (
-        <div className="space-y-5">
-          {columns.length === 0 && (
-            <div className="border-primary-100 bg-primary-50/30 text-ink/50 rounded-lg border border-dashed p-4 text-center text-xs italic">
-              No columns. Click "Add column" to create one.
-            </div>
-          )}
-          {columns.map((col, ci) => (
-            <div
-              key={`${col.id}-${ci}`}
-              className="border-primary-100 bg-paper/30 rounded-lg border p-4"
-            >
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                <span className="text-ink/50 text-xs font-medium uppercase tracking-wide">
-                  Column {ci + 1}
-                </span>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => moveColumn(ci, -1)}
-                    disabled={ci === 0}
-                    className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
-                    aria-label="Move column up"
-                  >
-                    <ArrowUp className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveColumn(ci, 1)}
-                    disabled={ci === columns.length - 1}
-                    className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
-                    aria-label="Move column down"
-                  >
-                    <ArrowDown className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeColumn(ci)}
-                    className="text-sienna hover:bg-sienna/10 rounded p-1"
-                    aria-label="Remove column"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-              <div className="grid gap-3 md:grid-cols-2">
-                <label className="block">
-                  <span className="text-ink/70 block text-xs font-medium">ID</span>
-                  <input
-                    type="text"
-                    value={col.id}
-                    onChange={(e) => patchColumn(ci, { id: e.target.value })}
-                    className={inputCls + ' font-mono text-xs'}
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-ink/70 block text-xs font-medium">Title</span>
-                  <input
-                    type="text"
-                    value={col.titleEn}
-                    onChange={(e) => patchColumn(ci, { titleEn: e.target.value })}
-                    className={inputCls}
-                  />
-                </label>
-              </div>
-
-              <div className="mt-4">
-                <h4 className="text-primary-700 mb-2 text-xs font-semibold uppercase tracking-wide">
-                  Links
-                </h4>
-                <ul className="space-y-2">
-                  {col.links.length === 0 && (
-                    <li className="text-ink/50 text-xs italic">No links in this column.</li>
-                  )}
-                  {col.links.map((link, li) => {
-                    const pathError = link.external ? null : validatePath(link.to);
-                    return (
-                      <li
-                        key={`${link.to}-${li}`}
-                        className="border-primary-100 rounded-md border bg-white p-3"
-                      >
-                        <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto_auto]">
-                          <input
-                            type="text"
-                            value={link.labelEn}
-                            onChange={(e) => patchLink(ci, li, { labelEn: e.target.value })}
-                            placeholder="Label"
-                            className={inputCls + ' mt-0'}
-                          />
-                          <div>
-                            <input
-                              type="text"
-                              value={link.to}
-                              onChange={(e) => patchLink(ci, li, { to: e.target.value })}
-                              placeholder={link.external ? 'https://…' : '/about'}
-                              className={
-                                inputCls +
-                                ' mt-0 font-mono text-xs' +
-                                (pathError
-                                  ? 'border-sienna focus:border-sienna focus:ring-sienna'
-                                  : '')
-                              }
-                            />
-                            {pathError && <p className="text-sienna mt-1 text-xs">{pathError}</p>}
-                          </div>
-                          <label className="text-ink/60 inline-flex items-center gap-1 text-xs">
-                            <input
-                              type="checkbox"
-                              checked={Boolean(link.external)}
-                              onChange={(e) => patchLink(ci, li, { external: e.target.checked })}
-                            />
-                            Ext
-                          </label>
-                          <div className="flex items-center gap-1">
-                            <button
-                              type="button"
-                              onClick={() => moveLink(ci, li, -1)}
-                              disabled={li === 0}
-                              className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
-                              aria-label="Move link up"
-                            >
-                              <ArrowUp className="h-4 w-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => moveLink(ci, li, 1)}
-                              disabled={li === col.links.length - 1}
-                              className="text-ink/60 hover:bg-primary-50 hover:text-primary-700 rounded p-1 disabled:opacity-30"
-                              aria-label="Move link down"
-                            >
-                              <ArrowDown className="h-4 w-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => removeLink(ci, li)}
-                              className="text-sienna hover:bg-sienna/10 rounded p-1"
-                              aria-label="Remove link"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-                <div className="mt-2">
-                  <button
-                    type="button"
-                    onClick={() => addLink(ci)}
-                    className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1 text-xs"
-                  >
-                    <Plus className="h-3 w-3" />
-                    Add link
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          <div>
-            <button
-              type="button"
-              onClick={addColumn}
-              className="border-primary-200 text-primary-700 hover:bg-primary-50 inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs"
-            >
-              <Plus className="h-3 w-3" />
-              Add column
             </button>
           </div>
 
@@ -2397,7 +2001,6 @@ const HOMEPAGE_SECTION_LABELS: Record<HomepageSectionId, string> = {
   learnRow: 'Learn row',
   quranBanner: "Qur'an banner",
   quickLinks: 'Quick links',
-  aboutPreview: 'About preview',
 };
 
 const DEFAULT_HOMEPAGE_SECTIONS: HomepageSection[] = [
@@ -2406,7 +2009,6 @@ const DEFAULT_HOMEPAGE_SECTIONS: HomepageSection[] = [
   { id: 'learnRow', visible: true, order: 2 },
   { id: 'quranBanner', visible: true, order: 3 },
   { id: 'quickLinks', visible: true, order: 4 },
-  { id: 'aboutPreview', visible: true, order: 5 },
 ];
 
 function HomepageSectionsCard() {
@@ -2426,7 +2028,10 @@ function HomepageSectionsCard() {
     const data = (query.data?.data as HomepageSectionsData | undefined) ?? undefined;
     const existing = data?.sections;
     if (existing && existing.length > 0) {
-      const sorted = [...existing].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      // Sections the site no longer has (e.g. the old About preview) are dropped.
+      const sorted = [...existing]
+        .filter((s) => s.id in HOMEPAGE_SECTION_LABELS)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
       const known = new Set(sorted.map((s) => s.id));
       const merged = [...sorted];
       for (const d of DEFAULT_HOMEPAGE_SECTIONS) {

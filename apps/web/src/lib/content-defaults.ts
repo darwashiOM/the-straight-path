@@ -10,7 +10,6 @@
 import type {
   ChannelDoc,
   FaqDoc,
-  FooterNavColumn,
   NavItem,
   PageDoc,
   QuickLinkItem,
@@ -228,50 +227,40 @@ export const DEFAULT_BRAND_SETTING: SiteSettingDefault<{
  * interface level for legacy doc compatibility but is unused.
  */
 export const DEFAULT_NAV_ITEMS: NavItem[] = [
-  { to: '/learn', key: 'learn', labelEn: 'Learn', visible: true, order: 0 },
+  { to: '/learn', key: 'learn', labelEn: 'Learn about Islam', visible: true, order: 0 },
+  { to: '/quran', key: 'quran', labelEn: "Read the Qur'an", visible: true, order: 1 },
   {
-    to: '/quran',
-    key: 'quran',
-    labelEn: "Read the Qur'an",
-    visible: true,
-    order: 1,
-  },
-  {
-    to: '/resources',
-    key: 'resources',
-    labelEn: 'Resources',
+    to: '/new-muslim-resources',
+    key: 'newMuslimResources',
+    labelEn: 'New Muslim Resources',
     visible: true,
     order: 2,
   },
   {
-    to: '/faq',
-    key: 'faq',
-    labelEn: 'Ask Questions',
+    to: '/mobile-billboards',
+    key: 'mobileBillboards',
+    labelEn: 'Mobile Billboards',
     visible: true,
     order: 3,
+  },
+  { to: '/faq', key: 'faq', labelEn: 'FAQs', visible: true, order: 4, placement: 'more' },
+  {
+    to: '/resources',
+    key: 'resources',
+    labelEn: 'Further Learning',
+    visible: true,
+    order: 5,
+    placement: 'more',
   },
   {
     to: '/social',
     key: 'social',
     labelEn: 'On Social Media',
     visible: true,
-    order: 4,
-  },
-  { to: '/about', key: 'about', labelEn: 'About', visible: true, order: 5 },
-  {
-    to: '/mobile-billboards',
-    key: 'mobileBillboards',
-    labelEn: 'Mobile Billboards',
-    visible: true,
     order: 6,
+    placement: 'more',
   },
-  {
-    to: '/new-muslim-resources',
-    key: 'newMuslimResources',
-    labelEn: 'New Muslim Resources',
-    visible: true,
-    order: 7,
-  },
+  { to: '/about', key: 'about', labelEn: 'About', visible: true, order: 7, placement: 'more' },
 ];
 
 /**
@@ -293,7 +282,7 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     icon: 'link',
     visible: true,
     order: 1,
-    labelEn: 'Useful External Links',
+    labelEn: 'Further Learning',
     descEn: "Qur'an, hadith, research — a small, carefully-picked list.",
   },
   {
@@ -320,53 +309,6 @@ export const DEFAULT_QUICK_LINKS: QuickLinkItem[] = [
     labelEn: 'Mobile Billboards',
     descEn: 'Dawah bumper stickers.',
     image: '/mobile-billboards/01-this-is-the-straight-path.png',
-  },
-];
-
-/**
- * Default footer navigation columns — three populated columns (Learn,
- * Community, Project) matching the current hardcoded markup, plus an empty
- * "Follow" column so editors have a slot to drop social links.
- */
-export const DEFAULT_FOOTER_NAV: FooterNavColumn[] = [
-  {
-    id: 'learn',
-    titleEn: 'Learn',
-    order: 0,
-    links: [
-      { to: '/learn', labelEn: 'Learn' },
-      { to: '/learn/articles', labelEn: 'Articles' },
-      { to: '/quran', labelEn: "Read the Qur'an" },
-    ],
-  },
-  {
-    id: 'community',
-    titleEn: 'Community',
-    order: 1,
-    links: [
-      { to: '/resources', labelEn: 'Resources' },
-      { to: '/faq', labelEn: 'FAQ' },
-      { to: '/social', labelEn: 'On Social Media' },
-      { to: '/mobile-billboards', labelEn: 'Mobile Billboards' },
-      { to: '/new-muslim-resources', labelEn: 'New Muslim Resources' },
-    ],
-  },
-  {
-    id: 'project',
-    titleEn: 'Project',
-    order: 2,
-    links: [
-      { to: '/about', labelEn: 'About' },
-      { to: '/contact', labelEn: 'Contact' },
-      { to: '/privacy', labelEn: 'Privacy' },
-      { to: '/terms', labelEn: 'Terms' },
-    ],
-  },
-  {
-    id: 'follow',
-    titleEn: 'Follow',
-    order: 3,
-    links: [],
   },
 ];
 
@@ -399,17 +341,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         body: "Quran.com offers the Qur'ān in many languages with a simple, clear interface.",
         cta: 'Open Quran.com',
         ctaUrl: 'https://quran.com/',
-      },
-    },
-  },
-  {
-    id: 'aboutPreview',
-    translations: {
-      en: {
-        eyebrow: 'About Us',
-        headline: 'An invitation, not an argument.',
-        body: 'The Straight Path is a small, independent effort to share Islam in a calm, reader-first voice — pastoral rather than polemical, for seekers of every background.',
-        cta: 'Read more about our mission',
       },
     },
   },
@@ -459,8 +390,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     id: 'footer',
     translations: {
       en: {
-        copyright: 'The Straight Path.',
-        madeWith: 'Built with care and in service.',
+        copyright: 'The Straight Path',
       },
     },
   },
@@ -470,15 +400,10 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     data: { items: DEFAULT_QUICK_LINKS },
   },
   {
-    id: 'footerNav',
-    translations: { en: {} },
-    data: { columns: DEFAULT_FOOTER_NAV },
-  },
-  {
     id: 'resourcesHeader',
     translations: {
       en: {
-        title: 'Useful External Links',
+        title: 'Further Learning',
         description:
           'Trusted resources for further study — chosen for their accuracy, accessibility, and tone.',
       },
@@ -618,7 +543,6 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
         { id: 'learnRow', visible: true, order: 2 },
         { id: 'quranBanner', visible: true, order: 3 },
         { id: 'quickLinks', visible: true, order: 4 },
-        { id: 'aboutPreview', visible: true, order: 5 },
       ],
     },
   },

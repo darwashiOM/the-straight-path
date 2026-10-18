@@ -41,13 +41,6 @@ interface QuranBannerCopy {
   ctaUrl?: string;
 }
 
-interface AboutPreviewCopy {
-  eyebrow: string;
-  headline: string;
-  body: string;
-  cta: string;
-}
-
 function HeroSection() {
   const { localizePath } = useLocalizedPath();
   const [showCitation, setShowCitation] = useState(false);
@@ -116,7 +109,6 @@ export default function HomePage() {
   const arrow = '→';
 
   const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
-  const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
   const quickLinks = useSiteSetting('quickLinks', locale);
   const sectionsSetting = useSiteSetting('homepageSections', locale);
   const featuredSetting = useSiteSetting('featured', locale);
@@ -128,7 +120,6 @@ export default function HomePage() {
     { id: 'learnRow', visible: true, order: 2 },
     { id: 'quranBanner', visible: true, order: 3 },
     { id: 'quickLinks', visible: true, order: 4 },
-    { id: 'aboutPreview', visible: true, order: 5 },
   ]) as HomepageSection[];
 
   const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
@@ -146,7 +137,6 @@ export default function HomePage() {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   const quranCopy = quranBanner.data?.value;
-  const aboutCopy = aboutPreview.data?.value;
 
   const articles = (articlesQuery.data ?? []).slice(0, 3);
   const manualMatch =
@@ -163,7 +153,6 @@ export default function HomePage() {
     learnRow: () => renderLearnRow(),
     quranBanner: () => renderQuranBanner(),
     quickLinks: () => renderQuickLinks(),
-    aboutPreview: () => renderAboutPreview(),
   };
 
   const orderedSections = sections
@@ -356,49 +345,6 @@ export default function HomePage() {
                 />
               );
             })}
-          </div>
-        </Container>
-      </section>
-    );
-  }
-
-  function renderAboutPreview() {
-    return (
-      <section
-        key="aboutPreview"
-        className={cn(
-          'bg-paper dark:bg-primary-900',
-          aboutCopy && !aboutCopy.headline && !aboutCopy.body ? 'py-14' : 'py-20',
-        )}
-      >
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            {aboutCopy ? (
-              <>
-                <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
-                  {aboutCopy.eyebrow}
-                </p>
-                {aboutCopy.headline ? (
-                  <h2 className="text-primary-700 dark:text-accent-300 mt-3 font-serif text-4xl font-semibold">
-                    {aboutCopy.headline}
-                  </h2>
-                ) : null}
-                {aboutCopy.body ? (
-                  <p className="text-ink/70 dark:text-paper/80 mt-6 text-lg">{aboutCopy.body}</p>
-                ) : null}
-                <Link
-                  to={localizePath('/about')}
-                  className={cn(
-                    'btn-ghost',
-                    aboutCopy.headline || aboutCopy.body ? 'mt-8' : 'mt-5',
-                  )}
-                >
-                  {aboutCopy.cta}
-                </Link>
-              </>
-            ) : (
-              <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
-            )}
           </div>
         </Container>
       </section>

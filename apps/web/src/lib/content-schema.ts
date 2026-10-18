@@ -132,7 +132,6 @@ export interface TopicDoc {
 export type SiteSettingId =
   | 'hero'
   | 'quranBanner'
-  | 'aboutPreview'
   | 'startHere'
   | 'seoDefaults'
   | 'navLabels'
@@ -143,7 +142,6 @@ export type SiteSettingId =
   | 'brand'
   | 'navItems'
   | 'quickLinks'
-  | 'footerNav'
   | 'resourcesHeader'
   | 'faqHeader'
   | 'socialHeader'
@@ -157,13 +155,7 @@ export type SiteSettingId =
 
 // ---------- Homepage section ordering ----------
 
-export type HomepageSectionId =
-  | 'hero'
-  | 'featured'
-  | 'learnRow'
-  | 'quranBanner'
-  | 'quickLinks'
-  | 'aboutPreview';
+export type HomepageSectionId = 'hero' | 'featured' | 'learnRow' | 'quranBanner' | 'quickLinks';
 
 export interface HomepageSection {
   id: HomepageSectionId;
@@ -264,7 +256,10 @@ export interface NavItem {
   labelEn: string;
   visible: boolean;
   order: number;
+  /** `'more'` puts the item in the "More" menu; missing means the main bar. */
+  placement?: NavPlacement;
 }
+export type NavPlacement = 'main' | 'more';
 export interface NavItemsData {
   items: NavItem[];
 }
@@ -299,28 +294,6 @@ export interface QuickLinkItem {
 
 export interface QuickLinksData {
   items: QuickLinkItem[];
-}
-
-/**
- * Shape of the `footerNav` siteSetting's `data.columns` — the four footer
- * navigation columns. Each link is either an internal locale-aware <Link>
- * or, when `external: true`, a new-tab <a>.
- */
-export interface FooterNavLink {
-  to: string;
-  external?: boolean;
-  labelEn: string;
-}
-
-export interface FooterNavColumn {
-  id: string;
-  titleEn: string;
-  order: number;
-  links: FooterNavLink[];
-}
-
-export interface FooterNavData {
-  columns: FooterNavColumn[];
 }
 
 /** siteSettings docs have heterogeneous shapes; editors pick the right

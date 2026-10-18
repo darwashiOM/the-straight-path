@@ -8,23 +8,21 @@
     "learn": "Learn",
     "articles": "Articles",
     "quran": "Read the Qur'an",
-    "resources": "Resources",
+    "resources": "Further Learning",
     "faq": "Ask Questions",
     "social": "On Social Media",
     "mobileBillboards": "Mobile Billboards",
     "newMuslimResources": "New Muslim Resources",
     "about": "About",
+    "more": "More",
     "contact": "Contact",
     "privacy": "Privacy",
     "terms": "Terms",
     "toggleMenu": "Toggle menu"
   },
   "footer": {
-    "copyright": "The Straight Path.",
-    "madeWith": "Built with care and in service.",
-    "learn": "Learn",
-    "community": "Community",
-    "project": "Project"
+    "copyright": "The Straight Path",
+    "license": "CC BY 4.0"
   },
   "home": {
     "hero": {
@@ -42,7 +40,7 @@
       "learn": "Learn About Islam",
       "quran": "Read the Qur'an",
       "social": "Islam Explained on Social Media",
-      "resources": "Useful External Links",
+      "resources": "Further Learning",
       "faq": "Frequently Asked Questions",
       "about": "About Us",
       "viewAll": "View all"
@@ -127,7 +125,7 @@
     "aboutBody2": "It is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good."
   },
   "resourcesPage": {
-    "title": "Useful External Links",
+    "title": "Further Learning",
     "description": "Trusted resources for further study — chosen for their accuracy, accessibility, and tone.",
     "categories": {
       "quran": "Qur'an",
@@ -444,7 +442,7 @@
     "groups": {
       "articles": "Articles",
       "faq": "FAQ",
-      "resources": "Resources",
+      "resources": "Further Learning",
       "social": "Social"
     },
     "hints": {

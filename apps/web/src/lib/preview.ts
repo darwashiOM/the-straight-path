@@ -217,7 +217,6 @@ export function publicPathForKind(kind: PreviewKind, id: string): string {
 function siteSettingPath(id: string): string {
   switch (id) {
     case 'hero':
-    case 'aboutPreview':
     case 'startHere':
     case 'footer':
     case 'quranBanner':
