@@ -34,6 +34,12 @@ default; departures are proposals, not decisions.
 - Write **in shaa Allah** exactly like that, three words with no diacritics,
   in every UI string, email, and document. Never inshā’Allāh, insha'Allah,
   or inshallah.
+- Write **Quran** exactly like that (Quranic, Qurans), never Qur'an,
+  Qur’ān, or Qurʾan, including in quotes, app names, and source lines.
+  Admin → Settings → House style finds and fixes stored content that slips
+  through; add a rule to `apps/web/src/lib/house-style.ts` for new spellings.
+- Headings use Montserrat Bold (the `font-serif` Tailwind token); body text
+  is Inter.
 - Link lists show the thumbnail and the title only. No note, source line,
   or "opens in a new tab" text under a link.
 - A page that needs no search description of its own leaves

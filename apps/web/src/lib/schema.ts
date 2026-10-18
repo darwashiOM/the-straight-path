@@ -13,7 +13,7 @@ import { SITE_ORIGIN } from '@/lib/routes';
 const SITE_NAME = 'The Straight Path';
 const DEFAULT_LOGO = `${SITE_ORIGIN}/logo.png`;
 const DEFAULT_DESCRIPTION =
-  'A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur’an, and explore a clear path to God.';
+  'A pastoral, accessible introduction to Islam. Learn the essentials, read the Quran, and explore a clear path to God.';
 
 /**
  * Public social / profile URLs for the Organization `sameAs`. Empty for now —

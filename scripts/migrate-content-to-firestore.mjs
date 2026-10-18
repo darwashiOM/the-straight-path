@@ -250,7 +250,7 @@ async function migrateTopics() {
   const topics = [
     { slug: 'foundations', en: 'Foundations', ar: 'الأساسيات' },
     { slug: 'creed', en: 'Creed', ar: 'العقيدة' },
-    { slug: 'quran', en: "Qur'an", ar: 'القرآن' },
+    { slug: 'quran', en: "Quran", ar: 'القرآن' },
     { slug: 'prophet', en: 'Prophet', ar: 'النبي ﷺ' },
     { slug: 'character', en: 'Character', ar: 'الأخلاق' },
     { slug: 'practice', en: 'Practice', ar: 'العبادة' },
@@ -284,7 +284,7 @@ async function migrateSiteSettings() {
           title: en.home?.hero?.title || 'A Clear Path to God',
           subtitle: en.home?.hero?.subtitle || '',
           ctaPrimary: en.home?.hero?.ctaPrimary || 'Start Learning',
-          ctaSecondary: en.home?.hero?.ctaSecondary || "Read the Qur'an",
+          ctaSecondary: en.home?.hero?.ctaSecondary || "Read the Quran",
         },
         ar: {
           eyebrow: ar.home?.hero?.eyebrow || '',
@@ -299,7 +299,7 @@ async function migrateSiteSettings() {
       id: 'quranBanner',
       translations: {
         en: {
-          eyebrow: en.home?.sections?.quran || "Read the Qur'an",
+          eyebrow: en.home?.sections?.quran || "Read the Quran",
           headline: en.home?.quranBanner?.headline || '',
           body: en.home?.quranBanner?.body || '',
           cta: en.home?.quranBanner?.cta || 'Open Quran.com',
@@ -373,7 +373,7 @@ async function migrateSiteSettings() {
       id: 'quranAbout',
       translations: {
         en: {
-          title: en.quranPage?.aboutTitle || "About the Qur'ān",
+          title: en.quranPage?.aboutTitle || "About the Quran",
           body: [en.quranPage?.aboutBody1, en.quranPage?.aboutBody2].filter(Boolean).join('\n\n'),
         },
         ar: {

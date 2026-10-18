@@ -4,7 +4,7 @@
  *
  * Every word typed must start a word somewhere in the title or the text
  * ("pray" finds "prayer", not "spray"). Case, diacritics, and apostrophes
- * are ignored, so "quran" finds "Qur'ān". Articles are searched in full.
+ * are ignored, so "muhammad" finds "Muḥammad". Articles are searched in full.
  *
  * This module is only imported by the lazy-loaded <SearchDialog>, which
  * keeps search code out of the first-paint bundle.

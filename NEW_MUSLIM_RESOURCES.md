@@ -3,7 +3,7 @@
 `/new-muslim-resources` welcomes new Muslims with a short note that ends with
 a link to the contact form, then lists trusted links in four groups (links and
 documents, videos, iOS apps, Android apps). The page never names the support
-services (mentor, Qur'an, hijab), since those are switched on and off in Admin
+services (mentor, Quran, hijab), since those are switched on and off in Admin
 and come and go.
 
 All visible text on the page came from the site owner; see CLAUDE.md before

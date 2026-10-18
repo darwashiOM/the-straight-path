@@ -128,7 +128,7 @@ function build() {
   parts.push('## Content principles');
   parts.push('');
   parts.push('- Pastoral, not polemical. We write as if speaking to a thoughtful stranger over coffee.');
-  parts.push('- Source everything. Qur’anic verses and authenticated hadith, cited and graded.');
+  parts.push('- Source everything. Quranic verses and authenticated hadith, cited and graded.');
   parts.push('- Non-sectarian. We teach core Islam and leave sectarian debates at the door.');
   parts.push('- Plain language. Arabic terms are defined on first use and transliterated consistently.');
   parts.push('- Reader-first. Every sentence earns its place.');

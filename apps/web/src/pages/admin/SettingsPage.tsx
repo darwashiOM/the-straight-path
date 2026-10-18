@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ExternalLink, Trash2, UserPlus } from 'lucide-react';
 
+import HouseStyleCard from '@/components/admin/HouseStyleCard';
 import { addAdmin, listAdmins, removeAdmin } from '@/lib/admin-firestore';
 import { useAuth } from '@/lib/auth';
 
@@ -179,6 +180,8 @@ export default function SettingsPage() {
           </div>
         </form>
       </section>
+
+      <HouseStyleCard />
     </div>
   );
 }

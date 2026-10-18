@@ -36,7 +36,7 @@ export const NEW_MUSLIM_LINK_GROUPS: NewMuslimLinkGroup[] = [
     links: [
       {
         id: 'quran-com',
-        title: 'The Noble Qur’an – Quran.com',
+        title: 'The Noble Quran – Quran.com',
         url: 'https://quran.com/',
         image: `${IMAGE_DIR}/quran-com.webp`,
         icon: 'book',
@@ -90,7 +90,7 @@ export const NEW_MUSLIM_LINK_GROUPS: NewMuslimLinkGroup[] = [
       },
       {
         id: 'muslim-pro-ios',
-        title: 'Muslim Pro: Qur’an & Prayer Times',
+        title: 'Muslim Pro: Quran & Prayer Times',
         url: 'https://apps.apple.com/us/app/muslim-pro-quran-prayer-times/id388389451',
         image: `${IMAGE_DIR}/muslim-pro-ios.webp`,
         icon: 'app',
@@ -117,7 +117,7 @@ export const NEW_MUSLIM_LINK_GROUPS: NewMuslimLinkGroup[] = [
       },
       {
         id: 'muslim-pro-android',
-        title: 'Muslim Pro: Qur’an & Prayer Times',
+        title: 'Muslim Pro: Quran & Prayer Times',
         url: 'https://play.google.com/store/apps/details?id=com.bitsmedia.android.muslimpro',
         image: `${IMAGE_DIR}/muslim-pro-android.webp`,
         icon: 'app',

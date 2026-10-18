@@ -33,8 +33,8 @@
   }
 
   /* Headings and anything using our `font-serif` token stay in Amiri because
-     Fraunces has no Arabic glyphs. Without this override they would fall back
-     to the system serif and mix visually with body text. */
+     the heading font (Montserrat) has no Arabic glyphs. Without this override
+     they would fall back to a system font and mix visually with body text. */
   html[dir='rtl'] h1,
   html[dir='rtl'] h2,
   html[dir='rtl'] h3,
