@@ -459,7 +459,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     id: 'footer',
     translations: {
       en: {
-        copyright: 'The Straight Path. All rights reserved.',
+        copyright: 'The Straight Path.',
         madeWith: 'Built with care and in service.',
       },
     },

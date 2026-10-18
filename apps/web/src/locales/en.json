@@ -1,7 +1,6 @@
 {
   "site": {
     "name": "The Straight Path",
-    "tagline": "A Clear Path to God",
     "description": "A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur'an, and explore a clear path to God."
   },
   "nav": {
@@ -21,7 +20,7 @@
     "toggleMenu": "Toggle menu"
   },
   "footer": {
-    "copyright": "The Straight Path. All rights reserved.",
+    "copyright": "The Straight Path.",
     "madeWith": "Built with care and in service.",
     "learn": "Learn",
     "community": "Community",
@@ -98,16 +97,6 @@
     "articles": {
       "heading": "All articles",
       "empty": "No articles match this topic yet. Try \"All\" to see everything available."
-    },
-    "faqPreview": {
-      "eyebrow": "Have a question?",
-      "title": "Common questions, answered plainly.",
-      "seeAll": "See all questions"
-    },
-    "resourcesPreview": {
-      "eyebrow": "Looking for more?",
-      "title": "Trusted places to go deeper.",
-      "seeAll": "See all resources"
     },
     "drafts": {
       "badge": "Draft",

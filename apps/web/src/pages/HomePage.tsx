@@ -301,10 +301,15 @@ export default function HomePage() {
                 <p className="text-accent-300 font-serif text-sm uppercase tracking-widest">
                   {quranCopy.eyebrow ?? t('home.sections.quran')}
                 </p>
-                <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
-                  {quranCopy.headline}
-                </h2>
-                <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
+                {/* Blank fields in Admin are left out so they take no space. */}
+                {quranCopy.headline ? (
+                  <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
+                    {quranCopy.headline}
+                  </h2>
+                ) : null}
+                {quranCopy.body ? (
+                  <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
+                ) : null}
                 <a
                   href={quranCtaUrl}
                   target="_blank"
@@ -324,6 +329,8 @@ export default function HomePage() {
   }
 
   function renderQuickLinks() {
+    // With every quick link hidden in Admin, an empty band would only add space.
+    if (quickLinkItems.length === 0) return null;
     return (
       <section key="quickLinks" className="py-20">
         <Container>
@@ -357,7 +364,13 @@ export default function HomePage() {
 
   function renderAboutPreview() {
     return (
-      <section key="aboutPreview" className="bg-paper dark:bg-primary-900 py-20">
+      <section
+        key="aboutPreview"
+        className={cn(
+          'bg-paper dark:bg-primary-900',
+          aboutCopy && !aboutCopy.headline && !aboutCopy.body ? 'py-14' : 'py-20',
+        )}
+      >
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             {aboutCopy ? (
@@ -365,11 +378,21 @@ export default function HomePage() {
                 <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
                   {aboutCopy.eyebrow}
                 </p>
-                <h2 className="text-primary-700 dark:text-accent-300 mt-3 font-serif text-4xl font-semibold">
-                  {aboutCopy.headline}
-                </h2>
-                <p className="text-ink/70 dark:text-paper/80 mt-6 text-lg">{aboutCopy.body}</p>
-                <Link to={localizePath('/about')} className="btn-ghost mt-8">
+                {aboutCopy.headline ? (
+                  <h2 className="text-primary-700 dark:text-accent-300 mt-3 font-serif text-4xl font-semibold">
+                    {aboutCopy.headline}
+                  </h2>
+                ) : null}
+                {aboutCopy.body ? (
+                  <p className="text-ink/70 dark:text-paper/80 mt-6 text-lg">{aboutCopy.body}</p>
+                ) : null}
+                <Link
+                  to={localizePath('/about')}
+                  className={cn(
+                    'btn-ghost',
+                    aboutCopy.headline || aboutCopy.body ? 'mt-8' : 'mt-5',
+                  )}
+                >
                   {aboutCopy.cta}
                 </Link>
               </>

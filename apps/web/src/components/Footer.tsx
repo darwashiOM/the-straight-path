@@ -13,6 +13,8 @@ export default function Footer() {
   const locale = 'en' as const;
 
   const footerNav = useSiteSetting('footerNav', locale);
+  const footerCopy = useSiteSetting<{ copyright?: string }>('footer', locale);
+  const copyright = footerCopy.data?.value.copyright ?? (t('footer.copyright') as string);
   const columns = ((footerNav.data?.data?.columns as FooterNavColumn[] | undefined) ?? [])
     .slice()
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
@@ -28,7 +30,6 @@ export default function Footer() {
             >
               {t('site.name')}
             </Link>
-            <p className="text-ink/70 dark:text-paper/70 mt-3 text-sm">{t('site.tagline')}</p>
           </div>
           {columns.map((col) => {
             const title = col.titleEn;
@@ -73,7 +74,7 @@ export default function Footer() {
         </div>
         <div className="border-primary-500/10 text-ink/60 dark:border-primary-700/30 dark:text-paper/60 mt-10 flex flex-col items-center justify-between gap-3 border-t pt-6 text-xs md:flex-row">
           <span>
-            &copy; {year} {t('footer.copyright')}
+            &copy; {year} {copyright}
           </span>
           <span className="flex items-center gap-4">
             <Link

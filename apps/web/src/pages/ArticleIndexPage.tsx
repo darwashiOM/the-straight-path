@@ -61,6 +61,11 @@ export default function ArticleIndexPage() {
     return showDrafts ? pool : pool.filter((a) => a.status === 'published');
   }, [articlesQuery.data, showDrafts]);
 
+  const topicsWithArticles = useMemo(
+    () => new Set(visibleArticles.map((a) => a.topic).filter((x): x is string => Boolean(x))),
+    [visibleArticles],
+  );
+
   const filteredArticles = useMemo(() => {
     if (activeTopic === 'all') return visibleArticles;
     return visibleArticles.filter((a) => a.topic === activeTopic);
@@ -106,7 +111,7 @@ export default function ArticleIndexPage() {
         ) : null}
 
         <div className="mt-10">
-          <TopicChips value={activeTopic} onChange={onTopicChange} />
+          <TopicChips value={activeTopic} onChange={onTopicChange} available={topicsWithArticles} />
         </div>
 
         {articlesQuery.isLoading && visibleArticles.length === 0 ? (

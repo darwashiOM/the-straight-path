@@ -88,7 +88,8 @@ const SETTINGS: SettingSpec[] = [
   {
     id: 'quranBanner',
     title: 'Qur’an banner',
-    description: 'Homepage banner linking to Quran.com.',
+    description:
+      'Homepage banner linking to Quran.com. The CTA label and URL are also the button on /quran.',
     previewPath: '/',
     fields: [
       { key: 'eyebrow', label: 'Eyebrow', type: 'text' },
@@ -145,7 +146,7 @@ const SETTINGS: SettingSpec[] = [
   {
     id: 'quranAbout',
     title: 'Qur’an page — about',
-    description: 'Body block on /quran (markdown).',
+    description: 'The /quran page: the title shows as the gold eyebrow, then the body (markdown).',
     previewPath: '/quran',
     fields: [
       { key: 'title', label: 'Title', type: 'text' },
