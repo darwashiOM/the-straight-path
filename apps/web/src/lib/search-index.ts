@@ -1,16 +1,18 @@
 /**
- * Search index — builds a Fuse.js index of every indexable entity on the
- * site (articles, FAQ items, resources, social channels) at call time.
+ * Search index — plain word search over every indexable entity on the site
+ * (articles, FAQ items, resources, social channels).
  *
- * Because Fuse is ~12 KB gzipped, this module is only imported by the
- * <SearchDialog>, which is itself lazy-loaded. That keeps the first-paint
- * bundle free of search code.
+ * Every word typed must start a word somewhere in the title or the text
+ * ("pray" finds "prayer", not "spray"). Case, diacritics, and apostrophes
+ * are ignored, so "quran" finds "Qur'ān". Articles are searched in full.
+ *
+ * This module is only imported by the lazy-loaded <SearchDialog>, which
+ * keeps search code out of the first-paint bundle.
  *
  * Content is fetched directly from Firestore when the dialog opens, so the
  * index reflects the live admin state. If Firestore is empty or unreachable
  * we fall back to the built-in defaults from `content-defaults`.
  */
-import Fuse from 'fuse.js';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
 import { getDb } from './firebase';
@@ -30,16 +32,16 @@ export interface SearchItem {
   externalUrl?: string;
 }
 
-function snippet(markdown: string, max = 400): string {
+/** Markdown to plain text for searching and snippets. */
+function plainText(markdown: string): string {
   return markdown
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/`[^`]*`/g, ' ')
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/[#>*_~`-]/g, ' ')
+    .replace(/[#>*_~`]/g, ' ')
     .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, max);
+    .trim();
 }
 
 async function fetchPublishedArticles(locale: Locale) {
@@ -165,7 +167,7 @@ export async function buildSearchItemsAsync(locale: Locale): Promise<SearchItem[
       id: `article:${a.slug}`,
       type: 'article',
       title: a.title,
-      body: `${a.excerpt} ${snippet(a.body)}`.trim(),
+      body: `${a.excerpt} ${plainText(a.body)}`.trim(),
       to: `/learn/articles/${a.slug}`,
     });
   }
@@ -205,22 +207,152 @@ export async function buildSearchItemsAsync(locale: Locale): Promise<SearchItem[
   return items;
 }
 
-/**
- * Construct a Fuse index with settings tuned for short titles and body
- * snippets. `includeMatches` lets the UI highlight the matching range.
- */
-export function createFuse(items: SearchItem[]): Fuse<SearchItem> {
-  return new Fuse(items, {
-    keys: [
-      { name: 'title', weight: 0.7 },
-      { name: 'body', weight: 0.3 },
-    ],
-    includeMatches: true,
-    includeScore: true,
-    threshold: 0.35,
-    ignoreLocation: true,
-    minMatchCharLength: 2,
-  });
+/** A highlighted span: start inclusive, end exclusive, in the original text. */
+export type Range = readonly [start: number, end: number];
+
+export interface SearchHit {
+  item: SearchItem;
+  score: number;
+  titleRanges: Range[];
+  /** A piece of the text around the first match (the opening if none). */
+  snippet: string;
+  snippetRanges: Range[];
 }
 
-export type FuseResult = ReturnType<ReturnType<typeof createFuse>['search']>[number];
+export interface SearchIndex {
+  search(query: string, limit?: number): SearchHit[];
+}
+
+/** Lowercased text without diacritics or apostrophes, plus a map from each
+ *  folded character back to its index in the original string. */
+interface Folded {
+  text: string;
+  map: number[];
+}
+
+const DROPPED = /['’‘ʿʾʻ`]/;
+const WORD_CHAR = /[\p{L}\p{N}]/u;
+
+function fold(source: string): Folded {
+  let text = '';
+  const map: number[] = [];
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i]!;
+    if (DROPPED.test(ch)) continue;
+    const base = ch
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    for (const b of base) {
+      text += b;
+      map.push(i);
+    }
+  }
+  return { text, map };
+}
+
+function queryTerms(query: string): string[] {
+  const terms = fold(query)
+    .text.split(/[^\p{L}\p{N}]+/u)
+    .filter(Boolean);
+  return [...new Set(terms)];
+}
+
+/** Original-text ranges where `term` starts a word. */
+function wordStarts(f: Folded, term: string): Range[] {
+  const out: Range[] = [];
+  let at = f.text.indexOf(term);
+  while (at !== -1) {
+    const prev = at > 0 ? f.text[at - 1]! : '';
+    if (!prev || !WORD_CHAR.test(prev)) {
+      out.push([f.map[at]!, f.map[at + term.length - 1]! + 1]);
+    }
+    at = f.text.indexOf(term, at + 1);
+  }
+  return out;
+}
+
+function mergeRanges(ranges: Range[]): Range[] {
+  const sorted = [...ranges].sort((a, b) => a[0] - b[0]);
+  const out: Array<[number, number]> = [];
+  for (const [s, e] of sorted) {
+    const last = out[out.length - 1];
+    if (last && s <= last[1]) last[1] = Math.max(last[1], e);
+    else out.push([s, e]);
+  }
+  return out;
+}
+
+const SNIPPET_BEFORE = 60;
+const SNIPPET_LENGTH = 240;
+
+/** Cut a window of `body` around its first match and shift the ranges. */
+function makeSnippet(body: string, ranges: Range[]): { snippet: string; ranges: Range[] } {
+  const first = ranges[0];
+  let start = 0;
+  if (first && first[0] > SNIPPET_BEFORE) {
+    start = first[0] - SNIPPET_BEFORE;
+    const space = body.indexOf(' ', start);
+    if (space !== -1 && space < first[0]) start = space + 1;
+  }
+  const end = Math.min(body.length, start + SNIPPET_LENGTH);
+  const lead = start > 0 ? '… ' : '';
+  const tail = end < body.length ? ' …' : '';
+  const shifted = ranges
+    .filter(([s, e]) => s >= start && e <= end)
+    .map(([s, e]) => [s - start + lead.length, e - start + lead.length] as const);
+  return { snippet: lead + body.slice(start, end) + tail, ranges: shifted };
+}
+
+/**
+ * Build the search index. Every query word has to appear (as the start of a
+ * word) in the title or the text; title matches rank first.
+ */
+export function createSearchIndex(items: SearchItem[]): SearchIndex {
+  const entries = items.map((item) => ({
+    item,
+    title: fold(item.title),
+    body: fold(item.body),
+  }));
+
+  return {
+    search(query, limit = 40) {
+      const terms = queryTerms(query);
+      if (terms.length === 0) return [];
+      const phrase = terms.join(' ');
+      const hits: SearchHit[] = [];
+
+      for (const entry of entries) {
+        let score = 0;
+        const titleRanges: Range[] = [];
+        const bodyRanges: Range[] = [];
+        let everyTerm = true;
+        for (const term of terms) {
+          const inTitle = wordStarts(entry.title, term);
+          const inBody = wordStarts(entry.body, term);
+          if (inTitle.length === 0 && inBody.length === 0) {
+            everyTerm = false;
+            break;
+          }
+          titleRanges.push(...inTitle);
+          bodyRanges.push(...inBody);
+          score += (inTitle.length > 0 ? 10 : 0) + Math.min(inBody.length, 5);
+        }
+        if (!everyTerm) continue;
+        if (terms.length > 1 && entry.title.text.includes(phrase)) score += 20;
+
+        const merged = mergeRanges(bodyRanges);
+        const { snippet, ranges } = makeSnippet(entry.item.body, merged);
+        hits.push({
+          item: entry.item,
+          score,
+          titleRanges: mergeRanges(titleRanges),
+          snippet,
+          snippetRanges: ranges,
+        });
+      }
+
+      return hits.sort((a, b) => b.score - a.score).slice(0, limit);
+    },
+  };
+}

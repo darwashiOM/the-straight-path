@@ -17,13 +17,14 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import type Fuse from 'fuse.js';
 
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import {
   buildSearchItemsAsync,
-  createFuse,
-  type FuseResult,
+  createSearchIndex,
+  type Range,
+  type SearchHit,
+  type SearchIndex,
   type SearchItem,
   type SearchItemType,
 } from '@/lib/search-index';
@@ -73,15 +74,15 @@ function writeRecent(list: string[]) {
   }
 }
 
-/** Highlight Fuse match indices inside a string using <mark>. */
-function highlight(text: string, indices: readonly [number, number][] | undefined) {
-  if (!indices || !indices.length) return <>{text}</>;
+/** Wrap the matched ranges (end exclusive) of a string in <mark>. */
+function highlight(text: string, ranges: readonly Range[]) {
+  if (!ranges.length) return <>{text}</>;
   const parts: Array<{ text: string; match: boolean }> = [];
   let cursor = 0;
-  for (const [start, end] of indices) {
+  for (const [start, end] of ranges) {
     if (start > cursor) parts.push({ text: text.slice(cursor, start), match: false });
-    parts.push({ text: text.slice(start, end + 1), match: true });
-    cursor = end + 1;
+    parts.push({ text: text.slice(start, end), match: true });
+    cursor = end;
   }
   if (cursor < text.length) parts.push({ text: text.slice(cursor), match: false });
   return (
@@ -103,8 +104,8 @@ function highlight(text: string, indices: readonly [number, number][] | undefine
 }
 
 /**
- * `<SearchDialog>` — full-screen overlay with a Fuse-backed client-side
- * index over articles, FAQ, resources, and social channels. Navigable via
+ * `<SearchDialog>` — full-screen overlay with a client-side word search
+ * over articles, FAQ, resources, and social channels. Navigable via
  * arrow keys; `Enter` commits; `Esc` closes; ⌘/Ctrl+K toggles.
  *
  * Results are grouped by type and keyboard navigation proceeds through the
@@ -118,11 +119,11 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const [recent, setRecent] = useState<string[]>(() => readRecent());
-  const [fuse, setFuse] = useState<Fuse<SearchItem> | null>(null);
+  const [index, setIndex] = useState<SearchIndex | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Build the Fuse index from Firestore content whenever the dialog is opened
+  // Build the search index from Firestore content whenever the dialog is opened
   // or the locale changes. Results are asynchronous, so the first keystroke
   // after open may see an empty list for a tick — this is fine: the cost is
   // roughly a single getDocs round-trip.
@@ -131,27 +132,27 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
     let cancelled = false;
     void buildSearchItemsAsync(locale).then((items) => {
       if (cancelled) return;
-      setFuse(createFuse(items));
+      setIndex(createSearchIndex(items));
     });
     return () => {
       cancelled = true;
     };
   }, [open, locale]);
 
-  const results: FuseResult[] = useMemo(() => {
-    if (!query.trim() || !fuse) return [];
-    return fuse.search(query.trim(), { limit: 40 });
-  }, [fuse, query]);
+  const results: SearchHit[] = useMemo(() => {
+    if (!query.trim() || !index) return [];
+    return index.search(query, 40);
+  }, [index, query]);
 
-  // Group results by type while preserving Fuse score order within each group.
+  // Group results by type while preserving score order within each group.
   const grouped = useMemo(() => {
-    const byType = new Map<SearchItemType, FuseResult[]>();
+    const byType = new Map<SearchItemType, SearchHit[]>();
     for (const r of results) {
       const list = byType.get(r.item.type) ?? [];
       list.push(r);
       byType.set(r.item.type, list);
     }
-    const ordered: Array<{ type: SearchItemType; results: FuseResult[] }> = [];
+    const ordered: Array<{ type: SearchItemType; results: SearchHit[] }> = [];
     for (const type of TYPE_ORDER) {
       const list = byType.get(type);
       if (list && list.length) ordered.push({ type, results: list });
@@ -320,8 +321,6 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
                       {group.results.map((r) => {
                         const flatIndex = flat.indexOf(r);
                         const isActive = flatIndex === active;
-                        const titleMatch = r.matches?.find((m) => m.key === 'title');
-                        const bodyMatch = r.matches?.find((m) => m.key === 'body');
                         return (
                           <li key={r.item.id}>
                             <button
@@ -342,7 +341,7 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
                               <span className="min-w-0 flex-1">
                                 <span className="text-primary-700 dark:text-accent-300 flex items-center gap-1 font-medium">
                                   <span className="truncate">
-                                    {highlight(r.item.title, titleMatch?.indices)}
+                                    {highlight(r.item.title, r.titleRanges)}
                                   </span>
                                   {r.item.externalUrl ? (
                                     <ExternalLink
@@ -352,8 +351,8 @@ export default function SearchDialog({ open, onClose }: SearchDialogProps) {
                                     />
                                   ) : null}
                                 </span>
-                                <span className="text-ink/60 dark:text-paper/60 mt-0.5 line-clamp-1 block text-xs">
-                                  {highlight(r.item.body, bodyMatch?.indices)}
+                                <span className="text-ink/60 dark:text-paper/60 mt-0.5 line-clamp-2 block text-xs">
+                                  {highlight(r.snippet, r.snippetRanges)}
                                 </span>
                               </span>
                             </button>

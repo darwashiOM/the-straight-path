@@ -9,7 +9,7 @@
     "articles": "Articles",
     "quran": "Read the Qur'an",
     "resources": "Further Learning",
-    "faq": "Ask Questions",
+    "faq": "Frequently Asked Questions",
     "social": "On Social Media",
     "mobileBillboards": "Mobile Billboards",
     "newMuslimResources": "New Muslim Resources",
@@ -39,7 +39,7 @@
     "sections": {
       "learn": "Learn About Islam",
       "quran": "Read the Qur'an",
-      "social": "Islam Explained on Social Media",
+      "social": "Helpful Social Media Channels",
       "resources": "Further Learning",
       "faq": "Frequently Asked Questions",
       "about": "About Us",
@@ -126,7 +126,6 @@
   },
   "resourcesPage": {
     "title": "Further Learning",
-    "description": "Trusted resources for further study — chosen for their accuracy, accessibility, and tone.",
     "categories": {
       "quran": "Qur'an",
       "hadith": "Hadith",
@@ -157,8 +156,7 @@
     }
   },
   "faqPage": {
-    "title": "Ask Questions",
-    "description": "Plain answers to common questions about Islam — and an open door for the rest.",
+    "title": "Frequently Asked Questions",
     "items": [
       {
         "q": "What is Islam, in one sentence?",
@@ -187,8 +185,7 @@
     ]
   },
   "socialPage": {
-    "title": "Islam Explained on Social Media",
-    "description": "A small, curated list of channels that explain Islam with clarity and good character.",
+    "title": "Helpful Social Media Channels",
     "visitChannel": "Visit channel",
     "channels": {
       "efdawah": {

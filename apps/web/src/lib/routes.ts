@@ -84,7 +84,7 @@ export const routes: RouteMeta[] = [
   },
   {
     path: '/social',
-    title: 'Islam Explained on Social Media',
+    title: 'Helpful Social Media Channels',
     description:
       'A small, curated list of video channels that explain Islam with clarity and good character — short reminders, long dialogues, and research-driven explainers.',
     priority: 0.6,

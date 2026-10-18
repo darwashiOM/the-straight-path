@@ -22,7 +22,8 @@ export default function FaqPage() {
   const schemaPairs = faqs.map((f) => ({ q: f.question, a: f.answer }));
   const header = useSiteSetting<{ title: string; description: string }>('faqHeader', locale);
   const headerTitle = header.data?.value.title || t('faqPage.title');
-  const headerDescription = header.data?.value.description || t('faqPage.description');
+  // A subtitle shows only when one is typed in Admin (faqHeader → Description).
+  const headerDescription = header.data?.value.description?.trim() ?? '';
 
   return (
     <>
@@ -49,9 +50,11 @@ export default function FaqPage() {
         <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
           {headerTitle}
         </h1>
-        <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
-          {headerDescription}
-        </p>
+        {headerDescription ? (
+          <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
+            {headerDescription}
+          </p>
+        ) : null}
         {isLoading && faqs.length === 0 ? (
           <div className="mx-auto mt-12 max-w-3xl space-y-4">
             {[0, 1, 2, 3].map((i) => (

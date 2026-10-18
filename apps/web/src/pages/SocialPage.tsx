@@ -18,7 +18,8 @@ export default function SocialPage() {
   const { data: channels = [], isLoading } = useChannels(locale);
   const header = useSiteSetting<{ title: string; description: string }>('socialHeader', locale);
   const headerTitle = header.data?.value.title || t('socialPage.title');
-  const headerDescription = header.data?.value.description || t('socialPage.description');
+  // A subtitle shows only when one is typed in Admin (socialHeader → Description).
+  const headerDescription = header.data?.value.description?.trim() ?? '';
 
   return (
     <>
@@ -42,9 +43,11 @@ export default function SocialPage() {
         <h1 className="text-primary-700 dark:text-accent-300 font-serif text-5xl font-semibold">
           {headerTitle}
         </h1>
-        <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
-          {headerDescription}
-        </p>
+        {headerDescription ? (
+          <p className="text-ink/70 dark:text-paper/70 mt-4 max-w-prose text-lg">
+            {headerDescription}
+          </p>
+        ) : null}
         {isLoading && channels.length === 0 ? (
           <ul className="mt-12 grid gap-6 md:grid-cols-3">
             {[0, 1, 2].map((i) => (

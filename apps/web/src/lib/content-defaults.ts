@@ -404,8 +404,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     translations: {
       en: {
         title: 'Further Learning',
-        description:
-          'Trusted resources for further study — chosen for their accuracy, accessibility, and tone.',
+        description: '',
       },
     },
   },
@@ -413,9 +412,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     id: 'faqHeader',
     translations: {
       en: {
-        title: 'Ask Questions',
-        description:
-          'Plain answers to common questions about Islam — and an open door for the rest.',
+        title: 'Frequently Asked Questions',
+        description: '',
       },
     },
   },
@@ -423,9 +421,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingDefault[] = [
     id: 'socialHeader',
     translations: {
       en: {
-        title: 'Islam Explained on Social Media',
-        description:
-          'A small, curated list of channels that explain Islam with clarity and good character.',
+        title: 'Helpful Social Media Channels',
+        description: '',
       },
     },
   },
