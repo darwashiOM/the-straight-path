@@ -41,13 +41,6 @@ interface QuranBannerCopy {
   ctaUrl?: string;
 }
 
-interface AboutPreviewCopy {
-  eyebrow: string;
-  headline: string;
-  body: string;
-  cta: string;
-}
-
 function HeroSection() {
   const { localizePath } = useLocalizedPath();
   const [showCitation, setShowCitation] = useState(false);
@@ -116,7 +109,6 @@ export default function HomePage() {
   const arrow = '→';
 
   const quranBanner = useSiteSetting<QuranBannerCopy>('quranBanner', locale);
-  const aboutPreview = useSiteSetting<AboutPreviewCopy>('aboutPreview', locale);
   const quickLinks = useSiteSetting('quickLinks', locale);
   const sectionsSetting = useSiteSetting('homepageSections', locale);
   const featuredSetting = useSiteSetting('featured', locale);
@@ -128,7 +120,6 @@ export default function HomePage() {
     { id: 'learnRow', visible: true, order: 2 },
     { id: 'quranBanner', visible: true, order: 3 },
     { id: 'quickLinks', visible: true, order: 4 },
-    { id: 'aboutPreview', visible: true, order: 5 },
   ]) as HomepageSection[];
 
   const featuredConfig = (featuredSetting.data?.data as FeaturedData | undefined) ?? {
@@ -146,7 +137,6 @@ export default function HomePage() {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   const quranCopy = quranBanner.data?.value;
-  const aboutCopy = aboutPreview.data?.value;
 
   const articles = (articlesQuery.data ?? []).slice(0, 3);
   const manualMatch =
@@ -163,7 +153,6 @@ export default function HomePage() {
     learnRow: () => renderLearnRow(),
     quranBanner: () => renderQuranBanner(),
     quickLinks: () => renderQuickLinks(),
-    aboutPreview: () => renderAboutPreview(),
   };
 
   const orderedSections = sections
@@ -301,10 +290,15 @@ export default function HomePage() {
                 <p className="text-accent-300 font-serif text-sm uppercase tracking-widest">
                   {quranCopy.eyebrow ?? t('home.sections.quran')}
                 </p>
-                <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
-                  {quranCopy.headline}
-                </h2>
-                <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
+                {/* Blank fields in Admin are left out so they take no space. */}
+                {quranCopy.headline ? (
+                  <h2 className="mt-3 font-serif text-4xl font-semibold md:text-5xl">
+                    {quranCopy.headline}
+                  </h2>
+                ) : null}
+                {quranCopy.body ? (
+                  <p className="text-paper/80 mt-6 text-lg">{quranCopy.body}</p>
+                ) : null}
                 <a
                   href={quranCtaUrl}
                   target="_blank"
@@ -324,6 +318,8 @@ export default function HomePage() {
   }
 
   function renderQuickLinks() {
+    // With every quick link hidden in Admin, an empty band would only add space.
+    if (quickLinkItems.length === 0) return null;
     return (
       <section key="quickLinks" className="py-20">
         <Container>
@@ -349,33 +345,6 @@ export default function HomePage() {
                 />
               );
             })}
-          </div>
-        </Container>
-      </section>
-    );
-  }
-
-  function renderAboutPreview() {
-    return (
-      <section key="aboutPreview" className="bg-paper dark:bg-primary-900 py-20">
-        <Container>
-          <div className="mx-auto max-w-3xl text-center">
-            {aboutCopy ? (
-              <>
-                <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
-                  {aboutCopy.eyebrow}
-                </p>
-                <h2 className="text-primary-700 dark:text-accent-300 mt-3 font-serif text-4xl font-semibold">
-                  {aboutCopy.headline}
-                </h2>
-                <p className="text-ink/70 dark:text-paper/80 mt-6 text-lg">{aboutCopy.body}</p>
-                <Link to={localizePath('/about')} className="btn-ghost mt-8">
-                  {aboutCopy.cta}
-                </Link>
-              </>
-            ) : (
-              <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
-            )}
           </div>
         </Container>
       </section>

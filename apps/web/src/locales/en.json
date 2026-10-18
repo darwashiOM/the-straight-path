@@ -1,7 +1,6 @@
 {
   "site": {
     "name": "The Straight Path",
-    "tagline": "A Clear Path to God",
     "description": "A pastoral, accessible introduction to Islam. Learn the essentials, read the Qur'an, and explore a clear path to God."
   },
   "nav": {
@@ -9,23 +8,21 @@
     "learn": "Learn",
     "articles": "Articles",
     "quran": "Read the Qur'an",
-    "resources": "Resources",
+    "resources": "Further Learning",
     "faq": "Ask Questions",
     "social": "On Social Media",
     "mobileBillboards": "Mobile Billboards",
     "newMuslimResources": "New Muslim Resources",
     "about": "About",
+    "more": "More",
     "contact": "Contact",
     "privacy": "Privacy",
     "terms": "Terms",
     "toggleMenu": "Toggle menu"
   },
   "footer": {
-    "copyright": "The Straight Path. All rights reserved.",
-    "madeWith": "Built with care and in service.",
-    "learn": "Learn",
-    "community": "Community",
-    "project": "Project"
+    "copyright": "The Straight Path",
+    "license": "CC BY 4.0"
   },
   "home": {
     "hero": {
@@ -43,7 +40,7 @@
       "learn": "Learn About Islam",
       "quran": "Read the Qur'an",
       "social": "Islam Explained on Social Media",
-      "resources": "Useful External Links",
+      "resources": "Further Learning",
       "faq": "Frequently Asked Questions",
       "about": "About Us",
       "viewAll": "View all"
@@ -99,16 +96,6 @@
       "heading": "All articles",
       "empty": "No articles match this topic yet. Try \"All\" to see everything available."
     },
-    "faqPreview": {
-      "eyebrow": "Have a question?",
-      "title": "Common questions, answered plainly.",
-      "seeAll": "See all questions"
-    },
-    "resourcesPreview": {
-      "eyebrow": "Looking for more?",
-      "title": "Trusted places to go deeper.",
-      "seeAll": "See all resources"
-    },
     "drafts": {
       "badge": "Draft",
       "notice": "Drafts are visible because \"?showDrafts=1\" is in the URL."
@@ -138,7 +125,7 @@
     "aboutBody2": "It is the central religious text of Islam — a book of guidance, mercy, and wisdom. Muslims believe its preservation is divinely safeguarded, and its message is a continuation of the one sent to earlier prophets: worship God alone, and do good."
   },
   "resourcesPage": {
-    "title": "Useful External Links",
+    "title": "Further Learning",
     "description": "Trusted resources for further study — chosen for their accuracy, accessibility, and tone.",
     "categories": {
       "quran": "Qur'an",
@@ -455,7 +442,7 @@
     "groups": {
       "articles": "Articles",
       "faq": "FAQ",
-      "resources": "Resources",
+      "resources": "Further Learning",
       "social": "Social"
     },
     "hints": {

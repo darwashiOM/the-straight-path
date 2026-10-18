@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, ChevronDown, ExternalLink } from 'lucide-react';
 
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Container from '@/components/Container';
@@ -12,14 +11,7 @@ import Skeleton from '@/components/Skeleton';
 import StartHereSteps from '@/components/StartHereSteps';
 import TopicChips, { TOPICS, type TopicSlug } from '@/components/TopicChips';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import {
-  useArticles,
-  useFaqs,
-  useResources,
-  useSeries,
-  useSiteSetting,
-  type PublicArticle,
-} from '@/lib/content';
+import { useArticles, useSeries, useSiteSetting, type PublicArticle } from '@/lib/content';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { buildBreadcrumbs, canonicalFor, getRouteMeta } from '@/lib/routes';
 import { breadcrumbSchema } from '@/lib/schema';
@@ -79,13 +71,16 @@ export default function LearnPage() {
   const startHereSetting = useSiteSetting<StartHereCopy>('startHere', locale);
   const articlesQuery = useArticles(locale);
   const seriesQuery = useSeries(locale);
-  const faqsQuery = useFaqs(locale);
-  const resourcesQuery = useResources(locale);
 
   const allArticles = articlesQuery.data ?? [];
   const visibleArticles = useMemo(
     () => (showDrafts ? allArticles : allArticles.filter((a) => a.status === 'published')),
     [allArticles, showDrafts],
+  );
+
+  const topicsWithArticles = useMemo(
+    () => new Set(visibleArticles.map((a) => a.topic).filter((x): x is string => Boolean(x))),
+    [visibleArticles],
   );
 
   const filteredArticles = useMemo(() => {
@@ -121,10 +116,6 @@ export default function LearnPage() {
       .map((slug) => pool.find((a) => a.slug === slug))
       .filter((a): a is PublicArticle => Boolean(a) && a!.series === featuredSeries.slug);
   }, [featuredSeries, allArticles, showDrafts]);
-
-  // --- FAQ + resource previews ----------------------------------------------
-  const faqPreviews = (faqsQuery.data ?? []).slice(0, 3);
-  const resourcePreviews = (resourcesQuery.data ?? []).slice(0, 3);
 
   const headerTitle = learnHeader.data?.value.title ?? (t('learn.title') as string);
   const headerDescription =
@@ -214,7 +205,12 @@ export default function LearnPage() {
             </Link>
           </div>
 
-          <TopicChips value={activeTopic} onChange={onTopicChange} className="mb-10" />
+          <TopicChips
+            value={activeTopic}
+            onChange={onTopicChange}
+            available={topicsWithArticles}
+            className="mb-10"
+          />
 
           {articlesQuery.isLoading && visibleArticles.length === 0 ? (
             <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -237,82 +233,6 @@ export default function LearnPage() {
               ))}
             </ul>
           )}
-        </section>
-
-        {/* FAQ + Resources previews */}
-        <section className="mt-24 grid gap-6 md:grid-cols-2">
-          {/* FAQ preview */}
-          <div className="card flex flex-col p-8">
-            <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
-              {t('learn.faqPreview.eyebrow')}
-            </p>
-            <h3 className="text-primary-700 dark:text-accent-300 mt-2 font-serif text-2xl font-semibold">
-              {t('learn.faqPreview.title')}
-            </h3>
-            <ul className="mt-6 flex-1 space-y-3">
-              {faqPreviews.map((f) => (
-                <li
-                  key={f.id}
-                  className="text-ink/80 dark:text-paper/80 flex items-start gap-3 text-sm"
-                >
-                  <ChevronDown
-                    size={16}
-                    aria-hidden="true"
-                    className="text-primary-400 dark:text-accent-400 shrink-0 -rotate-90"
-                  />
-                  <span className="leading-relaxed">{f.question}</span>
-                </li>
-              ))}
-            </ul>
-            <Link
-              to={localizePath('/faq')}
-              className="text-primary-600 hover:text-primary-700 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold"
-            >
-              {t('learn.faqPreview.seeAll')}
-              <ArrowRight size={14} aria-hidden="true" />
-            </Link>
-          </div>
-
-          {/* Resources preview */}
-          <div className="card flex flex-col p-8">
-            <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
-              {t('learn.resourcesPreview.eyebrow')}
-            </p>
-            <h3 className="text-primary-700 dark:text-accent-300 mt-2 font-serif text-2xl font-semibold">
-              {t('learn.resourcesPreview.title')}
-            </h3>
-            <ul className="mt-6 flex-1 space-y-3">
-              {resourcePreviews.map((r) => (
-                <li key={r.id}>
-                  <a
-                    href={r.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:bg-primary-50 dark:hover:bg-primary-700/40 group flex items-start justify-between gap-3 rounded-lg p-2 transition-colors"
-                  >
-                    <div>
-                      <p className="text-primary-700 group-hover:text-primary-600 dark:text-accent-300 font-serif text-base font-semibold">
-                        {r.title}
-                      </p>
-                      <p className="text-ink/60 dark:text-paper/60 text-xs">{r.description}</p>
-                    </div>
-                    <ExternalLink
-                      size={14}
-                      aria-hidden="true"
-                      className="text-primary-400 dark:text-accent-400 mt-1 shrink-0"
-                    />
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <Link
-              to={localizePath('/resources')}
-              className="text-primary-600 hover:text-primary-700 dark:text-accent-400 mt-6 inline-flex items-center gap-2 text-sm font-semibold"
-            >
-              {t('learn.resourcesPreview.seeAll')}
-              <ArrowRight size={14} aria-hidden="true" />
-            </Link>
-          </div>
         </section>
 
         {/* Reference the full-library view so the crawl surface is clear. */}

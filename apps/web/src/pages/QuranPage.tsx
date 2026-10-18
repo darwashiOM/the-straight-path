@@ -50,45 +50,27 @@ export default function QuranPage() {
           { name: t('nav.quran'), url: canonicalFor('/quran', locale) },
         ])}
       />
-      <section className="from-primary-50 to-paper dark:from-primary-800 dark:to-primary-900 bg-gradient-to-b py-24">
-        <Container className="text-center">
-          {bannerCopy ? (
-            <>
-              <p className="text-accent-500 font-serif text-sm uppercase tracking-widest">
-                {bannerCopy.eyebrow}
-              </p>
-              <h1 className="text-primary-700 dark:text-accent-300 mx-auto mt-3 max-w-3xl text-balance font-serif text-5xl font-semibold md:text-6xl">
-                {bannerCopy.headline}
-              </h1>
-              <p className="text-ink/70 dark:text-paper/80 mx-auto mt-6 max-w-2xl text-lg">
-                {bannerCopy.body}
-              </p>
-              <a
-                href={ctaUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary mt-8"
-              >
-                {bannerCopy.cta} <ArrowRight size={16} />
-              </a>
-            </>
-          ) : (
-            <Skeleton variant="text-line" lines={4} className="mx-auto max-w-2xl" />
-          )}
-        </Container>
-      </section>
-
-      <section className="py-16">
+      {/* One block: the about title as the gold eyebrow, the about text, then
+          the Quran.com button (label and URL shared with the homepage banner). */}
+      <section className="from-primary-50 to-paper dark:from-primary-800 dark:to-primary-900 bg-gradient-to-b py-20">
         <Container>
           <div className="mx-auto max-w-3xl">
-            {aboutCopy ? (
+            {aboutCopy && bannerCopy ? (
               <>
-                <h2 className="text-primary-700 dark:text-accent-300 font-serif text-3xl font-semibold">
+                <h1 className="text-accent-500 font-serif text-sm uppercase tracking-widest">
                   {aboutCopy.title}
-                </h2>
+                </h1>
                 <div className="prose prose-lg dark:prose-invert mt-6">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{aboutCopy.body}</ReactMarkdown>
                 </div>
+                <a
+                  href={ctaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary mt-10"
+                >
+                  {bannerCopy.cta} <ArrowRight size={16} />
+                </a>
               </>
             ) : (
               <Skeleton variant="text-line" lines={6} />

@@ -27,12 +27,22 @@ export interface TopicChipsProps {
   value: TopicSlug;
   /** Called with the new value when a chip is pressed. */
   onChange: (next: TopicSlug) => void;
+  /** Topics that have at least one article; other chips are hidden. The
+   *  active chip always stays so a shared `?topic=` link still shows it. */
+  available: ReadonlySet<string>;
   /** Optional extra wrapper classes. */
   className?: string;
 }
 
-export default function TopicChips({ value, onChange, className }: TopicChipsProps) {
+export default function TopicChips({ value, onChange, available, className }: TopicChipsProps) {
   const { t } = useTranslation();
+  const shown = TOPICS.filter(
+    (topic) => topic === 'all' || topic === value || available.has(topic),
+  );
+
+  // "All" on its own filters nothing, so the row only appears once there is
+  // a topic to choose.
+  if (shown.length < 2) return null;
 
   return (
     // A plain scroll container — keeps the chip row usable on narrow phones
@@ -42,7 +52,7 @@ export default function TopicChips({ value, onChange, className }: TopicChipsPro
       aria-label={t('learn.topics.ariaLabel')}
       className={cn('-mx-1 flex flex-wrap gap-2 px-1', className)}
     >
-      {TOPICS.map((topic) => {
+      {shown.map((topic) => {
         const active = value === topic;
         return (
           <button

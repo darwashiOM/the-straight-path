@@ -43,7 +43,11 @@ const TYPE_META: Record<
 > = {
   article: { labelKey: 'search.groups.articles', defaultLabel: 'Articles', Icon: BookOpen },
   faq: { labelKey: 'search.groups.faq', defaultLabel: 'FAQ', Icon: HelpCircle },
-  resource: { labelKey: 'search.groups.resources', defaultLabel: 'Resources', Icon: LinkIcon },
+  resource: {
+    labelKey: 'search.groups.resources',
+    defaultLabel: 'Further Learning',
+    Icon: LinkIcon,
+  },
   social: { labelKey: 'search.groups.social', defaultLabel: 'Social', Icon: Users },
 };
 
